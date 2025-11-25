@@ -2,7 +2,7 @@
 class ApiService {
     constructor() {
         this.baseUrl = CONFIG.webAppUrl;
-        this.isDevelopment = true; // ✅ MODO DESENVOLVIMENTO ATIVADO
+        this.isDevelopment = false; // ✅ MODO DESENVOLVIMENTO ATIVADO
         console.log('🌐 API Service - Modo:', this.isDevelopment ? 'DESENVOLVIMENTO' : 'PRODUÇÃO');
     }
 
