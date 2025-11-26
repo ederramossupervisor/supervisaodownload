@@ -2,7 +2,7 @@
 class ApiService {
     constructor() {
         this.baseUrl = CONFIG.webAppUrl;
-        this.isDevelopment = false; // ✅ MODO DESENVOLVIMENTO ATIVADO
+        this.isDevelopment = false; // 
         console.log('🌐 API Service - Modo:', this.isDevelopment ? 'DESENVOLVIMENTO' : 'PRODUÇÃO');
     }
 
@@ -59,37 +59,39 @@ class ApiService {
         }
     }
 
-    // ✅ MÉTODO PRINCIPAL - SIMULA RESPOSTAS REAIS
-    async makeRequest(payload) {
-        console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta realista');
-        console.log('📦 Payload enviado:', payload);
-        
-        // Simular delay de rede (1-2 segundos)
-        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
-        
-        // ✅ RESPOSTAS SIMULADAS BASEADAS NA AÇÃO
-        switch (payload.action) {
-            case 'generateDocument':
-                return this.simulateDocumentGeneration(payload);
-            
-            case 'requestAccess':
-                return this.simulateAccessRequest(payload);
-            
-            case 'checkAccess':
-                return { success: true, hasAccess: true };
-            
-            case 'test':
-                return { 
-                    success: true, 
-                    message: '✅ API Online - Modo Desenvolvimento',
-                    timestamp: new Date().toISOString()
-                };
-            
-            default:
-                return { success: false, error: 'Ação desconhecida' };
-        }
+    // ✅ MÉTODO PRINCIPAL - AGORA USA API REAL
+async makeRequest(payload) {
+    // SE ESTIVER EM DESENVOLVIMENTO, SIMULA
+    if (this.isDevelopment) {
+        console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
+        return this.simulateResponse(payload);
     }
-
+    
+    // SE ESTIVER EM PRODUÇÃO, USA API REAL
+    console.log('🚀 MODO PRODUÇÃO - Enviando para API real');
+    
+    try {
+        const response = await fetch(this.baseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Resposta da API real:', result);
+        return result;
+        
+    } catch (error) {
+        console.error('❌ Erro na API real:', error);
+        throw error;
+    }
+}
     // ✅ SIMULAR GERAÇÃO DE DOCUMENTO (MUITO REALISTA)
     simulateDocumentGeneration(payload) {
         const { documentType, formData } = payload;
