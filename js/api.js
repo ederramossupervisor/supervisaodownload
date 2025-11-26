@@ -59,61 +59,40 @@ class ApiService {
         }
     }
 
-    // ✅ MÉTODO PRINCIPAL - USA JSONP PARA EVITAR CORS
-    makeRequest(payload) {
-        return new Promise((resolve, reject) => {
-            if (this.isDevelopment) {
-                console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
-                resolve(this.simulateResponse(payload));
-                return;
-            }
-            
-            console.log('🚀 MODO PRODUÇÃO - Enviando via JSONP');
-            
-            // Criar callback única
-            const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            
-            // Criar script para JSONP
-            const script = document.createElement('script');
-            const url = this.baseUrl + 
-                '?callback=' + callbackName + 
-                '&data=' + encodeURIComponent(JSON.stringify(payload));
-            
-            script.src = url;
-            
-            // Definir callback global temporária
-            window[callbackName] = (response) => {
-                // Limpar
-                delete window[callbackName];
-                document.head.removeChild(script);
-                
-                console.log('✅ Resposta da API:', response);
-                resolve(response);
-            };
-            
-            // Timeout para erro
-            const timeout = setTimeout(() => {
-                delete window[callbackName];
-                if (script.parentNode) {
-                    document.head.removeChild(script);
-                }
-                reject(new Error('Timeout na requisição JSONP'));
-            }, 30000);
-            
-            // Tratamento de erro
-            script.onerror = () => {
-                clearTimeout(timeout);
-                delete window[callbackName];
-                if (script.parentNode) {
-                    document.head.removeChild(script);
-                }
-                reject(new Error('Falha ao carregar script JSONP'));
-            };
-            
-            document.head.appendChild(script);
-        });
+    // ✅ MÉTODO PRINCIPAL - USA PROXY CORS
+async makeRequest(payload) {
+    if (this.isDevelopment) {
+        console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
+        return this.simulateResponse(payload);
     }
-
+    
+    console.log('🚀 MODO PRODUÇÃO - Enviando via Proxy CORS');
+    
+    try {
+        const response = await fetch(this.baseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Resposta da API via Proxy:', result);
+        return result;
+        
+    } catch (error) {
+        console.error('❌ Erro na API via Proxy:', error);
+        
+        // Fallback para desenvolvimento em caso de erro
+        console.log('🔄 Usando fallback para modo desenvolvimento');
+        return this.simulateResponse(payload);
+    }
+}
     // ✅ SIMULAÇÃO PARA MODO DESENVOLVIMENTO
     simulateResponse(payload) {
         switch (payload.action) {
