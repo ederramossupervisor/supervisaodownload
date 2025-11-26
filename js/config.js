@@ -1,18 +1,16 @@
-// config.js - VERSÃO COM CLOUD FUNCTIONS
+// config.js - ATUALIZE COM SUA NOVA URL
 const CONFIG = {
     adminEmail: 'eder.ramos@educador.edu.es.gov.br',
     appName: 'Sistema Supervisão',
     version: '2.0.0',
     
-    // ✅ NOVAS URLs DAS CLOUD FUNCTIONS (SEM CORS!)
+    // ✅ NOVA URL DA CLOUD FUNCTION (SEM CORS!)
     cloudFunctions: {
-        generateDocument: 'https://sua-regiao-supervisao-12345.cloudfunctions.net/generateDocument',
-        requestAccess: 'https://sua-regiao-supervisao-12345.cloudfunctions.net/requestAccess'
+        generateDocument: 'https://southamerica-east1-sistema-documentos-sreac.cloudfunctions.net/generateDocument'
     },
     
     adminEmails: ['eder.ramos@educador.edu.es.gov.br']
 };
-
 // Dados das escolas
 const SCHOOLS_DATA = [
     { name: "CEEFMTI AFONSO CLÁUDIO", city: "Afonso Cláudio", director: "Allan Dyoni Dehete Many" },
