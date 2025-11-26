@@ -2,7 +2,7 @@
 class ApiService {
     constructor() {
         this.baseUrl = CONFIG.webAppUrl;
-        this.isDevelopment = false; // 
+        this.isDevelopment = false; // MODO PRODUÇÃO
         console.log('🌐 API Service - Modo:', this.isDevelopment ? 'DESENVOLVIMENTO' : 'PRODUÇÃO');
     }
 
@@ -52,58 +52,94 @@ class ApiService {
         try {
             console.log('🔐 Verificando acesso para:', userEmail);
             const response = await this.makeRequest(payload);
-            return response.hasAccess || true; // ✅ No desenvolvimento, sempre tem acesso
+            return response.hasAccess || true;
         } catch (error) {
             console.error('❌ Erro ao verificar acesso:', error);
-            return true; // ✅ No desenvolvimento, sempre retorna true
+            return true;
         }
     }
 
-    // ✅ MÉTODO PRINCIPAL - AGORA USA API REAL
-async makeRequest(payload) {
-    if (this.isDevelopment) {
-        console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
-        return this.simulateResponse(payload);
+    // ✅ MÉTODO PRINCIPAL - USA JSONP PARA EVITAR CORS
+    makeRequest(payload) {
+        return new Promise((resolve, reject) => {
+            if (this.isDevelopment) {
+                console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
+                resolve(this.simulateResponse(payload));
+                return;
+            }
+            
+            console.log('🚀 MODO PRODUÇÃO - Enviando via JSONP');
+            
+            // Criar callback única
+            const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            // Criar script para JSONP
+            const script = document.createElement('script');
+            const url = this.baseUrl + 
+                '?callback=' + callbackName + 
+                '&data=' + encodeURIComponent(JSON.stringify(payload));
+            
+            script.src = url;
+            
+            // Definir callback global temporária
+            window[callbackName] = (response) => {
+                // Limpar
+                delete window[callbackName];
+                document.head.removeChild(script);
+                
+                console.log('✅ Resposta da API:', response);
+                resolve(response);
+            };
+            
+            // Timeout para erro
+            const timeout = setTimeout(() => {
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.head.removeChild(script);
+                }
+                reject(new Error('Timeout na requisição JSONP'));
+            }, 30000);
+            
+            // Tratamento de erro
+            script.onerror = () => {
+                clearTimeout(timeout);
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.head.removeChild(script);
+                }
+                reject(new Error('Falha ao carregar script JSONP'));
+            };
+            
+            document.head.appendChild(script);
+        });
     }
-    
-    console.log('🚀 MODO PRODUÇÃO - Enviando para API real');
-    
-    // ✅ SOLUÇÃO CORS: Usar JSONP para Apps Script
-    return new Promise((resolve, reject) => {
-        // Criar callback única
-        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-        
-        // Criar script
-        const script = document.createElement('script');
-        script.src = this.baseUrl + '?callback=' + callbackName + '&data=' + encodeURIComponent(JSON.stringify(payload));
-        
-        // Definir callback global
-        window[callbackName] = (data) => {
-            delete window[callbackName];
-            document.body.removeChild(script);
-            console.log('✅ Resposta da API real:', data);
-            resolve(data);
-        };
-        
-        // Tratamento de erro
-        script.onerror = () => {
-            delete window[callbackName];
-            document.body.removeChild(script);
-            reject(new Error('Falha ao carregar API'));
-        };
-        
-        document.body.appendChild(script);
-    });
-}    // ✅ SIMULAR GERAÇÃO DE DOCUMENTO (MUITO REALISTA)
+
+    // ✅ SIMULAÇÃO PARA MODO DESENVOLVIMENTO
+    simulateResponse(payload) {
+        switch (payload.action) {
+            case 'generateDocument':
+                return this.simulateDocumentGeneration(payload);
+            case 'requestAccess':
+                return this.simulateAccessRequest(payload);
+            case 'checkAccess':
+                return { success: true, hasAccess: true };
+            case 'test':
+                return { 
+                    success: true, 
+                    message: '✅ API Online - Modo Desenvolvimento',
+                    timestamp: new Date().toISOString()
+                };
+            default:
+                return { success: false, error: 'Ação desconhecida' };
+        }
+    }
+
     simulateDocumentGeneration(payload) {
         const { documentType, formData } = payload;
         const timestamp = new Date().getTime();
-        
-        // Nome do arquivo realista
         const filename = `${DOCUMENT_NAMES[documentType]}_${timestamp}.pdf`;
         
         console.log('📄 Simulando geração de:', filename);
-        console.log('📋 Dados usados:', formData);
         
         return {
             success: true,
@@ -111,45 +147,38 @@ async makeRequest(payload) {
             documentUrl: `https://docs.google.com/document/d/doc_${timestamp}/edit`,
             pdfUrl: `https://drive.google.com/file/d/pdf_${timestamp}/view`,
             filename: filename,
-            message: '✅ Documento gerado com sucesso! (Modo Desenvolvimento)',
-            timestamp: new Date().toISOString(),
-            
-            // ✅ DADOS EXTRA PARA DEBUG
-            debug: {
-                documentType: documentType,
-                fieldsPreenchidos: Object.keys(formData).length,
-                simulacao: true
-            }
+            message: '✅ Documento gerado com sucesso! (Modo Desenvolvimento)'
         };
     }
 
-    // ✅ SIMULAR SOLICITAÇÃO DE ACESSO
     simulateAccessRequest(payload) {
         console.log('📧 Simulando envio de email para:', CONFIG.adminEmail);
-        
         return {
             success: true,
-            message: '✅ Solicitação de acesso enviada! (Modo Desenvolvimento)',
-            debug: {
-                emailEnviadoPara: CONFIG.adminEmail,
-                dadosSolicitacao: {
-                    nome: payload.name,
-                    email: payload.email,
-                    funcao: payload.role
-                }
-            }
+            message: '✅ Solicitação de acesso enviada! (Modo Desenvolvimento)'
         };
     }
 
-    // ✅ TESTE DE CONEXÃO (SEMPRE BEM-SUCEDIDO NO DESENVOLVIMENTO)
     async testConnection() {
-        console.log('🧪 Teste de conexão - Modo Desenvolvimento');
+        if (this.isDevelopment) {
+            console.log('🧪 Teste de conexão - Modo Desenvolvimento');
+            await new Promise(resolve => setTimeout(resolve, 500));
+            console.log('✅ Conexão simulada - Sistema pronto para uso!');
+            return true;
+        }
         
-        // Simular teste bem-sucedido
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        console.log('✅ Conexão simulada - Sistema pronto para uso!');
-        return true;
+        // Teste real em produção
+        try {
+            const result = await this.makeRequest({
+                action: 'test',
+                userEmail: 'test@email.com'
+            });
+            console.log('✅ Conexão real estabelecida:', result);
+            return true;
+        } catch (error) {
+            console.error('❌ Falha na conexão real:', error);
+            return false;
+        }
     }
 }
 
@@ -158,13 +187,12 @@ const API_SERVICE = new ApiService();
 
 // Teste automático ao carregar
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Sistema Supervisão - Modo Desenvolvimento');
+    console.log('🚀 Sistema Supervisão - Inicializando...');
     
     setTimeout(() => {
         API_SERVICE.testConnection().then(success => {
             if (success) {
                 console.log('🎉 Sistema funcionando perfeitamente!');
-                console.log('💡 Dica: Em produção, atualize isDevelopment para false');
             }
         });
     }, 1000);
