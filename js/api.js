@@ -61,38 +61,40 @@ class ApiService {
 
     // ✅ MÉTODO PRINCIPAL - AGORA USA API REAL
 async makeRequest(payload) {
-    // SE ESTIVER EM DESENVOLVIMENTO, SIMULA
     if (this.isDevelopment) {
         console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
         return this.simulateResponse(payload);
     }
     
-    // SE ESTIVER EM PRODUÇÃO, USA API REAL
     console.log('🚀 MODO PRODUÇÃO - Enviando para API real');
     
-    try {
-        const response = await fetch(this.baseUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        });
+    // ✅ SOLUÇÃO CORS: Usar JSONP para Apps Script
+    return new Promise((resolve, reject) => {
+        // Criar callback única
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
         
-        if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
-        }
+        // Criar script
+        const script = document.createElement('script');
+        script.src = this.baseUrl + '?callback=' + callbackName + '&data=' + encodeURIComponent(JSON.stringify(payload));
         
-        const result = await response.json();
-        console.log('✅ Resposta da API real:', result);
-        return result;
+        // Definir callback global
+        window[callbackName] = (data) => {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            console.log('✅ Resposta da API real:', data);
+            resolve(data);
+        };
         
-    } catch (error) {
-        console.error('❌ Erro na API real:', error);
-        throw error;
-    }
-}
-    // ✅ SIMULAR GERAÇÃO DE DOCUMENTO (MUITO REALISTA)
+        // Tratamento de erro
+        script.onerror = () => {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            reject(new Error('Falha ao carregar API'));
+        };
+        
+        document.body.appendChild(script);
+    });
+}    // ✅ SIMULAR GERAÇÃO DE DOCUMENTO (MUITO REALISTA)
     simulateDocumentGeneration(payload) {
         const { documentType, formData } = payload;
         const timestamp = new Date().getTime();
