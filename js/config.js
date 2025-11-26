@@ -1,8 +1,15 @@
+// config.js - VERSÃO COM CLOUD FUNCTIONS
 const CONFIG = {
     adminEmail: 'eder.ramos@educador.edu.es.gov.br',
     appName: 'Sistema Supervisão',
-    version: '1.0.0',
-    webAppUrl: 'https://corsproxy.io/?url=' + encodeURIComponent('https://script.google.com/macros/s/AKfycbw0zPovpzORk7Viv_3ypjnuyx6WSE2l-lfPycwKAWezFlxanpOUiTcZiu7k6_1L1wYW/exec'),
+    version: '2.0.0',
+    
+    // ✅ NOVAS URLs DAS CLOUD FUNCTIONS (SEM CORS!)
+    cloudFunctions: {
+        generateDocument: 'https://sua-regiao-supervisao-12345.cloudfunctions.net/generateDocument',
+        requestAccess: 'https://sua-regiao-supervisao-12345.cloudfunctions.net/requestAccess'
+    },
+    
     adminEmails: ['eder.ramos@educador.edu.es.gov.br']
 };
 
