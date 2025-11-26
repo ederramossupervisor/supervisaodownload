@@ -1,209 +1,55 @@
-// Serviço de API para comunicação com Google Apps Script
+// api.js - VERSÃO SIMPLIFICADA COM CLOUD FUNCTIONS
 class ApiService {
     constructor() {
-        this.baseUrl = CONFIG.webAppUrl;
-        this.isDevelopment = false; // MODO PRODUÇÃO
-        console.log('🌐 API Service - Modo:', this.isDevelopment ? 'DESENVOLVIMENTO' : 'PRODUÇÃO');
+        this.isDevelopment = false;
+        console.log('🌐 API Service - Modo Cloud Functions');
     }
 
-    // Gerar documento
     async generateDocument(documentType, formData, userEmail) {
         const payload = {
-            action: 'generateDocument',
             documentType: documentType,
             formData: formData,
             userEmail: userEmail
         };
 
         try {
-            console.log('📄 Gerando documento:', documentType);
-            const response = await this.makeRequest(payload);
-            return response;
-        } catch (error) {
-            console.error('❌ Erro ao gerar documento:', error);
-            throw error;
-        }
-    }
-
-    // Solicitar acesso
-    async requestAccess(accessData) {
-        const payload = {
-            action: 'requestAccess',
-            ...accessData
-        };
-
-        try {
-            console.log('🔑 Solicitando acesso para:', accessData.email);
-            const response = await this.makeRequest(payload);
-            return response;
-        } catch (error) {
-            console.error('❌ Erro ao solicitar acesso:', error);
-            throw error;
-        }
-    }
-
-    // Verificar acesso
-    async checkAccess(userEmail) {
-        const payload = {
-            action: 'checkAccess',
-            userEmail: userEmail
-        };
-
-        try {
-            console.log('🔐 Verificando acesso para:', userEmail);
-            const response = await this.makeRequest(payload);
-            return response.hasAccess || true;
-        } catch (error) {
-            console.error('❌ Erro ao verificar acesso:', error);
-            return true;
-        }
-    }
-
-    async makeRequest(payload) {
-    if (this.isDevelopment) {
-        console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
-        return this.simulateResponse(payload);
-    }
-    
-    console.log('🚀 MODO PRODUÇÃO - Enviando via Proxy GitHub');
-    
-    return new Promise((resolve, reject) => {
-        // URL do proxy no SEU GitHub Pages
-        const proxyUrl = 'https://ederramossupervisor.github.io/supervisaodownload/proxy.html' +
-            '?url=' + encodeURIComponent('https://script.google.com/macros/s/AKfycbw0zPovpzORk7Viv_3ypjnuyx6WSE2l-lfPycwKAWezFlxanpOUiTcZiu7k6_1L1wYW/exec') +
-            '&data=' + encodeURIComponent(JSON.stringify(payload));
-        
-        console.log('🔗 URL do Proxy:', proxyUrl);
-        
-        // Criar iframe invisível para o proxy
-        const iframe = document.createElement('iframe');
-        iframe.src = proxyUrl;
-        iframe.style.display = 'none';
-        iframe.id = 'proxy-iframe-' + Date.now();
-        
-        // Handler para receber respostas do proxy
-        const messageHandler = (event) => {
-            console.log('📩 Mensagem recebida do proxy:', event.data);
+            console.log('🚀 Enviando para Cloud Function...');
             
-            if (event.data.type === 'PROXY_RESPONSE') {
-                // Limpeza
-                window.removeEventListener('message', messageHandler);
-                if (iframe.parentNode) {
-                    document.body.removeChild(iframe);
-                }
-                
-                console.log('✅ Resposta via Proxy:', event.data.result);
-                resolve(event.data.result);
-                
-            } else if (event.data.type === 'PROXY_ERROR') {
-                window.removeEventListener('message', messageHandler);
-                if (iframe.parentNode) {
-                    document.body.removeChild(iframe);
-                }
-                console.error('❌ Erro do Proxy:', event.data.error);
-                reject(new Error('Proxy error: ' + event.data.error));
-            }
-        };
-        
-        // Escutar mensagens do proxy
-        window.addEventListener('message', messageHandler);
-        
-        // Adicionar iframe ao documento
-        document.body.appendChild(iframe);
-        
-        console.log('🔄 Iframe do proxy criado:', iframe.id);
-        
-        // Timeout de segurança (30 segundos)
-        setTimeout(() => {
-            window.removeEventListener('message', messageHandler);
-            if (iframe.parentNode) {
-                document.body.removeChild(iframe);
-                console.log('⏰ Timeout - Iframe removido');
-            }
-            reject(new Error('Timeout: Proxy não respondeu em 30 segundos'));
-        }, 30000);
-    });
-}
-    // ✅ SIMULAÇÃO PARA MODO DESENVOLVIMENTO
-    simulateResponse(payload) {
-        switch (payload.action) {
-            case 'generateDocument':
-                return this.simulateDocumentGeneration(payload);
-            case 'requestAccess':
-                return this.simulateAccessRequest(payload);
-            case 'checkAccess':
-                return { success: true, hasAccess: true };
-            case 'test':
-                return { 
-                    success: true, 
-                    message: '✅ API Online - Modo Desenvolvimento',
-                    timestamp: new Date().toISOString()
-                };
-            default:
-                return { success: false, error: 'Ação desconhecida' };
-        }
-    }
-
-    simulateDocumentGeneration(payload) {
-        const { documentType, formData } = payload;
-        const timestamp = new Date().getTime();
-        const filename = `${DOCUMENT_NAMES[documentType]}_${timestamp}.pdf`;
-        
-        console.log('📄 Simulando geração de:', filename);
-        
-        return {
-            success: true,
-            documentId: `doc_${timestamp}`,
-            documentUrl: `https://docs.google.com/document/d/doc_${timestamp}/edit`,
-            pdfUrl: `https://drive.google.com/file/d/pdf_${timestamp}/view`,
-            filename: filename,
-            message: '✅ Documento gerado com sucesso! (Modo Desenvolvimento)'
-        };
-    }
-
-    simulateAccessRequest(payload) {
-        console.log('📧 Simulando envio de email para:', CONFIG.adminEmail);
-        return {
-            success: true,
-            message: '✅ Solicitação de acesso enviada! (Modo Desenvolvimento)'
-        };
-    }
-
-    async testConnection() {
-        if (this.isDevelopment) {
-            console.log('🧪 Teste de conexão - Modo Desenvolvimento');
-            await new Promise(resolve => setTimeout(resolve, 500));
-            console.log('✅ Conexão simulada - Sistema pronto para uso!');
-            return true;
-        }
-        
-        // Teste real em produção
-        try {
-            const result = await this.makeRequest({
-                action: 'test',
-                userEmail: 'test@email.com'
+            const response = await fetch(CONFIG.cloudFunctions.generateDocument, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
             });
-            console.log('✅ Conexão real estabelecida:', result);
-            return true;
+
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                return result.data; // ✅ Dados do Apps Script
+            } else {
+                throw new Error(result.error);
+            }
+
         } catch (error) {
-            console.error('❌ Falha na conexão real:', error);
-            return false;
+            console.error('❌ Erro na Cloud Function:', error);
+            throw error;
         }
     }
-}
 
-// Instância global do serviço de API
-const API_SERVICE = new ApiService();
-
-// Teste automático ao carregar
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Sistema Supervisão - Inicializando...');
-    
-    setTimeout(() => {
-        API_SERVICE.testConnection().then(success => {
-            if (success) {
-                console.log('🎉 Sistema funcionando perfeitamente!');
-            }
+    // ✅ MESMA LÓGICA PARA OUTRAS FUNÇÕES
+    async requestAccess(accessData) {
+        const response = await fetch(CONFIG.cloudFunctions.requestAccess, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(accessData)
         });
-    }, 1000);
-});
+        return await response.json();
+    }
+}
