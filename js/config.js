@@ -3,7 +3,7 @@ const CONFIG = {
     adminEmail: 'eder.ramos@educador.edu.es.gov.br',
     appName: 'Sistema Supervisão',
     version: '1.0.0',
-    webAppUrl: 'https://script.google.com/macros/s/AKfycbwQtkEU1SN2oxDumCb-65oZb_f01eGVXKT2ij5y0hAvoL4zcgmxpDbQFligqBjMArwj/exec',
+    webAppUrl: 'https://script.google.com/macros/s/AKfycbzUEYjOPOo1S3VlNIRJHuR48c4RJMRPPemagj2ecguMRX1jU8nAbv2hLDV8Vp5UhbQc/exec',
     adminEmails: ['eder.ramos@educador.edu.es.gov.br']
 };
 
