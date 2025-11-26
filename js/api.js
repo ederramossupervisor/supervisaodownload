@@ -70,39 +70,57 @@ class ApiService {
     return new Promise((resolve, reject) => {
         // URL do proxy no SEU GitHub Pages
         const proxyUrl = 'https://ederramossupervisor.github.io/supervisaodownload/proxy.html' +
-            '?url=' + encodeURIComponent('https://script.google.com/macros/s/SUA_URL/exec') +
+            '?url=' + encodeURIComponent('https://script.google.com/macros/s/AKfycbw0zPovpzORk7Viv_3ypjnuyx6WSE2l-lfPycwKAWezFlxanpOUiTcZiu7k6_1L1wYW/exec') +
             '&data=' + encodeURIComponent(JSON.stringify(payload));
         
-        // Cria um iframe invisível que carrega o proxy
+        console.log('🔗 URL do Proxy:', proxyUrl);
+        
+        // Criar iframe invisível para o proxy
         const iframe = document.createElement('iframe');
         iframe.src = proxyUrl;
         iframe.style.display = 'none';
+        iframe.id = 'proxy-iframe-' + Date.now();
         
-        // Escuta a resposta do proxy
+        // Handler para receber respostas do proxy
         const messageHandler = (event) => {
+            console.log('📩 Mensagem recebida do proxy:', event.data);
+            
             if (event.data.type === 'PROXY_RESPONSE') {
                 // Limpeza
                 window.removeEventListener('message', messageHandler);
-                document.body.removeChild(iframe);
+                if (iframe.parentNode) {
+                    document.body.removeChild(iframe);
+                }
                 
                 console.log('✅ Resposta via Proxy:', event.data.result);
                 resolve(event.data.result);
                 
             } else if (event.data.type === 'PROXY_ERROR') {
                 window.removeEventListener('message', messageHandler);
-                document.body.removeChild(iframe);
-                reject(new Error(event.data.error));
+                if (iframe.parentNode) {
+                    document.body.removeChild(iframe);
+                }
+                console.error('❌ Erro do Proxy:', event.data.error);
+                reject(new Error('Proxy error: ' + event.data.error));
             }
         };
         
+        // Escutar mensagens do proxy
         window.addEventListener('message', messageHandler);
+        
+        // Adicionar iframe ao documento
         document.body.appendChild(iframe);
         
-        // Timeout de segurança
+        console.log('🔄 Iframe do proxy criado:', iframe.id);
+        
+        // Timeout de segurança (30 segundos)
         setTimeout(() => {
             window.removeEventListener('message', messageHandler);
-            if (iframe.parentNode) document.body.removeChild(iframe);
-            reject(new Error('Timeout no proxy'));
+            if (iframe.parentNode) {
+                document.body.removeChild(iframe);
+                console.log('⏰ Timeout - Iframe removido');
+            }
+            reject(new Error('Timeout: Proxy não respondeu em 30 segundos'));
         }, 30000);
     });
 }
