@@ -1,5 +1,3 @@
-// 🐛 DEPURAÇÃO - Verificar se a classe está carregando
-
 // Aplicação principal - Controle de fluxo e eventos
 class SupervisaoApp {
     constructor() {
@@ -45,13 +43,17 @@ class SupervisaoApp {
 
         // Fechar modais ao clicar fora
         window.addEventListener('click', (e) => {
-    if (typeof this.handleOutsideClick === 'function') {
-        this.handleOutsideClick(e);
-    }
-});
+            if (e.target.classList.contains('modal')) {
+                this.closeModal(e.target);
+            }
+        });
 
-        // Prevenir fechamento do dropdown ao clicar dentro
-        document.getElementById('schools-list').addEventListener('click', (e) => e.stopPropagation());
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.multi-select')) {
+                document.getElementById('schools-list').classList.remove('show');
+            }
+        });
     }
 
     // Verificar se há configuração salva
@@ -135,7 +137,6 @@ class SupervisaoApp {
         this.updateSelectedSchoolsDisplay();
     }
 
-    // ✅ CORRIGIDO: Método saveConfiguration completo
     saveConfiguration() {
         const supervisorName = document.getElementById('supervisor-name').value.trim();
         
@@ -152,11 +153,10 @@ class SupervisaoApp {
             return;
         }
 
-        // ✅ CORRIGIDO: Salvar configuração
+        // Salvar configuração
         APP_STATE.supervisorName = supervisorName;
         APP_STATE.configCompleted = true;
         
-        // ✅ FORÇAR SALVAMENTO E VERIFICAR
         const saved = UTILS.saveConfig();
         
         if (saved) {
@@ -305,86 +305,65 @@ class SupervisaoApp {
     }
 
     async generateDocument() {
-    const validation = DOCUMENT_HANDLERS.validateForm(APP_STATE.currentDocumentType);
-    
-    if (!validation.isValid) {
-        UTILS.showNotification('Preencha todos os campos obrigatórios!', 'error');
-        validation.errors.forEach(error => {
-            console.error('Erro de validação:', error);
-        });
-        return;
-    }
-
-    // Coletar dados
-    APP_STATE.formData = DOCUMENT_HANDLERS.collectFormData(APP_STATE.currentDocumentType);
-
-    try {
-        console.log('🔧 === INICIANDO GERAÇÃO DE DOCUMENTO ===');
-        console.log('📄 Tipo:', APP_STATE.currentDocumentType);
-        console.log('📋 Dados:', APP_STATE.formData);
+        const validation = DOCUMENT_HANDLERS.validateForm(APP_STATE.currentDocumentType);
         
-        // Mostrar loading
-        const generateBtn = document.getElementById('generate-document');
-        const originalText = generateBtn.innerHTML;
-        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Documento...';
-        generateBtn.disabled = true;
-
-        // Usar seu email real
-        const userEmail = 'eder.ramos@educador.edu.es.gov.br';
-        console.log('📧 Email usado:', userEmail);
-        console.log('🌐 Chamando API...');
-        
-        // Gerar documento real usando a API
-        const result = await DOCUMENT_HANDLERS.createPDF(
-            APP_STATE.currentDocumentType, 
-            APP_STATE.formData,
-            userEmail
-        );
-
-        console.log('📤 Resultado da API:', result);
-
-        if (result.success) {
-            APP_STATE.generatedDocument = result;
-            console.log('🎯 Documento gerado com sucesso!');
-            console.log('🔗 URL do PDF:', result.url);
-            console.log('🔗 URL do DOCX:', result.documentUrl);
-            
-            // ✅ SOLUÇÃO DIRETA - Mostrar modal manualmente
-console.log('🎯 Mostrando modal de download manualmente...');
-const modal = document.getElementById('download-modal');
-if (modal) {
-    modal.classList.remove('hidden');
-    console.log('✅ Modal mostrado com sucesso!');
-    
-    // Configurar botão de fechar
-    const closeBtn = modal.querySelector('.close');
-    if (closeBtn) {
-        closeBtn.onclick = () => {
-            modal.classList.add('hidden');
-            DOCUMENT_HANDLERS.clearForm();
-            this.showMainScreen();
-        };
-    }
-} else {
-    console.error('❌ Modal não encontrado!');
-    // Fallback: mostrar mensagem
-    UTILS.showNotification('Documento gerado! (Modal não disponível)', 'success');
-}
-            UTILS.showNotification('Documento gerado com sucesso!', 'success');
-        } else {
-            throw new Error('Falha na geração do documento: ' + (result.error || 'Erro desconhecido'));
+        if (!validation.isValid) {
+            UTILS.showNotification('Preencha todos os campos obrigatórios!', 'error');
+            validation.errors.forEach(error => {
+                console.error('Erro de validação:', error);
+            });
+            return;
         }
 
-    } catch (error) {
-        console.error('💥 ERRO COMPLETO:', error);
-        UTILS.showNotification(error.message || 'Erro ao gerar documento. Tente novamente.', 'error');
-    } finally {
-        // Restaurar botão
-        const generateBtn = document.getElementById('generate-document');
-        generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
-        generateBtn.disabled = false;
+        // Coletar dados
+        APP_STATE.formData = DOCUMENT_HANDLERS.collectFormData(APP_STATE.currentDocumentType);
+
+        try {
+            console.log('🔧 === INICIANDO GERAÇÃO DE DOCUMENTO ===');
+            console.log('📄 Tipo:', APP_STATE.currentDocumentType);
+            console.log('📋 Dados:', APP_STATE.formData);
+            
+            // Mostrar loading
+            const generateBtn = document.getElementById('generate-document');
+            const originalText = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Documento...';
+            generateBtn.disabled = true;
+
+            // Usar seu email real
+            const userEmail = 'eder.ramos@educador.edu.es.gov.br';
+            console.log('📧 Email usado:', userEmail);
+            console.log('🌐 Chamando API...');
+            
+            // Gerar documento real usando a API
+            const result = await DOCUMENT_HANDLERS.createPDF(
+                APP_STATE.currentDocumentType, 
+                APP_STATE.formData,
+                userEmail
+            );
+
+            console.log('📤 Resultado da API:', result);
+
+            if (result.success) {
+                APP_STATE.generatedDocument = result;
+                console.log('🎯 Documento gerado com sucesso!');
+                
+                // Mostrar modal de download
+                this.showDownloadModal();
+                UTILS.showNotification('Documento gerado com sucesso!', 'success');
+            } else {
+                throw new Error('Falha na geração do documento: ' + (result.error || 'Erro desconhecido'));
+            }
+
+        } catch (error) {
+            console.error('💥 ERRO COMPLETO:', error);
+            UTILS.showNotification(error.message || 'Erro ao gerar documento. Tente novamente.', 'error');
+        } finally {
+            // Restaurar botão
+            const generateBtn = document.getElementById('generate-document');
+            generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
+            generateBtn.disabled = false;
+        }
     }
-}
 
     // Download de documentos
     async downloadPDF() {
@@ -522,87 +501,22 @@ if (modal) {
         }
     }
 
-    // Verificar acesso aos templates
-    async checkTemplateAccess() {
-        // ✅ CORREÇÃO: Administradores têm acesso imediato
-        const userEmail = 'eder.ramos@educador.edu.es.gov.br'; // Em produção, pegar do usuário logado
-        if (CONFIG.adminEmails && CONFIG.adminEmails.includes(userEmail)) {
-            return true;
-        }
-        
-        // Para outros usuários, verificar se solicitaram acesso
-        return APP_STATE.accessRequested || APP_STATE.hasAccess;
-    }
-
     // Utilitários
-    showLoading(message = 'Processando...') {
-        // Poderia implementar um overlay de loading aqui
-        console.log('Loading:', message);
-    }
-
-    hideLoading() {
-        // Remover overlay de loading se implementado
-        console.log('Loading completo');
-    }
-
-    // Limpar estado da aplicação
-    clearAppState() {
-        APP_STATE = {
-            supervisorName: "",
-            selectedSchools: [],
-            currentDocumentType: "",
-            formData: {},
-            hasAccess: false,
-            configCompleted: false,
-            accessRequested: false,
-            generatedDocument: null
-        };
-        UTILS.clearConfig();
-    }
-        // ✅ CORREÇÃO: Método para mostrar modal de download
     showDownloadModal() {
         console.log('📁 Mostrando modal de download...');
         const modal = document.getElementById('download-modal');
         modal.classList.remove('hidden');
-        
-        // Adicionar evento para fechar modal
-        const closeBtn = modal.querySelector('.close');
-        if (closeBtn) {
-            closeBtn.onclick = () => this.closeModal(modal);
-        }
     }
 
-    // ✅ CORREÇÃO: Método para fechar modais
-    closeModal(modal) {
-        console.log('❌ Fechando modal...');
-        modal.classList.add('hidden');
-    }
-
-    // ✅ CORREÇÃO: Método para mostrar modal de acesso
     showAccessModal() {
         console.log('🔑 Mostrando modal de acesso...');
         const modal = document.getElementById('access-modal');
         modal.classList.remove('hidden');
-        
-        const closeBtn = modal.querySelector('.close');
-        if (closeBtn) {
-            closeBtn.onclick = () => this.closeModal(modal);
-        }
     }
 
-    // ✅ CORREÇÃO: Método para lidar com clique fora dos modais
-    handleOutsideClick(e) {
-        // Fechar dropdown de escolas
-        const schoolsDropdown = document.getElementById('schools-list');
-        if (schoolsDropdown && schoolsDropdown.classList.contains('show') && 
-            !e.target.closest('.multi-select')) {
-            schoolsDropdown.classList.remove('show');
-        }
-        
-        // Fechar modais ao clicar fora
-        if (e.target.classList.contains('modal')) {
-            this.closeModal(e.target);
-        }
+    closeModal(modal) {
+        console.log('❌ Fechando modal...');
+        modal.classList.add('hidden');
     }
 }
 
@@ -610,7 +524,7 @@ if (modal) {
 document.addEventListener('DOMContentLoaded', function() {
     window.supervisaoApp = new SupervisaoApp();
     
-    // Adicionar estilos dinâmicos se necessário
+    // Adicionar estilos dinâmicos
     if (!document.querySelector('.dynamic-styles')) {
         const dynamicStyles = document.createElement('style');
         dynamicStyles.className = 'dynamic-styles';
@@ -641,96 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 color: var(--cinza-escuro);
                 cursor: not-allowed;
             }
-
-            /* Estilos para loading states */
-            .loading {
-                position: relative;
-                pointer-events: none;
-            }
-
-            .loading::after {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 20px;
-                height: 20px;
-                margin: -10px 0 0 -10px;
-                border: 2px solid var(--cinza);
-                border-top: 2px solid var(--azul);
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
         `;
         document.head.appendChild(dynamicStyles);
     }
 });
-
-// ✅ CORREÇÃO: Service Worker comentado para evitar erros
-/*
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-                console.log('ServiceWorker registrado com sucesso: ', registration.scope);
-            })
-            .catch(function(error) {
-                console.log('Falha no registro do ServiceWorker: ', error);
-            });
-    });
-}
-*/
-// ✅ SOLUÇÃO DE EMERGÊNCIA - Configuração manual dos botões
-console.log('🔧 Configurando navegação manual...');
-
-// Função para configurar navegação manual
-function setupManualNavigation() {
-    console.log('🎯 Iniciando configuração manual de navegação...');
-    
-    // Botão Entrar
-    const enterBtn = document.getElementById('enter-btn');
-    if (enterBtn) {
-        enterBtn.addEventListener('click', function() {
-            console.log('🚪 Botão Entrar clicado!');
-            document.getElementById('welcome-screen').classList.add('hidden');
-            document.getElementById('config-screen').classList.remove('hidden');
-        });
-        console.log('✅ Botão Entrar configurado');
-    }
-    
-    // Botão Voltar (Configuração → Boas-vindas)
-    const backToWelcome = document.getElementById('back-to-welcome');
-    if (backToWelcome) {
-        backToWelcome.addEventListener('click', function() {
-            console.log('↩️ Botão Voltar clicado!');
-            document.getElementById('config-screen').classList.add('hidden');
-            document.getElementById('welcome-screen').classList.remove('hidden');
-        });
-        console.log('✅ Botão Voltar configurado');
-    }
-    
-    // Botão Configurações (Principal → Configuração)
-    const configBtn = document.getElementById('config-btn');
-    if (configBtn) {
-        configBtn.addEventListener('click', function() {
-            console.log('⚙️ Botão Configurações clicado!');
-            document.getElementById('main-screen').classList.add('hidden');
-            document.getElementById('config-screen').classList.remove('hidden');
-        });
-        console.log('✅ Botão Configurações configurado');
-    }
-    
-    console.log('🎉 Navegação manual configurada com sucesso!');
-}
-
-// Aguardar o DOM carregar e então configurar
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupManualNavigation);
-} else {
-    setupManualNavigation();
-}
