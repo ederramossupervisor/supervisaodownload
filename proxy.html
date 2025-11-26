@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+// Esta página está no MESMO domínio (GitHub Pages)
+// então pode fazer fetch para QUALQUER site sem CORS
+
+const urlParams = new URLSearchParams(window.location.search);
+const targetUrl = urlParams.get('url');  // URL do Apps Script
+const data = urlParams.get('data');      // Dados do formulário
+
+if (targetUrl && data) {
+  // Faz a requisição REAL para o Apps Script
+  fetch(decodeURIComponent(targetUrl), {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: decodeURIComponent(data)  // Dados do formulário
+  })
+  .then(r => r.json())
+  .then(result => {
+    // Envia a resposta de volta para o PWA principal
+    window.parent.postMessage({
+      type: 'PROXY_RESPONSE', 
+      result: result
+    }, '*');
+  })
+  .catch(error => {
+    window.parent.postMessage({
+      type: 'PROXY_ERROR', 
+      error: error.message
+    }, '*');
+  });
+}
+</script>
+</body>
+</html>
