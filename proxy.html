@@ -1,36 +1,56 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Proxy - Sistema Supervisão</title>
+</head>
 <body>
-<script>
-// Esta página está no MESMO domínio (GitHub Pages)
-// então pode fazer fetch para QUALQUER site sem CORS
+    <script>
+        // PROXY PARA APPS SCRIPT - SISTEMA SUPERVISÃO
+        console.log('🔧 Proxy carregado - Aguardando requisições...');
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUrl = urlParams.get('url');
+        const data = urlParams.get('data');
 
-const urlParams = new URLSearchParams(window.location.search);
-const targetUrl = urlParams.get('url');  // URL do Apps Script
-const data = urlParams.get('data');      // Dados do formulário
-
-if (targetUrl && data) {
-  // Faz a requisição REAL para o Apps Script
-  fetch(decodeURIComponent(targetUrl), {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: decodeURIComponent(data)  // Dados do formulário
-  })
-  .then(r => r.json())
-  .then(result => {
-    // Envia a resposta de volta para o PWA principal
-    window.parent.postMessage({
-      type: 'PROXY_RESPONSE', 
-      result: result
-    }, '*');
-  })
-  .catch(error => {
-    window.parent.postMessage({
-      type: 'PROXY_ERROR', 
-      error: error.message
-    }, '*');
-  });
-}
-</script>
+        if (targetUrl && data) {
+            console.log('📨 Processando requisição para:', targetUrl);
+            
+            // Fazer requisição REAL para o Apps Script (sem CORS)
+            fetch(decodeURIComponent(targetUrl), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: decodeURIComponent(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(result => {
+                console.log('✅ Resposta recebida:', result);
+                // Enviar resposta de volta para o PWA principal
+                window.parent.postMessage({
+                    type: 'PROXY_RESPONSE', 
+                    result: result
+                }, '*');
+            })
+            .catch(error => {
+                console.error('❌ Erro no proxy:', error);
+                window.parent.postMessage({
+                    type: 'PROXY_ERROR', 
+                    error: error.message
+                }, '*');
+            });
+        } else {
+            console.warn('⚠️ Parâmetros ausentes');
+            window.parent.postMessage({
+                type: 'PROXY_ERROR', 
+                error: 'Parâmetros url e data são obrigatórios'
+            }, '*');
+        }
+    </script>
 </body>
 </html>
