@@ -59,39 +59,52 @@ class ApiService {
         }
     }
 
-    // ✅ MÉTODO PRINCIPAL - USA PROXY CORS
-async makeRequest(payload) {
+    async makeRequest(payload) {
     if (this.isDevelopment) {
         console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
         return this.simulateResponse(payload);
     }
     
-    console.log('🚀 MODO PRODUÇÃO - Enviando via Proxy CORS');
+    console.log('🚀 MODO PRODUÇÃO - Enviando via Proxy GitHub');
     
-    try {
-        const response = await fetch(this.baseUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        });
+    return new Promise((resolve, reject) => {
+        // URL do proxy no SEU GitHub Pages
+        const proxyUrl = 'https://ederramossupervisor.github.io/supervisaodownload/proxy.html' +
+            '?url=' + encodeURIComponent('https://script.google.com/macros/s/SUA_URL/exec') +
+            '&data=' + encodeURIComponent(JSON.stringify(payload));
         
-        if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
-        }
+        // Cria um iframe invisível que carrega o proxy
+        const iframe = document.createElement('iframe');
+        iframe.src = proxyUrl;
+        iframe.style.display = 'none';
         
-        const result = await response.json();
-        console.log('✅ Resposta da API via Proxy:', result);
-        return result;
+        // Escuta a resposta do proxy
+        const messageHandler = (event) => {
+            if (event.data.type === 'PROXY_RESPONSE') {
+                // Limpeza
+                window.removeEventListener('message', messageHandler);
+                document.body.removeChild(iframe);
+                
+                console.log('✅ Resposta via Proxy:', event.data.result);
+                resolve(event.data.result);
+                
+            } else if (event.data.type === 'PROXY_ERROR') {
+                window.removeEventListener('message', messageHandler);
+                document.body.removeChild(iframe);
+                reject(new Error(event.data.error));
+            }
+        };
         
-    } catch (error) {
-        console.error('❌ Erro na API via Proxy:', error);
+        window.addEventListener('message', messageHandler);
+        document.body.appendChild(iframe);
         
-        // Fallback para desenvolvimento em caso de erro
-        console.log('🔄 Usando fallback para modo desenvolvimento');
-        return this.simulateResponse(payload);
-    }
+        // Timeout de segurança
+        setTimeout(() => {
+            window.removeEventListener('message', messageHandler);
+            if (iframe.parentNode) document.body.removeChild(iframe);
+            reject(new Error('Timeout no proxy'));
+        }, 30000);
+    });
 }
     // ✅ SIMULAÇÃO PARA MODO DESENVOLVIMENTO
     simulateResponse(payload) {
