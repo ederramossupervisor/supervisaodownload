@@ -544,39 +544,42 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('✅ Todos os scripts carregados - Iniciando aplicação...');
         window.supervisaoApp = new SupervisaoApp();
-    }, 500);
-});    
-    // Adicionar estilos dinâmicos
-    if (!document.querySelector('.dynamic-styles')) {
-        const dynamicStyles = document.createElement('style');
-        dynamicStyles.className = 'dynamic-styles';
-        dynamicStyles.textContent = `
-            .btn:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-                transform: none !important;
-            }
-            
-            .btn:disabled:hover {
-                transform: none !important;
-                box-shadow: none !important;
-            }
-            
-            .fa-spin {
-                animation: fa-spin 1s infinite linear;
-            }
-            
-            @keyframes fa-spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
+            console.log('✅ Todos os scripts carregados - Iniciando aplicação...');
+        window.supervisaoApp = new SupervisaoApp();
+        
+        // Adicionar estilos dinâmicos
+        if (!document.querySelector('.dynamic-styles')) {
+            const dynamicStyles = document.createElement('style');
+            dynamicStyles.className = 'dynamic-styles';
+            dynamicStyles.textContent = `
+                .btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    transform: none !important;
+                }
+                
+                .btn:disabled:hover {
+                    transform: none !important;
+                    box-shadow: none !important;
+                }
+                
+                .fa-spin {
+                    animation: fa-spin 1s infinite linear;
+                }
+                
+                @keyframes fa-spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
 
-            /* Melhorar visualização dos campos readonly */
-            input[readonly], textarea[readonly] {
-                background-color: var(--cinza-claro);
-                color: var(--cinza-escuro);
-                cursor: not-allowed;
-            }
-        `;
-        document.head.appendChild(dynamicStyles);
-    }
+                /* Melhorar visualização dos campos readonly */
+                input[readonly], textarea[readonly] {
+                    background-color: var(--cinza-claro);
+                    color: var(--cinza-escuro);
+                    cursor: not-allowed;
+                }
+            `;
+            document.head.appendChild(dynamicStyles);
+        }
+    }, 500);
+});    // ← APENAS ESTE }); NO FINAL
