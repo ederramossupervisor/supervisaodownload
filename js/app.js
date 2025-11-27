@@ -441,43 +441,51 @@ class SupervisaoApp {
     }
 
     async downloadDOCX() {
-        if (!APP_STATE.generatedDocument) {
-            UTILS.showNotification('Nenhum documento gerado para download.', 'error');
-            return;
-        }
-
-        try {
-            // Mostrar loading no botão de download
-            const docxBtn = document.getElementById('download-docx');
-            const originalText = docxBtn.innerHTML;
-            docxBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Baixando...';
-            docxBtn.disabled = true;
-
-            // Para DOCX, usamos a URL do documento editável do Google Docs
-            const docxFilename = APP_STATE.generatedDocument.filename.replace('.pdf', '.docx');
-            
-            // Abrir o documento editável em nova aba
-            window.open(APP_STATE.generatedDocument.documentUrl, '_blank');
-
-            // Fechar modal e limpar após um breve delay
-            setTimeout(() => {
-                this.closeModal(document.getElementById('download-modal'));
-                DOCUMENT_HANDLERS.clearForm();
-                this.showMainScreen();
-                UTILS.showNotification('Documento editável aberto em nova aba!', 'success');
-            }, 1000);
-
-        } catch (error) {
-            console.error('Erro ao abrir DOCX:', error);
-            UTILS.showNotification('Erro ao abrir documento editável. Tente novamente.', 'error');
-        } finally {
-            // Restaurar botão
-            const docxBtn = document.getElementById('download-docx');
-            docxBtn.innerHTML = '<i class="fas fa-file-word"></i> Baixar DOCX';
-            docxBtn.disabled = false;
-        }
+    if (!APP_STATE.generatedDocument) {
+        UTILS.showNotification('Nenhum documento gerado para download.', 'error');
+        return;
     }
 
+    try {
+        // Mostrar loading no botão de download
+        const docxBtn = document.getElementById('download-docx');
+        const originalText = docxBtn.innerHTML;
+        docxBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Baixando...<div class="download-subtitle">Editável</div>';
+        docxBtn.disabled = true;
+
+        // ✅ USAR docxUrl QUE AGORA VIRÁ DO APPS SCRIPT
+        const docxUrl = APP_STATE.generatedDocument.docxUrl;
+        
+        if (!docxUrl) {
+            throw new Error('URL do documento editável não disponível');
+        }
+
+        console.log('📥 Baixando DOCX:', docxUrl);
+
+        // Fazer download do DOCX
+        DOCUMENT_HANDLERS.downloadFile(
+            APP_STATE.generatedDocument.filename.replace('.pdf', '.docx'),
+            docxUrl
+        );
+
+        // Fechar modal e limpar após um breve delay
+        setTimeout(() => {
+            this.closeModal(document.getElementById('download-modal'));
+            DOCUMENT_HANDLERS.clearForm();
+            this.showMainScreen();
+            UTILS.showNotification('Documento editável baixado com sucesso!', 'success');
+        }, 1000);
+
+    } catch (error) {
+        console.error('Erro ao baixar DOCX:', error);
+        UTILS.showNotification('Erro ao baixar DOCX. Tente novamente.', 'error');
+    } finally {
+        // Restaurar botão
+        const docxBtn = document.getElementById('download-docx');
+        docxBtn.innerHTML = '<i class="fas fa-file-word"></i> Baixar DOCX<div class="download-subtitle">Editável</div>';
+        docxBtn.disabled = false;
+    }
+}
     // Solicitação de acesso
     async handleAccessRequest(e) {
         e.preventDefault();
