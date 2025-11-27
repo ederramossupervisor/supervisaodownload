@@ -548,12 +548,14 @@ input:focus, select:focus, textarea:focus {
 
 .download-options {
     display: flex;
-    gap: 15px;
+    justify-content: center;
     margin-top: 25px;
 }
 
 .download-options .btn {
-    flex: 1;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    min-width: 200px;
 }
 
 /* Footer */
