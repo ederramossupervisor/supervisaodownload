@@ -759,3 +759,24 @@ footer {
     margin: 5px !important;
   }
 }
+/* Estilo para os subtítulos dos botões de download */
+.download-subtitle {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+/* Ajustar os botões de download para acomodar o subtítulo */
+.download-options .btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 10px;
+    min-height: 80px;
+}
+
+.download-options .btn i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
