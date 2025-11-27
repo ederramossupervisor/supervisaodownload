@@ -598,7 +598,7 @@ const DOCUMENT_HANDLERS = {
         let isValid = true;
         const errors = [];
 
-        fields.forEach(field) => {
+        fields.forEach(field => {
             if (field.required) {
                 const input = document.querySelector(`[name="${field.name}"]`);
                 if (!input || !input.value.trim()) {
