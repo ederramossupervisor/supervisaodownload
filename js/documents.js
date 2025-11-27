@@ -1,3 +1,6 @@
+// ✅ INSTÂNCIA DO SERVIÇO DE API
+const API_SERVICE = new ApiService();
+
 // Definição dos campos para cada tipo de documento
 const DOCUMENT_FIELDS = {
     cuidador: [
@@ -595,7 +598,7 @@ const DOCUMENT_HANDLERS = {
         let isValid = true;
         const errors = [];
 
-        fields.forEach(field => {
+        fields.forEach(field) => {
             if (field.required) {
                 const input = document.querySelector(`[name="${field.name}"]`);
                 if (!input || !input.value.trim()) {
@@ -652,95 +655,111 @@ const DOCUMENT_HANDLERS = {
         return content;
     },
 
-    // NOVO: Criar documento PDF real integrado com Google Apps Script
-createPDF: async function(documentType, formData, userEmail) {
-    try {
-        const result = await API_SERVICE.generateDocument(documentType, formData, userEmail);
-        
-        if (result.success) {
-            return {
-                success: true,
-                filename: `${DOCUMENT_NAMES[documentType]}_${new Date().getTime()}.pdf`,
-                url: result.pdfUrl,
-                documentUrl: result.documentUrl,
-                documentId: result.documentId
-            };
-        } else {
-            throw new Error(result.error || 'Erro ao gerar PDF');
+    // ✅ CORRIGIDO: Criar documento PDF real
+    createPDF: async function(documentType, formData, userEmail) {
+        try {
+            // ✅ USA A INSTÂNCIA GLOBAL API_SERVICE
+            const result = await API_SERVICE.generateDocument(documentType, formData, userEmail);
+            
+            if (result.success) {
+                return {
+                    success: true,
+                    filename: `${DOCUMENT_NAMES[documentType]}_${new Date().getTime()}.pdf`,
+                    url: result.pdfUrl,
+                    documentUrl: result.documentUrl,
+                    documentId: result.documentId
+                };
+            } else {
+                throw new Error(result.error || 'Erro ao gerar PDF');
+            }
+        } catch (error) {
+            console.error('Erro ao criar PDF:', error);
+            throw error;
         }
-    } catch (error) {
-        console.error('Erro ao criar PDF:', error);
-        throw error;
-    }
-},
+    },
 
-// NOVO: Criar documento DOCX real (documento editável)
-createDOCX: async function(documentType, formData, userEmail) {
-    try {
-        const result = await API_SERVICE.generateDocument(documentType, formData, userEmail);
-        
-        if (result.success) {
-            return {
-                success: true,
-                filename: `${DOCUMENT_NAMES[documentType]}_${new Date().getTime()}.docx`, 
-                url: result.documentUrl, // URL do Google Docs (editável)
-                pdfUrl: result.pdfUrl,
-                documentId: result.documentId
-            };
-        } else {
-            throw new Error(result.error || 'Erro ao gerar DOCX');
+    // Criar documento DOCX real (documento editável)
+    createDOCX: async function(documentType, formData, userEmail) {
+        try {
+            const result = await API_SERVICE.generateDocument(documentType, formData, userEmail);
+            
+            if (result.success) {
+                return {
+                    success: true,
+                    filename: `${DOCUMENT_NAMES[documentType]}_${new Date().getTime()}.docx`, 
+                    url: result.documentUrl, // URL do Google Docs (editável)
+                    pdfUrl: result.pdfUrl,
+                    documentId: result.documentId
+                };
+            } else {
+                throw new Error(result.error || 'Erro ao gerar DOCX');
+            }
+        } catch (error) {
+            console.error('Erro ao criar DOCX:', error);
+            throw error;
         }
-    } catch (error) {
-        console.error('Erro ao criar DOCX:', error);
-        throw error;
-    }
-},
+    },
 
-// ATUALIZADA: Download de arquivo real (agora recebe URL)
-downloadFile: function(filename, url) {
-    // Para Google Drive, abrimos em nova aba ou forçamos download
-    const link = document.createElement('a');
-    link.href = url;
-    
-    // Se for URL do Google Drive, adicionar parâmetro para forçar download
-    if (url.includes('drive.google.com')) {
-        // Converter URL de visualização para URL de download
-        const fileId = url.match(/[-\w]{25,}/);
-        if (fileId) {
-            link.href = `https://drive.google.com/uc?export=download&id=${fileId[0]}`;
-        }
-    }
-    
-    link.download = filename;
-    link.target = '_blank'; // Abrir em nova aba
-    link.style.display = 'none';
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-},
-
-// NOVO: Função para forçar download do Google Drive
-forceGoogleDriveDownload: function(url, filename) {
-    // Extrair ID do arquivo do Google Drive
-    const match = url.match(/[-\w]{25,}/);
-    if (match) {
-        const fileId = match[0];
-        const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-        
+    // Download de arquivo real (agora recebe URL)
+    downloadFile: function(filename, url) {
+        // Para Google Drive, abrimos em nova aba ou forçamos download
         const link = document.createElement('a');
-        link.href = downloadUrl;
+        link.href = url;
+        
+        // Se for URL do Google Drive, adicionar parâmetro para forçar download
+        if (url.includes('drive.google.com')) {
+            // Converter URL de visualização para URL de download
+            const fileId = url.match(/[-\w]{25,}/);
+            if (fileId) {
+                link.href = `https://drive.google.com/uc?export=download&id=${fileId[0]}`;
+            }
+        }
+        
         link.download = filename;
+        link.target = '_blank'; // Abrir em nova aba
         link.style.display = 'none';
         
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    } else {
-        // Fallback: abrir URL normal
-        window.open(url, '_blank');
+    },
+
+    // Função para forçar download do Google Drive
+    forceGoogleDriveDownload: function(url, filename) {
+        // Extrair ID do arquivo do Google Drive
+        const match = url.match(/[-\w]{25,}/);
+        if (match) {
+            const fileId = match[0];
+            const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = filename;
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            // Fallback: abrir URL normal
+            window.open(url, '_blank');
+        }
+    },
+
+    // ✅ FUNÇÃO PARA LIMPAR FORMULÁRIO
+    clearForm: function() {
+        console.log('🧹 Limpando formulário...');
+        const form = document.getElementById('document-form');
+        if (form) {
+            form.reset();
+            console.log('✅ Formulário limpo!');
+        }
+        
+        // Limpar também os dados do estado
+        APP_STATE.formData = {};
+        APP_STATE.currentDocumentType = "";
+        APP_STATE.generatedDocument = null;
     }
-}
 };
 
 // Adicionar estilos para campos com erro
@@ -779,17 +798,3 @@ if (!document.querySelector('.field-error-styles')) {
     `;
     document.head.appendChild(errorStyles);
 }
-// ✅ ADICIONAR ESTA FUNÇÃO NO documents.js
-DOCUMENT_HANDLERS.clearForm = function() {
-    console.log('🧹 Limpando formulário...');
-    const form = document.getElementById('document-form');
-    if (form) {
-        form.reset();
-        console.log('✅ Formulário limpo!');
-    }
-    
-    // Limpar também os dados do estado
-    APP_STATE.formData = {};
-    APP_STATE.currentDocumentType = "";
-    APP_STATE.generatedDocument = null;
-};
