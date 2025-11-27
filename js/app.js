@@ -1,6 +1,7 @@
 // Aplicação principal - Controle de fluxo e eventos
 class SupervisaoApp {
     constructor() {
+        this.selectedSchools = []; // Para controle temporário no modal
         this.initializeApp();
         this.bindEvents();
         this.checkSavedConfig();
@@ -9,7 +10,7 @@ class SupervisaoApp {
     // Inicialização da aplicação
     initializeApp() {
         console.log(`${CONFIG.appName} v${CONFIG.version} inicializando...`);
-        this.populateSchoolsList();
+        this.initSchoolSelector(); // Novo sistema de seleção
         this.createDocumentCards();
     }
 
@@ -25,9 +26,6 @@ class SupervisaoApp {
         document.getElementById('save-config').addEventListener('click', () => this.saveConfiguration());
         document.getElementById('request-access-btn').addEventListener('click', () => this.showAccessModal());
 
-        // Seleção de escolas
-        document.getElementById('schools-select').addEventListener('click', () => this.toggleSchoolsDropdown());
-        
         // Formulário de documentos
         document.getElementById('generate-document').addEventListener('click', () => this.generateDocument());
 
@@ -46,14 +44,201 @@ class SupervisaoApp {
                 this.closeModal(e.target);
             }
         });
+    }
 
-        // Fechar dropdown ao clicar fora
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.multi-select')) {
-                document.getElementById('schools-list').classList.remove('show');
+    // ===== NOVO SISTEMA DE SELEÇÃO DE ESCOLAS =====
+
+    // Inicializar o sistema de seleção de escolas
+    initSchoolSelector() {
+        const schoolBtn = document.getElementById('school-selector-btn');
+        const schoolsModal = document.getElementById('schools-modal');
+        const confirmBtn = document.getElementById('confirm-schools');
+        const cancelBtn = document.getElementById('cancel-schools');
+        const clearBtn = document.getElementById('clear-selection');
+        const searchInput = document.getElementById('school-search');
+        const closeBtn = schoolsModal.querySelector('.close');
+
+        // Carregar escolas
+        this.loadSchools();
+
+        // Event listeners
+        schoolBtn.addEventListener('click', () => this.openSchoolsModal());
+        confirmBtn.addEventListener('click', () => this.confirmSchoolSelection());
+        cancelBtn.addEventListener('click', () => this.closeSchoolsModal());
+        clearBtn.addEventListener('click', () => this.clearSchoolSelection());
+        closeBtn.addEventListener('click', () => this.closeSchoolsModal());
+        searchInput.addEventListener('input', (e) => this.filterSchools(e.target.value));
+
+        // Fechar modal ao clicar fora
+        schoolsModal.addEventListener('click', (e) => {
+            if (e.target === schoolsModal) {
+                this.closeSchoolsModal();
             }
         });
     }
+
+    // Carregar lista de escolas
+    loadSchools() {
+        // Usar SCHOOLS_DATA existente
+        APP_STATE.allSchools = SCHOOLS_DATA.map(school => school.name);
+        
+        // Carregar escolas salvas anteriormente
+        const savedConfig = UTILS.loadConfig();
+        if (savedConfig && savedConfig.schools) {
+            APP_STATE.selectedSchools = savedConfig.schools;
+            this.selectedSchools = [...savedConfig.schools]; // Cópia para controle temporário
+            this.updateSchoolSelectionDisplay();
+        }
+    }
+
+    // Abrir modal de escolas
+    openSchoolsModal() {
+        const modal = document.getElementById('schools-modal');
+        const schoolBtn = document.getElementById('school-selector-btn');
+        
+        modal.classList.remove('hidden');
+        schoolBtn.classList.add('active');
+        this.renderSchoolsList();
+        this.updateSelectionCounters();
+    }
+
+    // Fechar modal de escolas
+    closeSchoolsModal() {
+        const modal = document.getElementById('schools-modal');
+        const schoolBtn = document.getElementById('school-selector-btn');
+        
+        modal.classList.add('hidden');
+        schoolBtn.classList.remove('active');
+        
+        // Restaurar seleção temporária para o estado atual
+        this.selectedSchools = [...APP_STATE.selectedSchools];
+    }
+
+    // Confirmar seleção de escolas
+    confirmSchoolSelection() {
+        APP_STATE.selectedSchools = [...this.selectedSchools];
+        this.updateSchoolSelectionDisplay();
+        this.closeSchoolsModal();
+    }
+
+    // Limpar seleção
+    clearSchoolSelection() {
+        this.selectedSchools = [];
+        this.renderSchoolsList();
+        this.updateSelectionCounters();
+    }
+
+    // Filtrar escolas
+    filterSchools(searchTerm) {
+        this.renderSchoolsList(searchTerm);
+    }
+
+    // Renderizar lista de escolas
+    renderSchoolsList(filter = '') {
+        const container = document.getElementById('schools-checklist');
+        const filteredSchools = APP_STATE.allSchools.filter(school => 
+            school.toLowerCase().includes(filter.toLowerCase())
+        );
+
+        if (filteredSchools.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <p>Nenhuma escola encontrada</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filteredSchools.map(school => `
+            <div class="school-checkbox-item ${this.selectedSchools.includes(school) ? 'selected' : ''}" 
+                 data-school="${school}">
+                <div class="school-checkbox"></div>
+                <div class="school-name">${school}</div>
+            </div>
+        `).join('');
+
+        // Adicionar event listeners aos itens
+        container.querySelectorAll('.school-checkbox-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const school = item.dataset.school;
+                this.toggleSchoolSelection(school);
+            });
+        });
+    }
+
+    // Alternar seleção de escola
+    toggleSchoolSelection(school) {
+        const index = this.selectedSchools.indexOf(school);
+        
+        if (index > -1) {
+            // Remover se já estiver selecionada
+            this.selectedSchools.splice(index, 1);
+        } else {
+            // Adicionar se não estiver selecionada
+            this.selectedSchools.push(school);
+        }
+        
+        this.renderSchoolsList(document.getElementById('school-search').value);
+        this.updateSelectionCounters();
+    }
+
+    // Atualizar contadores
+    updateSelectionCounters() {
+        const selectedCounter = document.getElementById('selected-counter');
+        const totalCounter = document.getElementById('total-counter');
+        const countNumber = document.getElementById('count-number');
+        
+        if (selectedCounter) selectedCounter.textContent = this.selectedSchools.length;
+        if (totalCounter) totalCounter.textContent = APP_STATE.allSchools.length;
+        if (countNumber) countNumber.textContent = this.selectedSchools.length;
+    }
+
+    // Atualizar display da seleção
+    updateSchoolSelectionDisplay() {
+        const previewContainer = document.getElementById('selected-schools-preview');
+        const selectorText = document.getElementById('school-selector-text');
+        
+        // Atualizar texto do botão
+        if (selectorText) {
+            if (APP_STATE.selectedSchools.length === 0) {
+                selectorText.textContent = 'Selecionar Escolas';
+            } else if (APP_STATE.selectedSchools.length === 1) {
+                selectorText.textContent = '1 escola selecionada';
+            } else {
+                selectorText.textContent = `${APP_STATE.selectedSchools.length} escolas selecionadas`;
+            }
+        }
+        
+        // Atualizar preview
+        if (previewContainer) {
+            if (APP_STATE.selectedSchools.length === 0) {
+                previewContainer.innerHTML = '<div class="empty-preview">Nenhuma escola selecionada</div>';
+            } else {
+                previewContainer.innerHTML = APP_STATE.selectedSchools.map(school => `
+                    <div class="school-preview-item">
+                        ${school}
+                        <i class="fas fa-times" onclick="supervisaoApp.removeSchoolFromPreview('${school}')"></i>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        this.updateSelectionCounters();
+    }
+
+    // Remover escola do preview
+    removeSchoolFromPreview(school) {
+        const index = APP_STATE.selectedSchools.indexOf(school);
+        if (index > -1) {
+            APP_STATE.selectedSchools.splice(index, 1);
+            this.selectedSchools.splice(index, 1);
+            this.updateSchoolSelectionDisplay();
+            this.renderSchoolsList(document.getElementById('school-search').value);
+        }
+    }
+
+    // ===== FIM DO NOVO SISTEMA DE SELEÇÃO =====
 
     // Verificar se há configuração salva
     checkSavedConfig() {
@@ -61,20 +246,6 @@ class SupervisaoApp {
             this.showMainScreen();
             UTILS.showNotification('Configuração carregada com sucesso!', 'success');
         }
-    }
-
-    // Popular lista de escolas
-    populateSchoolsList() {
-        const schoolsList = document.getElementById('schools-list');
-        schoolsList.innerHTML = '';
-
-        SCHOOLS_DATA.forEach(school => {
-            const item = document.createElement('div');
-            item.className = 'dropdown-item';
-            item.textContent = school.name;
-            item.addEventListener('click', () => this.toggleSchoolSelection(school.name));
-            schoolsList.appendChild(item);
-        });
     }
 
     // Criar cards de documentos
@@ -133,7 +304,7 @@ class SupervisaoApp {
     // Configuração do usuário
     loadConfigIntoForm() {
         document.getElementById('supervisor-name').value = APP_STATE.supervisorName;
-        this.updateSelectedSchoolsDisplay();
+        // O display das escolas é atualizado automaticamente pelo novo sistema
     }
 
     saveConfiguration() {
@@ -148,7 +319,6 @@ class SupervisaoApp {
 
         if (APP_STATE.selectedSchools.length === 0) {
             UTILS.showNotification('Selecione pelo menos uma escola.', 'error');
-            document.getElementById('schools-select').focus();
             return;
         }
 
@@ -164,101 +334,6 @@ class SupervisaoApp {
         } else {
             UTILS.showNotification('Erro ao salvar configuração. Tente novamente.', 'error');
         }
-    }
-
-    // Seleção de escolas
-    toggleSchoolsDropdown() {
-        const dropdown = document.getElementById('schools-list');
-        
-        // Criar overlay se não existir
-        let overlay = document.getElementById('dropdown-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'dropdown-overlay';
-            overlay.className = 'dropdown-overlay';
-            overlay.addEventListener('click', () => {
-                document.getElementById('schools-list').classList.remove('show');
-                overlay.classList.remove('show');
-            });
-            document.body.appendChild(overlay);
-        }
-
-        if (dropdown.classList.contains('show')) {
-            // Fechar dropdown
-            dropdown.classList.remove('show');
-            overlay.classList.remove('show');
-        } else {
-            // Abrir dropdown
-            dropdown.classList.add('show');
-            overlay.classList.add('show');
-            
-            // Focar no primeiro item para melhor acessibilidade
-            const firstItem = dropdown.querySelector('.dropdown-item');
-            if (firstItem) {
-                firstItem.focus();
-            }
-        }
-    }
-
-    toggleSchoolSelection(schoolName) {
-        const index = APP_STATE.selectedSchools.indexOf(schoolName);
-        
-        if (index > -1) {
-            // Remover escola
-            APP_STATE.selectedSchools.splice(index, 1);
-        } else {
-            // Adicionar escola
-            APP_STATE.selectedSchools.push(schoolName);
-        }
-        
-        this.updateSelectedSchoolsDisplay();
-        this.highlightSelectedSchools();
-        
-        // Fechar no mobile
-        if (window.innerWidth <= 768) {
-            const dropdown = document.getElementById('schools-list');
-            const overlay = document.getElementById('dropdown-overlay');
-            if (dropdown) dropdown.classList.remove('show');
-            if (overlay) overlay.classList.remove('show');
-        }
-    }
-
-    updateSelectedSchoolsDisplay() {
-        const container = document.getElementById('selected-schools');
-        container.innerHTML = '';
-
-        APP_STATE.selectedSchools.forEach(schoolName => {
-            const item = document.createElement('div');
-            item.className = 'selected-item';
-            item.innerHTML = `
-                ${schoolName}
-                <i class="fas fa-times" data-school="${schoolName}"></i>
-            `;
-            
-            item.querySelector('i').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.removeSchool(schoolName);
-            });
-            
-            container.appendChild(item);
-        });
-    }
-
-    highlightSelectedSchools() {
-        const dropdownItems = document.querySelectorAll('.dropdown-item');
-        dropdownItems.forEach(item => {
-            if (APP_STATE.selectedSchools.includes(item.textContent)) {
-                item.classList.add('selected');
-            } else {
-                item.classList.remove('selected');
-            }
-        });
-    }
-
-    removeSchool(schoolName) {
-        APP_STATE.selectedSchools = APP_STATE.selectedSchools.filter(name => name !== schoolName);
-        this.updateSelectedSchoolsDisplay();
-        this.highlightSelectedSchools();
     }
 
     // Documentos
@@ -340,66 +415,67 @@ class SupervisaoApp {
     }
 
     async generateDocument() {
-    const validation = DOCUMENT_HANDLERS.validateForm(APP_STATE.currentDocumentType);
-    
-    if (!validation.isValid) {
-        UTILS.showNotification('Preencha todos os campos obrigatórios!', 'error');
-        validation.errors.forEach(error => {
-            console.error('Erro de validação:', error);
-        });
-        return;
-    }
-
-    // Coletar dados
-    APP_STATE.formData = DOCUMENT_HANDLERS.collectFormData(APP_STATE.currentDocumentType);
-
-    try {
-        console.log('🔧 === INICIANDO GERAÇÃO DE DOCUMENTO ===');
-        console.log('📄 Tipo:', APP_STATE.currentDocumentType);
-        console.log('📋 Dados:', APP_STATE.formData);
+        const validation = DOCUMENT_HANDLERS.validateForm(APP_STATE.currentDocumentType);
         
-        // Mostrar loading
-        const generateBtn = document.getElementById('generate-document');
-        const originalText = generateBtn.innerHTML;
-        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Documento...';
-        generateBtn.disabled = true;
-
-        // Usar seu email real
-        const userEmail = 'eder.ramos@educador.edu.es.gov.br';
-        console.log('📧 Email usado:', userEmail);
-        console.log('🌐 Chamando API...');
-        
-        // Gerar documento real usando a API
-        const result = await DOCUMENT_HANDLERS.createPDF(
-            APP_STATE.currentDocumentType, 
-            APP_STATE.formData,
-            userEmail
-        );
-
-        console.log('📤 RESULTADO COMPLETO DA API:', result); // ← LOG DE DIAGNÓSTICO
-
-        if (result.success) {
-            APP_STATE.generatedDocument = result;
-            console.log('🎯 Documento gerado com sucesso!');
-            console.log('🔗 Propriedades disponíveis:', Object.keys(result)); // ← LOG DE DIAGNÓSTICO
-            
-            // Mostrar modal de download
-            this.showDownloadModal();
-            UTILS.showNotification('Documento gerado com sucesso!', 'success');
-        } else {
-            throw new Error('Falha na geração do documento: ' + (result.error || 'Erro desconhecido'));
+        if (!validation.isValid) {
+            UTILS.showNotification('Preencha todos os campos obrigatórios!', 'error');
+            validation.errors.forEach(error => {
+                console.error('Erro de validação:', error);
+            });
+            return;
         }
 
-    } catch (error) {
-        console.error('💥 ERRO COMPLETO:', error);
-        UTILS.showNotification(error.message || 'Erro ao gerar documento. Tente novamente.', 'error');
-    } finally {
-        // Restaurar botão
-        const generateBtn = document.getElementById('generate-document');
-        generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
-        generateBtn.disabled = false;
+        // Coletar dados
+        APP_STATE.formData = DOCUMENT_HANDLERS.collectFormData(APP_STATE.currentDocumentType);
+
+        try {
+            console.log('🔧 === INICIANDO GERAÇÃO DE DOCUMENTO ===');
+            console.log('📄 Tipo:', APP_STATE.currentDocumentType);
+            console.log('📋 Dados:', APP_STATE.formData);
+            
+            // Mostrar loading
+            const generateBtn = document.getElementById('generate-document');
+            const originalText = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Documento...';
+            generateBtn.disabled = true;
+
+            // Usar seu email real
+            const userEmail = 'eder.ramos@educador.edu.es.gov.br';
+            console.log('📧 Email usado:', userEmail);
+            console.log('🌐 Chamando API...');
+            
+            // Gerar documento real usando a API
+            const result = await DOCUMENT_HANDLERS.createPDF(
+                APP_STATE.currentDocumentType, 
+                APP_STATE.formData,
+                userEmail
+            );
+
+            console.log('📤 RESULTADO COMPLETO DA API:', result);
+
+            if (result.success) {
+                APP_STATE.generatedDocument = result;
+                console.log('🎯 Documento gerado com sucesso!');
+                console.log('🔗 Propriedades disponíveis:', Object.keys(result));
+                
+                // Mostrar modal de download
+                this.showDownloadModal();
+                UTILS.showNotification('Documento gerado com sucesso!', 'success');
+            } else {
+                throw new Error('Falha na geração do documento: ' + (result.error || 'Erro desconhecido'));
+            }
+
+        } catch (error) {
+            console.error('💥 ERRO COMPLETO:', error);
+            UTILS.showNotification(error.message || 'Erro ao gerar documento. Tente novamente.', 'error');
+        } finally {
+            // Restaurar botão
+            const generateBtn = document.getElementById('generate-document');
+            generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
+            generateBtn.disabled = false;
+        }
     }
-}
+
     // Download de documentos
     async downloadPDF() {
         if (!APP_STATE.generatedDocument) {
