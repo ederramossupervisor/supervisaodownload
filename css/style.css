@@ -134,10 +134,15 @@ header p {
     line-height: 1.6;
 }
 
-.welcome-text p {
-    margin-bottom: 20px;
-    font-size: 1.1rem;
+.welcome-text p:first-child {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--azul-escuro);
+    margin-bottom: 30px;
+    padding: 0 20px;
 }
+
 
 .flow-steps {
     display: flex;
@@ -175,15 +180,21 @@ header p {
     text-align: center;
 }
 
-.note {
+.welcome-text p.note {
+    text-align: justify;
+    text-justify: inter-word;
+    font-size: 1rem;
+    line-height: 1.7;
     background: linear-gradient(135deg, var(--azul) 10%, var(--rosa) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 500;
-    padding: 15px;
+    padding: 20px;
     border-radius: var(--borda-radius);
     border: 2px dashed var(--azul);
+    margin: 25px 0;
+}
 }
 
 /* Headers com botões */
