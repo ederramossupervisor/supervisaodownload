@@ -115,7 +115,7 @@ class ApiService {
         console.error('❌ Erro na requisição:', error);
         throw error;
     }
-},
+}
     // ✅ SIMULAÇÃO PARA MODO DESENVOLVIMENTO
     simulateResponse(payload) {
         switch (payload.action) {
