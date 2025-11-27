@@ -579,9 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('✅ Todos os scripts carregados - Iniciando aplicação...');
         window.supervisaoApp = new SupervisaoApp();
-            console.log('✅ Todos os scripts carregados - Iniciando aplicação...');
-        window.supervisaoApp = new SupervisaoApp();
-        
+                   
         // Adicionar estilos dinâmicos
         if (!document.querySelector('.dynamic-styles')) {
             const dynamicStyles = document.createElement('style');
