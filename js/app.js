@@ -447,38 +447,34 @@ class SupervisaoApp {
     }
 
     try {
-        // Mostrar loading no botão de download
         const docxBtn = document.getElementById('download-docx');
         const originalText = docxBtn.innerHTML;
-        docxBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Baixando...<div class="download-subtitle">Editável</div>';
+        docxBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Abrindo...<div class="download-subtitle">Editável</div>';
         docxBtn.disabled = true;
 
-        // ✅ USAR docxUrl QUE AGORA VIRÁ DO APPS SCRIPT
-        const docxUrl = APP_STATE.generatedDocument.docxUrl;
+        // ✅ ABRIR O GOOGLE DOCS EDITÁVEL EM NOVA ABA
+        const editableUrl = APP_STATE.generatedDocument.editableUrl;
         
-        if (!docxUrl) {
+        if (!editableUrl) {
             throw new Error('URL do documento editável não disponível');
         }
 
-        console.log('📥 Baixando DOCX:', docxUrl);
+        console.log('🔗 Abrindo documento editável:', editableUrl);
+        
+        // Abrir em nova aba
+        window.open(editableUrl, '_blank');
 
-        // Fazer download do DOCX
-        DOCUMENT_HANDLERS.downloadFile(
-            APP_STATE.generatedDocument.filename.replace('.pdf', '.docx'),
-            docxUrl
-        );
-
-        // Fechar modal e limpar após um breve delay
+        // Fechar modal após um breve delay
         setTimeout(() => {
             this.closeModal(document.getElementById('download-modal'));
             DOCUMENT_HANDLERS.clearForm();
             this.showMainScreen();
-            UTILS.showNotification('Documento editável baixado com sucesso!', 'success');
+            UTILS.showNotification('Documento editável aberto em nova aba!', 'success');
         }, 1000);
 
     } catch (error) {
-        console.error('Erro ao baixar DOCX:', error);
-        UTILS.showNotification('Erro ao baixar DOCX. Tente novamente.', 'error');
+        console.error('Erro ao abrir documento editável:', error);
+        UTILS.showNotification('Erro ao abrir documento editável. Tente novamente.', 'error');
     } finally {
         // Restaurar botão
         const docxBtn = document.getElementById('download-docx');
