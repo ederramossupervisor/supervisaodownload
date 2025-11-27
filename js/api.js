@@ -78,28 +78,44 @@ class ApiService {
     }
 
     async makeRequest(payload) {
-        if (this.isDevelopment) {
-            console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
-            return this.simulateResponse(payload);
-        }
-        
-        console.log('🚀 MODO PRODUÇÃO - Enviando via Cloud Function');
+    if (this.isDevelopment) {
+        console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
+        return this.simulateResponse(payload);
+    }
+    
+    console.log('🚀 MODO PRODUÇÃO - Enviando para Cloud Function');
+    
+    try {
+        // ✅ FORMATO CORRETO PARA A CLOUD FUNCTION
+        const requestBody = {
+            documentType: payload.documentType || 'test',
+            formData: payload.formData || {teste: 'dados'},
+            userEmail: payload.userEmail || 'test@educador.edu.es.gov.br'
+        };
+
+        console.log('📤 Enviando dados:', requestBody);
         
         const response = await fetch(CONFIG.cloudFunctions.generateDocument, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(requestBody)
         });
 
         if (!response.ok) {
             throw new Error(`Erro HTTP: ${response.status}`);
         }
 
-        return await response.json();
-    }
+        const result = await response.json();
+        console.log('📥 Resposta recebida:', result);
+        return result;
 
+    } catch (error) {
+        console.error('❌ Erro na requisição:', error);
+        throw error;
+    }
+},
     // ✅ SIMULAÇÃO PARA MODO DESENVOLVIMENTO
     simulateResponse(payload) {
         switch (payload.action) {
@@ -146,28 +162,27 @@ class ApiService {
     }
 
     async testConnection() {
-        if (this.isDevelopment) {
-            console.log('🧪 Teste de conexão - Modo Desenvolvimento');
-            await new Promise(resolve => setTimeout(resolve, 500));
-            console.log('✅ Conexão simulada - Sistema pronto para uso!');
-            return true;
-        }
-        
-        // Teste real em produção
-        try {
-            const result = await this.makeRequest({
-                action: 'test',
-                userEmail: 'test@email.com'
-            });
-            console.log('✅ Conexão real estabelecida:', result);
-            return true;
-        } catch (error) {
-            console.error('❌ Falha na conexão real:', error);
-            return false;
-        }
+    if (this.isDevelopment) {
+        console.log('🧪 Teste de conexão - Modo Desenvolvimento');
+        await new Promise(resolve => setTimeout(resolve, 500));
+        console.log('✅ Conexão simulada - Sistema pronto para uso!');
+        return true;
+    }
+    
+    // Teste real em produção
+    try {
+        const result = await this.makeRequest({
+            documentType: 'cuidador',
+            userEmail: 'test@educador.edu.es.gov.br',
+            formData: {teste: 'conexao'}
+        });
+        console.log('✅ Conexão real estabelecida:', result);
+        return true;
+    } catch (error) {
+        console.error('❌ Falha na conexão real:', error);
+        return false;
     }
 }
-
 // ✅ ✅ ✅ INSTÂNCIA GLOBAL - ADICIONE ESTA LINHA NO FINAL ✅ ✅ ✅
 const API_SERVICE = new ApiService();
 
