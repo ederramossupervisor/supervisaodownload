@@ -169,25 +169,60 @@ class SupervisaoApp {
 
     // Seleção de escolas
     toggleSchoolsDropdown() {
-        const dropdown = document.getElementById('schools-list');
-        dropdown.classList.toggle('show');
+    const dropdown = document.getElementById('schools-list');
+    
+    // Criar overlay se não existir
+    let overlay = document.getElementById('dropdown-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'dropdown-overlay';
+        overlay.className = 'dropdown-overlay';
+        overlay.addEventListener('click', () => {
+            document.getElementById('schools-list').classList.remove('show');
+            overlay.classList.remove('show');
+        });
+        document.body.appendChild(overlay);
     }
+
+    if (dropdown.classList.contains('show')) {
+        // Fechar dropdown
+        dropdown.classList.remove('show');
+        overlay.classList.remove('show');
+    } else {
+        // Abrir dropdown
+        dropdown.classList.add('show');
+        overlay.classList.add('show');
+        
+        // Focar no primeiro item para melhor acessibilidade
+        const firstItem = dropdown.querySelector('.dropdown-item');
+        if (firstItem) {
+            firstItem.focus();
+        }
+    }
+},
 
     toggleSchoolSelection(schoolName) {
-        const index = APP_STATE.selectedSchools.indexOf(schoolName);
-        
-        if (index > -1) {
-            // Remover escola
-            APP_STATE.selectedSchools.splice(index, 1);
-        } else {
-            // Adicionar escola
-            APP_STATE.selectedSchools.push(schoolName);
-        }
-        
-        this.updateSelectedSchoolsDisplay();
-        this.highlightSelectedSchools();
+    const index = APP_STATE.selectedSchools.indexOf(schoolName);
+    
+    if (index > -1) {
+        // Remover escola
+        APP_STATE.selectedSchools.splice(index, 1);
+    } else {
+        // Adicionar escola
+        APP_STATE.selectedSchools.push(schoolName);
     }
-
+    
+    this.updateSelectedSchoolsDisplay();
+    this.highlightSelectedSchools();
+    
+    // 👇 ADICIONE ESTAS LINHAS PARA FECHAR NO MOBILE
+    if (window.innerWidth <= 768) {
+        const dropdown = document.getElementById('schools-list');
+        const overlay = document.getElementById('dropdown-overlay');
+        if (dropdown) dropdown.classList.remove('show');
+        if (overlay) overlay.classList.remove('show');
+    }
+},
     updateSelectedSchoolsDisplay() {
         const container = document.getElementById('selected-schools');
         container.innerHTML = '';
