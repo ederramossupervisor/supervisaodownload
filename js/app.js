@@ -215,7 +215,7 @@ class SupervisaoApp {
         this.updateSelectedSchoolsDisplay();
         this.highlightSelectedSchools();
         
-        // 👇 ADICIONE ESTAS LINHAS PARA FECHAR NO MOBILE
+        // Fechar no mobile
         if (window.innerWidth <= 768) {
             const dropdown = document.getElementById('schools-list');
             const overlay = document.getElementById('dropdown-overlay');
