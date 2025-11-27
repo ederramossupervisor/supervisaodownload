@@ -167,7 +167,7 @@ class SupervisaoApp {
         }
     }
 
-        // Seleção de escolas
+            // Seleção de escolas
     toggleSchoolsDropdown() {
         const dropdown = document.getElementById('schools-list');
         
@@ -199,7 +199,7 @@ class SupervisaoApp {
                 firstItem.focus();
             }
         }
-    },    // ✅ VÍRGULA CORRETA
+    },
 
     toggleSchoolSelection(schoolName) {
         const index = APP_STATE.selectedSchools.indexOf(schoolName);
@@ -222,7 +222,7 @@ class SupervisaoApp {
             if (dropdown) dropdown.classList.remove('show');
             if (overlay) overlay.classList.remove('show');
         }
-    },    // ✅ VÍRGULA CORRETA
+    },
 
     updateSelectedSchoolsDisplay() {
         const container = document.getElementById('selected-schools');
