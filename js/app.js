@@ -33,7 +33,6 @@ class SupervisaoApp {
 
         // Modais
         document.getElementById('download-pdf').addEventListener('click', () => this.downloadPDF());
-        document.getElementById('download-docx').addEventListener('click', () => this.downloadDOCX());
         document.getElementById('access-form').addEventListener('submit', (e) => this.handleAccessRequest(e));
 
         // Fechar modais
@@ -440,54 +439,6 @@ class SupervisaoApp {
         }
     }
 
-    async downloadDOCX() {
-    if (!APP_STATE.generatedDocument) {
-        UTILS.showNotification('Nenhum documento gerado para download.', 'error');
-        return;
-    }
-
-    try {
-        const docxBtn = document.getElementById('download-docx');
-        const originalText = docxBtn.innerHTML;
-        docxBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Abrindo...<div class="download-subtitle">Editável</div>';
-        docxBtn.disabled = true;
-
-        console.log('🔍 Dados do documento gerado:', APP_STATE.generatedDocument);
-
-        // ✅ VERIFICAÇÃO ROBUSTA - TENTAR DIFERENTES PROPRIEDADES
-        const editableUrl = APP_STATE.generatedDocument.editableUrl || 
-                           APP_STATE.generatedDocument.docxUrl || 
-                           APP_STATE.generatedDocument.documentUrl ||
-                           APP_STATE.generatedDocument.url;
-        
-        if (!editableUrl) {
-            console.error('❌ Nenhuma URL encontrada. Propriedades disponíveis:', Object.keys(APP_STATE.generatedDocument));
-            throw new Error('URL do documento não disponível. Tente gerar o documento novamente.');
-        }
-
-        console.log('🔗 Abrindo documento:', editableUrl);
-        
-        // Abrir em nova aba
-        window.open(editableUrl, '_blank');
-
-        // Fechar modal após um breve delay
-        setTimeout(() => {
-            this.closeModal(document.getElementById('download-modal'));
-            DOCUMENT_HANDLERS.clearForm();
-            this.showMainScreen();
-            UTILS.showNotification('Documento editável aberto em nova aba!', 'success');
-        }, 1000);
-
-    } catch (error) {
-        console.error('Erro ao abrir documento editável:', error);
-        UTILS.showNotification(error.message, 'error');
-    } finally {
-        // Restaurar botão
-        const docxBtn = document.getElementById('download-docx');
-        docxBtn.innerHTML = '<i class="fas fa-file-word"></i> Baixar DOCX<div class="download-subtitle">Editável</div>';
-        docxBtn.disabled = false;
-    }
-}
     // Solicitação de acesso
     async handleAccessRequest(e) {
         e.preventDefault();
