@@ -253,7 +253,7 @@ class SupervisaoApp {
                 item.classList.remove('selected');
             }
         });
-    }
+    },
 
     removeSchool(schoolName) {
         APP_STATE.selectedSchools = APP_STATE.selectedSchools.filter(name => name !== schoolName);
