@@ -1,13 +1,14 @@
-// Service Worker simples para PWA
+// Service Worker para GitHub Pages
 const CACHE_NAME = 'supervisao-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/config.js',
-  '/js/documents.js', 
-  '/js/api.js',
-  '/js/app.js'
+  '/supervisaodownload/',
+  '/supervisaodownload/index.html',
+  '/supervisaodownload/css/style.css',
+  '/supervisaodownload/js/config.js',
+  '/supervisaodownload/js/documents.js', 
+  '/supervisaodownload/js/api.js',
+  '/supervisaodownload/js/app.js',
+  '/supervisaodownload/manifest.json'
 ];
 
 self.addEventListener('install', function(event) {
