@@ -189,3 +189,4 @@ async testConnection() {
         return true; // ✅ Continua mesmo com erro
     }
 }
+}
