@@ -214,6 +214,18 @@ header p {
     margin: 0;
     flex: 1;
 }
+.config-header {
+    justify-content: space-between;
+}
+
+.config-header .btn {
+    margin-left: auto;
+    order: 2;
+}
+
+.config-header h2 {
+    order: 1;
+}
 
 /* Form Elements */
 .form-group {
