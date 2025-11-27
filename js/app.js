@@ -341,66 +341,66 @@ class SupervisaoApp {
     }
 
     async generateDocument() {
-        const validation = DOCUMENT_HANDLERS.validateForm(APP_STATE.currentDocumentType);
-        
-        if (!validation.isValid) {
-            UTILS.showNotification('Preencha todos os campos obrigatórios!', 'error');
-            validation.errors.forEach(error => {
-                console.error('Erro de validação:', error);
-            });
-            return;
-        }
-
-        // Coletar dados
-        APP_STATE.formData = DOCUMENT_HANDLERS.collectFormData(APP_STATE.currentDocumentType);
-
-        try {
-            console.log('🔧 === INICIANDO GERAÇÃO DE DOCUMENTO ===');
-            console.log('📄 Tipo:', APP_STATE.currentDocumentType);
-            console.log('📋 Dados:', APP_STATE.formData);
-            
-            // Mostrar loading
-            const generateBtn = document.getElementById('generate-document');
-            const originalText = generateBtn.innerHTML;
-            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Documento...';
-            generateBtn.disabled = true;
-
-            // Usar seu email real
-            const userEmail = 'eder.ramos@educador.edu.es.gov.br';
-            console.log('📧 Email usado:', userEmail);
-            console.log('🌐 Chamando API...');
-            
-            // Gerar documento real usando a API
-            const result = await DOCUMENT_HANDLERS.createPDF(
-                APP_STATE.currentDocumentType, 
-                APP_STATE.formData,
-                userEmail
-            );
-
-            console.log('📤 Resultado da API:', result);
-
-            if (result.success) {
-                APP_STATE.generatedDocument = result;
-                console.log('🎯 Documento gerado com sucesso!');
-                
-                // Mostrar modal de download
-                this.showDownloadModal();
-                UTILS.showNotification('Documento gerado com sucesso!', 'success');
-            } else {
-                throw new Error('Falha na geração do documento: ' + (result.error || 'Erro desconhecido'));
-            }
-
-        } catch (error) {
-            console.error('💥 ERRO COMPLETO:', error);
-            UTILS.showNotification(error.message || 'Erro ao gerar documento. Tente novamente.', 'error');
-        } finally {
-            // Restaurar botão
-            const generateBtn = document.getElementById('generate-document');
-            generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
-            generateBtn.disabled = false;
-        }
+    const validation = DOCUMENT_HANDLERS.validateForm(APP_STATE.currentDocumentType);
+    
+    if (!validation.isValid) {
+        UTILS.showNotification('Preencha todos os campos obrigatórios!', 'error');
+        validation.errors.forEach(error => {
+            console.error('Erro de validação:', error);
+        });
+        return;
     }
 
+    // Coletar dados
+    APP_STATE.formData = DOCUMENT_HANDLERS.collectFormData(APP_STATE.currentDocumentType);
+
+    try {
+        console.log('🔧 === INICIANDO GERAÇÃO DE DOCUMENTO ===');
+        console.log('📄 Tipo:', APP_STATE.currentDocumentType);
+        console.log('📋 Dados:', APP_STATE.formData);
+        
+        // Mostrar loading
+        const generateBtn = document.getElementById('generate-document');
+        const originalText = generateBtn.innerHTML;
+        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Documento...';
+        generateBtn.disabled = true;
+
+        // Usar seu email real
+        const userEmail = 'eder.ramos@educador.edu.es.gov.br';
+        console.log('📧 Email usado:', userEmail);
+        console.log('🌐 Chamando API...');
+        
+        // Gerar documento real usando a API
+        const result = await DOCUMENT_HANDLERS.createPDF(
+            APP_STATE.currentDocumentType, 
+            APP_STATE.formData,
+            userEmail
+        );
+
+        console.log('📤 RESULTADO COMPLETO DA API:', result); // ← LOG DE DIAGNÓSTICO
+
+        if (result.success) {
+            APP_STATE.generatedDocument = result;
+            console.log('🎯 Documento gerado com sucesso!');
+            console.log('🔗 Propriedades disponíveis:', Object.keys(result)); // ← LOG DE DIAGNÓSTICO
+            
+            // Mostrar modal de download
+            this.showDownloadModal();
+            UTILS.showNotification('Documento gerado com sucesso!', 'success');
+        } else {
+            throw new Error('Falha na geração do documento: ' + (result.error || 'Erro desconhecido'));
+        }
+
+    } catch (error) {
+        console.error('💥 ERRO COMPLETO:', error);
+        UTILS.showNotification(error.message || 'Erro ao gerar documento. Tente novamente.', 'error');
+    } finally {
+        // Restaurar botão
+        const generateBtn = document.getElementById('generate-document');
+        generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
+        generateBtn.disabled = false;
+    }
+}
     // Download de documentos
     async downloadPDF() {
         if (!APP_STATE.generatedDocument) {
@@ -452,14 +452,20 @@ class SupervisaoApp {
         docxBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Abrindo...<div class="download-subtitle">Editável</div>';
         docxBtn.disabled = true;
 
-        // ✅ ABRIR O GOOGLE DOCS EDITÁVEL EM NOVA ABA
-        const editableUrl = APP_STATE.generatedDocument.editableUrl;
+        console.log('🔍 Dados do documento gerado:', APP_STATE.generatedDocument);
+
+        // ✅ VERIFICAÇÃO ROBUSTA - TENTAR DIFERENTES PROPRIEDADES
+        const editableUrl = APP_STATE.generatedDocument.editableUrl || 
+                           APP_STATE.generatedDocument.docxUrl || 
+                           APP_STATE.generatedDocument.documentUrl ||
+                           APP_STATE.generatedDocument.url;
         
         if (!editableUrl) {
-            throw new Error('URL do documento editável não disponível');
+            console.error('❌ Nenhuma URL encontrada. Propriedades disponíveis:', Object.keys(APP_STATE.generatedDocument));
+            throw new Error('URL do documento não disponível. Tente gerar o documento novamente.');
         }
 
-        console.log('🔗 Abrindo documento editável:', editableUrl);
+        console.log('🔗 Abrindo documento:', editableUrl);
         
         // Abrir em nova aba
         window.open(editableUrl, '_blank');
@@ -474,7 +480,7 @@ class SupervisaoApp {
 
     } catch (error) {
         console.error('Erro ao abrir documento editável:', error);
-        UTILS.showNotification('Erro ao abrir documento editável. Tente novamente.', 'error');
+        UTILS.showNotification(error.message, 'error');
     } finally {
         // Restaurar botão
         const docxBtn = document.getElementById('download-docx');
