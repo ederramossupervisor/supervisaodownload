@@ -1093,19 +1093,22 @@ footer {
 @media (max-width: 768px) {
     .schools-modal {
         width: 95%;
-        height: 90vh;
+        height: 85vh;
         margin: 0;
     }
     
     .selection-info {
-        flex-direction: column;
-        gap: 10px;
-        align-items: stretch;
-    }
-    
-    .btn-clear {
-        align-self: flex-end;
-    }
+    flex-direction: row; /* ← MUDEI AQUI */
+    gap: 15px;
+    align-items: center; /* ← MUDEI AQUI */
+    flex-wrap: nowrap; /* ← ADICIONEI */
+    padding: 12px 0;
+}
+
+.btn-clear {
+    align-self: center; /* ← MUDEI AQUI */
+    margin-left: auto; /* ← ADICIONEI */
+}
     
     .modal-actions {
         flex-direction: column;
@@ -1123,6 +1126,21 @@ footer {
 @media (max-width: 480px) {
     .schools-modal .modal-content {
         padding: 20px 15px;
+    }
+    
+    /* ADICIONE ESTAS LINhas: */
+    .selection-info {
+        gap: 8px;
+        padding: 10px 0;
+    }
+    
+    .selection-counter {
+        font-size: 0.9rem;
+    }
+    
+    .btn-clear {
+        font-size: 0.8rem;
+        padding: 4px 8px;
     }
     
     .selected-schools-preview {
@@ -1424,7 +1442,8 @@ footer {
     opacity: 0.5;
 }
 
-/* Responsivo para mobile */@media (max-width: 768px) {
+/* Responsivo para mobile */
+@media (max-width: 768px) {
     .schools-modal {
         width: 95%;
         height: 85vh; /* Reduzi um pouco para dar margem */
