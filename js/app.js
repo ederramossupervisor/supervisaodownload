@@ -167,7 +167,7 @@ class SupervisaoApp {
         }
     }
 
-            // Seleção de escolas
+    // Seleção de escolas
     toggleSchoolsDropdown() {
         const dropdown = document.getElementById('schools-list');
         
@@ -199,7 +199,7 @@ class SupervisaoApp {
                 firstItem.focus();
             }
         }
-    },
+    }
 
     toggleSchoolSelection(schoolName) {
         const index = APP_STATE.selectedSchools.indexOf(schoolName);
@@ -222,7 +222,7 @@ class SupervisaoApp {
             if (dropdown) dropdown.classList.remove('show');
             if (overlay) overlay.classList.remove('show');
         }
-    },
+    }
 
     updateSelectedSchoolsDisplay() {
         const container = document.getElementById('selected-schools');
@@ -243,7 +243,8 @@ class SupervisaoApp {
             
             container.appendChild(item);
         });
-    },
+    }
+
     highlightSelectedSchools() {
         const dropdownItems = document.querySelectorAll('.dropdown-item');
         dropdownItems.forEach(item => {
@@ -253,7 +254,7 @@ class SupervisaoApp {
                 item.classList.remove('selected');
             }
         });
-    },
+    }
 
     removeSchool(schoolName) {
         APP_STATE.selectedSchools = APP_STATE.selectedSchools.filter(name => name !== schoolName);
@@ -615,4 +616,4 @@ document.addEventListener('DOMContentLoaded', function() {
             document.head.appendChild(dynamicStyles);
         }
     }, 500);
-});    // ← APENAS ESTE }); NO FINAL
+});
