@@ -1512,3 +1512,71 @@ footer {
 .selected-item {
     display: none !important;
 }
+/* ===== OTIMIZAÇÕES ESPECÍFICAS PARA MOBILE ===== */
+@media (max-width: 480px) {
+    .schools-modal .modal-content {
+        padding: 15px;
+        border-radius: 12px;
+    }
+    
+    .schools-modal {
+        height: 88vh;
+    }
+    
+    .schools-list-container {
+        min-height: 350px; /* Altura ainda maior em mobile pequeno */
+    }
+    
+    .school-checkbox-item {
+        padding: 18px 12px; /* Área de toque ainda maior */
+        border-radius: 8px;
+        margin-bottom: 6px;
+    }
+    
+    .school-checkbox {
+        width: 20px;
+        height: 20px; /* Checkbox maior para mobile */
+    }
+    
+    .school-name {
+        font-size: 1.05rem; /* Texto um pouco maior */
+        line-height: 1.4;
+    }
+    
+    .search-box {
+        margin-bottom: 12px;
+    }
+    
+    #school-search {
+        padding: 16px 16px 16px 50px;
+        font-size: 1.1rem; /* Input maior */
+    }
+    
+    .selection-info {
+        padding: 12px 0;
+        font-size: 0.95rem;
+    }
+    
+    /* Garantir que o modal ocupe boa parte da tela */
+    .modal {
+        padding: 10px;
+        align-items: flex-end; /* Alinha na parte de baixo para melhor uso */
+    }
+}
+
+/* Melhorar scroll no mobile */
+.schools-list-container {
+    -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+    scroll-behavior: smooth;
+}
+
+/* Estilo para muitos itens selecionados */
+.selected-schools-preview {
+    max-height: 150px; /* Aumentei a altura máxima */
+}
+
+@media (max-width: 768px) {
+    .selected-schools-preview {
+        max-height: 120px;
+    }
+}
