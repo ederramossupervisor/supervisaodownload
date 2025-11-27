@@ -44,7 +44,7 @@ const DOCUMENT_FIELDS = {
             type: "text", 
             required: true,
             placeholder: "Ex: OFÍCIO 123/2024",
-            autoGenerate: true
+           
         },
         { 
             name: "Nome do(a) Aluno(a)", 
@@ -237,7 +237,7 @@ const DOCUMENT_FIELDS = {
             type: "text", 
             required: true,
             placeholder: "Ex: OFÍCIO 123/2024",
-            autoGenerate: true
+            
         },
         { 
             name: "Data do Ofício", 
@@ -587,7 +587,6 @@ const DOCUMENT_HANDLERS = {
 
         if (field.name === "Número do Ofício") {
             inputElement.value = UTILS.generateOfficeNumber();
-            inputElement.readOnly = true;
             inputElement.title = "Número gerado automaticamente";
         }
     },
