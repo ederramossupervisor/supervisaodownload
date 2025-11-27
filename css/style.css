@@ -1410,18 +1410,49 @@ footer {
     opacity: 0.5;
 }
 
-/* Responsivo para mobile */
-@media (max-width: 768px) {
+/* Responsivo para mobile */@media (max-width: 768px) {
     .schools-modal {
         width: 95%;
-        height: 90vh;
+        height: 85vh; /* Reduzi um pouco para dar margem */
         margin: 0;
+        max-width: none; /* Remove limite máximo */
+    }
+    
+    .schools-modal .modal-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .schools-modal .modal-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0; /* Importante para flex funcionar */
+    }
+    
+    .schools-list-container {
+        flex: 1;
+        min-height: 300px; /* Altura mínima garantida */
+        max-height: none; /* Remove limite máximo */
+    }
+    
+    .schools-list {
+        padding: 10px;
+        min-height: 200px;
+    }
+    
+    .school-checkbox-item {
+        padding: 16px 12px; /* Mais espaço para toque */
+        margin-bottom: 8px;
+        font-size: 1rem;
     }
     
     .selection-info {
         flex-direction: column;
         gap: 10px;
         align-items: stretch;
+        flex-shrink: 0; /* Não reduzir */
     }
     
     .btn-clear {
@@ -1430,10 +1461,8 @@ footer {
     
     .modal-actions {
         flex-direction: column;
-    }
-    
-    .school-checkbox-item {
-        padding: 15px 10px;
+        flex-shrink: 0; /* Não reduzir */
+        margin-top: auto; /* Empurra para baixo */
     }
     
     .school-name {
@@ -1442,6 +1471,21 @@ footer {
     
     .school-selector-btn {
         padding: 12px 15px;
+    }
+    
+    /* Ajuste específico para telas muito pequenas */
+    @media (max-height: 700px) {
+        .schools-modal {
+            height: 92vh;
+        }
+        
+        .schools-list-container {
+            min-height: 250px;
+        }
+        
+        .school-checkbox-item {
+            padding: 14px 10px;
+        }
     }
 }
 
