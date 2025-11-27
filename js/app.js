@@ -199,7 +199,7 @@ class SupervisaoApp {
                 firstItem.focus();
             }
         }
-    }
+    },
 
     toggleSchoolSelection(schoolName) {
         const index = APP_STATE.selectedSchools.indexOf(schoolName);
