@@ -1,12 +1,12 @@
-// config.js - ATUALIZE COM SUA NOVA URL
+// config.js - VERSÃO FINAL
 const CONFIG = {
     adminEmail: 'eder.ramos@educador.edu.es.gov.br',
     appName: 'Sistema Supervisão',
     version: '2.0.0',
     
-    // ✅ NOVA URL DA CLOUD FUNCTION (SEM CORS!)
+    // ✅ URL DEFINITIVA SEM CORS
     cloudFunctions: {
-        generateDocument: 'https://southamerica-east1-sistema-documentos-sreac.cloudfunctions.net/generateDocument'
+        generateDocument: 'https://southamerica-east1-sistema-documentos-sreac.cloudfunctions.net/supervisaoSp'
     },
     
     adminEmails: ['eder.ramos@educador.edu.es.gov.br']
