@@ -12,3 +12,4 @@ async generateDocument(documentType, formData, userEmail) {
     const result = await response.json();
     return result.data;
 }
+const API_SERVICE = new ApiService();
