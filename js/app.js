@@ -520,10 +520,32 @@ class SupervisaoApp {
     }
 }
 
-// Inicializar aplicação quando o DOM estiver pronto
+// ✅ INICIALIZAÇÃO CORRIGIDA - Aguarda todos os scripts carregarem
 document.addEventListener('DOMContentLoaded', function() {
-    window.supervisaoApp = new SupervisaoApp();
+    console.log('🔄 Verificando carregamento dos scripts...');
     
+    // Aguardar um pouco para garantir que todos os scripts carregaram
+    setTimeout(() => {
+        if (typeof DOCUMENT_FIELDS === 'undefined') {
+            console.error('❌ DOCUMENT_FIELDS não carregado!');
+            console.log('📋 Scripts carregados:', {
+                CONFIG: typeof CONFIG,
+                SCHOOLS_DATA: typeof SCHOOLS_DATA, 
+                DOCUMENT_FIELDS: typeof DOCUMENT_FIELDS,
+                ApiService: typeof ApiService
+            });
+            return;
+        }
+        
+        if (typeof ApiService === 'undefined') {
+            console.error('❌ ApiService não carregado!');
+            return;
+        }
+        
+        console.log('✅ Todos os scripts carregados - Iniciando aplicação...');
+        window.supervisaoApp = new SupervisaoApp();
+    }, 500);
+});    
     // Adicionar estilos dinâmicos
     if (!document.querySelector('.dynamic-styles')) {
         const dynamicStyles = document.createElement('style');
