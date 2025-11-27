@@ -1284,16 +1284,29 @@ footer {
     padding: 10px 0;
     border-bottom: 1px solid var(--cinza);
     font-size: 0.9rem;
+    flex-wrap: nowrap; /* Impede quebra de linha */
+    gap: 10px;
+}
+
+/* Estilo para os contadores ficarem em linha */
+.selection-counter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap; /* Impede quebra de texto */
+    flex-shrink: 0; /* Não reduzir */
 }
 
 #selected-counter {
     font-weight: 600;
     color: var(--azul);
+    font-size: 1rem;
 }
 
 #total-counter {
     font-weight: 600;
     color: var(--preto);
+    font-size: 1rem;
 }
 
 .btn-clear {
@@ -1308,8 +1321,9 @@ footer {
     padding: 5px 10px;
     border-radius: 5px;
     transition: all 0.2s ease;
+    white-space: nowrap; /* Impede quebra de texto */
+    flex-shrink: 0; /* Não reduzir */
 }
-
 .btn-clear:hover {
     background: var(--cinza-claro);
     color: var(--preto);
