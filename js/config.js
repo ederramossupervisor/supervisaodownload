@@ -6,10 +6,10 @@ const CONFIG = {
     // ✅ NOVA URL DA SUA CLOUD FUNCTION
     cloudFunctions: {
         generateDocument: 'https://southamerica-east1-sistema-documentos-sreac.cloudfunctions.net/supervisaoSp'
-    },
+    }, // ✅ VÍRGULA AQUI!
     
     adminEmails: ['eder.ramos@educador.edu.es.gov.br']
-};
+}; // ✅ FIM CORRETO
 // Dados das escolas
 const SCHOOLS_DATA = [
     { name: "CEEFMTI AFONSO CLÁUDIO", city: "Afonso Cláudio", director: "Allan Dyoni Dehete Many" },
