@@ -76,27 +76,69 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="schools-select">Escolas Sob Sua Responsabilidade *</label>
-                    <div class="multi-select">
-                        <input type="text" id="schools-select" placeholder="Clique para selecionar as escolas" readonly>
-                        <div class="dropdown-list" id="schools-list">
-                            <!-- As escolas serão preenchidas via JavaScript -->
-                        </div>
-                        <div class="selected-items" id="selected-schools">
-                            <!-- Escolas selecionadas aparecerão aqui -->
-                        </div>
-                    </div>
-                </div>
+    <label for="schools-select">Escolas Sob Sua Responsabilidade *</label>
+    
+    <!-- Botão para abrir o modal de seleção -->
+    <div class="school-selector">
+        <button type="button" class="school-selector-btn" id="school-selector-btn">
+            <i class="fas fa-school"></i>
+            <span id="school-selector-text">Selecionar Escolas</span>
+            <i class="fas fa-chevron-down"></i>
+        </button>
+        
+        <!-- Contador de escolas selecionadas -->
+        <div class="selected-count" id="selected-count">
+            <span id="count-number">0</span> escolas selecionadas
+        </div>
+        
+        <!-- Área para mostrar as escolas selecionadas -->
+        <div class="selected-schools-preview" id="selected-schools-preview">
+            <!-- As escolas selecionadas aparecerão aqui -->
+        </div>
+    </div>
+</div>
 
-                <div class="config-actions">
-                    <button class="btn btn-secondary" id="request-access-btn">
-                        <i class="fas fa-key"></i> Solicitar Acesso aos Templates
-                    </button>
-                    <button class="btn btn-primary" id="save-config">
-                        <i class="fas fa-save"></i> Salvar Configuração
-                    </button>
+<!-- Modal de Seleção de Escolas -->
+<div id="schools-modal" class="modal hidden">
+    <div class="modal-content schools-modal">
+        <div class="modal-header">
+            <h2><i class="fas fa-school"></i> Selecionar Escolas</h2>
+            <span class="close">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+            <!-- Barra de pesquisa -->
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="school-search" placeholder="Pesquisar escolas...">
+            </div>
+            
+            <!-- Contadores -->
+            <div class="selection-info">
+                <span id="selected-counter">0</span> de <span id="total-counter">0</span> escolas selecionadas
+                <button type="button" class="btn-clear" id="clear-selection">
+                    <i class="fas fa-times"></i> Limpar seleção
+                </button>
+            </div>
+            
+            <!-- Lista de escolas -->
+            <div class="schools-list-container">
+                <div class="schools-list" id="schools-checklist">
+                    <!-- As escolas serão preenchidas via JavaScript -->
                 </div>
             </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-secondary" id="cancel-schools">
+                Cancelar
+            </button>
+            <button class="btn btn-primary" id="confirm-schools">
+                <i class="fas fa-check"></i> Confirmar Seleção
+            </button>
+        </div>
+    </div>
+</div>
 
             <!-- Tela Principal com Cards -->
             <div id="main-screen" class="hidden">
