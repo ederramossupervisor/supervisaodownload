@@ -461,71 +461,82 @@ const SERIE_TO_ETAPA = {
 
 // Funções específicas para manipulação de documentos
 const DOCUMENT_HANDLERS = {
-    // Gerar HTML para um campo do formulário
-    createFieldHTML: function(field) {
-        const fieldId = `field-${field.name.replace(/\s+/g, '-').toLowerCase()}`;
-        let fieldHTML = '';
+    // ✅ FUNÇÃO ATUALIZADA PARA SUPORTAR ATRIBUTOS
+createFieldHTML: function(field) {
+    const fieldId = `field-${field.name.replace(/\s+/g, '-').toLowerCase()}`;
+    let fieldHTML = '';
+    
+    // Construir atributos adicionais
+    let additionalAttributes = '';
+    if (field.attributes) {
+        Object.keys(field.attributes).forEach(attr => {
+            additionalAttributes += ` ${attr}="${field.attributes[attr]}"`;
+        });
+    }
 
-        switch (field.type) {
-            case 'dropdown':
-                fieldHTML = `
-                    <select id="${fieldId}" name="${field.name}" 
-                            ${field.required ? 'required' : ''}
-                            class="form-field dropdown-field">
-                        <option value="">${field.placeholder || `Selecione ${field.name}`}</option>
-                    </select>
-                `;
-                break;
+    switch (field.type) {
+        case 'dropdown':
+            fieldHTML = `
+                <select id="${fieldId}" name="${field.name}" 
+                        ${field.required ? 'required' : ''}
+                        ${additionalAttributes}
+                        class="form-field dropdown-field">
+                    <option value="">${field.placeholder || `Selecione ${field.name}`}</option>
+                </select>
+            `;
+            break;
 
-            case 'textarea':
-                fieldHTML = `
-                    <textarea id="${fieldId}" name="${field.name}" 
-                              ${field.required ? 'required' : ''}
-                              ${field.readOnly ? 'readonly' : ''}
-                              rows="${field.rows || 4}"
-                              placeholder="${field.placeholder || ''}"
-                              class="form-field textarea-field">${field.defaultValue || ''}</textarea>
-                `;
-                break;
+        case 'textarea':
+            fieldHTML = `
+                <textarea id="${fieldId}" name="${field.name}" 
+                          ${field.required ? 'required' : ''}
+                          ${field.readOnly ? 'readonly' : ''}
+                          ${additionalAttributes}
+                          rows="${field.rows || 4}"
+                          placeholder="${field.placeholder || ''}"
+                          class="form-field textarea-field">${field.defaultValue || ''}</textarea>
+            `;
+            break;
 
-            case 'date':
-                const defaultValue = field.defaultValue === 'today' ? 
-                    new Date().toISOString().split('T')[0] : 
-                    (field.defaultValue || '');
-                
-                fieldHTML = `
-                    <input type="date" id="${fieldId}" name="${field.name}" 
-                           ${field.required ? 'required' : ''}
-                           ${field.readOnly ? 'readonly' : ''}
-                           value="${defaultValue}"
-                           placeholder="${field.placeholder || ''}"
-                           class="form-field date-field">
-                `;
-                break;
+        case 'date':
+            const defaultValue = field.defaultValue === 'today' ? 
+                new Date().toISOString().split('T')[0] : 
+                (field.defaultValue || '');
+            
+            fieldHTML = `
+                <input type="date" id="${fieldId}" name="${field.name}" 
+                       ${field.required ? 'required' : ''}
+                       ${field.readOnly ? 'readonly' : ''}
+                       ${additionalAttributes}
+                       value="${defaultValue}"
+                       placeholder="${field.placeholder || ''}"
+                       class="form-field date-field">
+            `;
+            break;
 
-            default:
-                fieldHTML = `
-                    <input type="${field.type}" id="${fieldId}" name="${field.name}" 
-                           ${field.required ? 'required' : ''}
-                           ${field.readOnly ? 'readonly' : ''}
-                           value="${field.defaultValue || ''}"
-                           placeholder="${field.placeholder || ''}"
-                           class="form-field text-field">
-                `;
-        }
+        default:
+            fieldHTML = `
+                <input type="${field.type}" id="${fieldId}" name="${field.name}" 
+                       ${field.required ? 'required' : ''}
+                       ${field.readOnly ? 'readonly' : ''}
+                       ${additionalAttributes}
+                       value="${field.defaultValue || ''}"
+                       placeholder="${field.placeholder || ''}"
+                       class="form-field text-field">
+            `;
+    }
 
-        return `
-            <div class="form-group field-group" data-field-name="${field.name}">
-                <label for="${fieldId}">
-                    ${field.name} 
-                    ${field.required ? '<span class="required-asterisk">*</span>' : ''}
-                </label>
-                ${fieldHTML}
-                ${field.autoGenerate ? '<small class="field-hint">Este campo será gerado automaticamente</small>' : ''}
-            </div>
-        `;
-    },
-
+    return `
+        <div class="form-group field-group" data-field-name="${field.name}">
+            <label for="${fieldId}">
+                ${field.name} 
+                ${field.required ? '<span class="required-asterisk">*</span>' : ''}
+            </label>
+            ${fieldHTML}
+            ${field.autoGenerate ? '<small class="field-hint">Este campo será gerado automaticamente</small>' : ''}
+        </div>
+    `;
+},
     // Preencher opções de dropdown
     populateDropdown: function(selectElement, fieldName) {
         const options = DROPDOWN_OPTIONS[fieldName] || [];
