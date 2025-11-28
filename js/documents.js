@@ -43,7 +43,7 @@ const DOCUMENT_FIELDS = {
             name: "Número do Ofício", 
             type: "text", 
             required: true,
-            placeholder: "Ex: OFÍCIO 123/2024",
+            placeholder: "Ex.: 013",
            
         },
         { 
@@ -162,7 +162,7 @@ const DOCUMENT_FIELDS = {
             name: "Função", 
             type: "text", 
             required: true,
-            placeholder: "Ex: Professor"
+            placeholder: "Ex.: Professor de História"
         },
         { 
             name: "Motivo da contratação", 
@@ -192,7 +192,7 @@ const DOCUMENT_FIELDS = {
             name: "Formação", 
             type: "text", 
             required: true,
-            placeholder: "Ex: Licenciatura em Matemática"
+            placeholder: "Ex.: Licenciatura em Língua Portuguesa"
         },
         { 
             name: "Nome do Supervisor", 
@@ -236,7 +236,7 @@ const DOCUMENT_FIELDS = {
             name: "Número do Ofício", 
             type: "text", 
             required: true,
-            placeholder: "Ex: OFÍCIO 123/2024",
+            placeholder: "Ex.: 027"
             
         },
         { 
@@ -317,7 +317,7 @@ const DOCUMENT_FIELDS = {
             name: "Local de Visitação", 
             type: "text", 
             required: true,
-            placeholder: "Ex: Museu de Ciências"
+            placeholder: "Ex.: Ruínas da Igreja de São José de Queimado"
         }
     ],
 
@@ -395,7 +395,7 @@ const DOCUMENT_FIELDS = {
             name: "Número Edocs", 
             type: "text", 
             required: true,
-            placeholder: "Digite o número Edocs"
+            placeholder: "Ex.: 2025-00XXX0"
         }
     ],
 
