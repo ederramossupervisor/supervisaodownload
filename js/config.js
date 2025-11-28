@@ -14,7 +14,7 @@ const CONFIG = {
 const SCHOOLS_DATA = [
     { name: "CEEFMTI AFONSO CLÁUDIO", city: "Afonso Cláudio", director: "Allan Dyoni Dehete Many" },
     { name: "CEEFMTI ELISA PAIVA", city: "Conceição do Castelo", director: "Rosangela Vargas Davel Pinto" },
-    { name: "EEEF DOMINGOS PERIM", city: "Venda Nova do Imigrante", director: "Maristela Broedel" },
+    { name: "EEEFM DOMINGOS PERIM", city: "Venda Nova do Imigrante", director: "Maristela Broedel" },
     { name: "EEEFM ALTO RIO POSSMOSER", city: "Santa Maria de Jetibá", director: "Adriana da Conceição Tesch" },
     { name: "EEEFM ÁLVARO CASTELO", city: "Brejetuba", director: "Rose Fabrícia Moretto" },
     { name: "EEEFM ELVIRA BARROS", city: "Afonso Cláudio", director: "Andrea Gomes Klug" },
