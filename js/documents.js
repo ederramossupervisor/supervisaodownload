@@ -40,12 +40,18 @@ const DOCUMENT_FIELDS = {
             defaultValue: "today"
         },
         { 
-            name: "Número do Ofício", 
-            type: "text", 
-            required: true,
-            placeholder: "Ex.: 013",
-           
-        },
+    name: "Número do Ofício", 
+    type: "text", 
+    required: true,
+    placeholder: "Ex.: 013",
+    autoGenerate: true,
+    attributes: {
+        autocomplete: "off",
+        autocorrect: "off",
+        autocapitalize: "off",
+        spellcheck: "false"
+    }
+},
         { 
             name: "Nome do(a) Aluno(a)", 
             type: "text", 
