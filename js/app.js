@@ -265,50 +265,58 @@ class SupervisaoApp {
         <i class="${DOCUMENT_ICONS[docType]}"></i>
         <h3>${DOCUMENT_NAMES[docType]}</h3>
         <div class="links-buttons">
+            <!-- COLUNA ESQUERDA -->
             <!-- AGENDA -->
             <a href="https://docs.google.com/spreadsheets/d/19qp1JvmUod_iasnI0GwFronxrcYWHp9oVg8T_PXoS48/edit?usp=sharing" 
                target="_blank" 
-               class="btn btn-secondary">
+               class="btn btn-secondary"
+               title="Acessar Agenda">
                 <i class="fas fa-calendar-alt"></i>
                 AGENDA
-            </a>
-            
-            <!-- SIGAE -->
-            <a href="https://sigae.institutounibanco.org.br/" 
-               target="_blank" 
-               class="btn btn-secondary">
-                <i class="fas fa-chart-line"></i>
-                SIGAE
             </a>
             
             <!-- Outlook -->
             <a href="https://outlook.office.com/mail/" 
                target="_blank" 
-               class="btn btn-secondary">
+               class="btn btn-secondary"
+               title="Acessar Outlook">
                 <i class="fas fa-envelope"></i>
                 Outlook
-            </a>
-            
-            <!-- SEGES -->
-            <a href="https://seges.sedu.es.gov.br/users/sign_in" 
-               target="_blank" 
-               class="btn btn-secondary">
-                <i class="fas fa-user-shield"></i>
-                SEGES
             </a>
             
             <!-- DRIVE -->
             <a href="https://drive.google.com/drive/home" 
                target="_blank" 
-               class="btn btn-secondary">
+               class="btn btn-secondary"
+               title="Acessar Google Drive">
                 <i class="fas fa-hdd"></i>
                 DRIVE
+            </a>
+            
+            <!-- COLUNA DIREITA -->
+            <!-- SIGAE -->
+            <a href="https://sigae.institutounibanco.org.br/" 
+               target="_blank" 
+               class="btn btn-secondary"
+               title="Acessar SIGAE">
+                <i class="fas fa-chart-line"></i>
+                SIGAE
+            </a>
+            
+            <!-- SEGES -->
+            <a href="https://seges.sedu.es.gov.br/users/sign_in" 
+               target="_blank" 
+               class="btn btn-secondary"
+               title="Acessar SEGES">
+                <i class="fas fa-user-shield"></i>
+                SEGES
             </a>
             
             <!-- EDOCS -->
             <a href="https://sso.acesso.gov.br/login?client_id=acessocidadao.es.gov.br&authorization_id=19af64bde0d" 
                target="_blank" 
-               class="btn btn-secondary">
+               class="btn btn-secondary"
+               title="Acessar e-Docs">
                 <i class="fas fa-file-alt"></i>
                 EDOCS
             </a>
