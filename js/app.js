@@ -265,7 +265,7 @@ class SupervisaoApp {
         <i class="${DOCUMENT_ICONS[docType]}"></i>
         <h3>${DOCUMENT_NAMES[docType]}</h3>
         <div class="links-buttons">
-            <!-- COLUNA ESQUERDA -->
+            <!-- LINHA SUPERIOR -->
             <!-- AGENDA -->
             <a href="https://docs.google.com/spreadsheets/d/19qp1JvmUod_iasnI0GwFronxrcYWHp9oVg8T_PXoS48/edit?usp=sharing" 
                target="_blank" 
@@ -281,7 +281,7 @@ class SupervisaoApp {
                class="btn btn-secondary"
                title="Acessar Outlook">
                 <i class="fas fa-envelope"></i>
-                Outlook
+                OUTLOOK
             </a>
             
             <!-- DRIVE -->
@@ -293,7 +293,7 @@ class SupervisaoApp {
                 DRIVE
             </a>
             
-            <!-- COLUNA DIREITA -->
+            <!-- LINHA INFERIOR -->
             <!-- SIGAE -->
             <a href="https://sigae.institutounibanco.org.br/" 
                target="_blank" 
@@ -318,7 +318,7 @@ class SupervisaoApp {
                class="btn btn-secondary"
                title="Acessar e-Docs">
                 <i class="fas fa-file-alt"></i>
-                EDOCS
+                E-DOCS
             </a>
         </div>
     `;
