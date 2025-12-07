@@ -21,6 +21,7 @@ class SupervisaoApp {
         document.getElementById('back-to-welcome').addEventListener('click', () => this.showWelcomeScreen());
         document.getElementById('config-btn').addEventListener('click', () => this.showConfigScreen());
         document.getElementById('back-to-main').addEventListener('click', () => this.showMainScreen());
+        document.getElementById('back-form').addEventListener('click', () => this.showMainScreen()); // ← NOVO BOTÃO
 
         // Configuração
         document.getElementById('save-config').addEventListener('click', () => this.saveConfiguration());
@@ -288,11 +289,21 @@ class SupervisaoApp {
 
         this.hideAllScreens();
         document.getElementById('main-screen').classList.remove('hidden');
+        
+        // Garantir que o botão "Gerar Documento" está visível
+        document.getElementById('generate-document').classList.remove('hidden');
     }
 
     showFormScreen() {
         this.hideAllScreens();
         document.getElementById('form-screen').classList.remove('hidden');
+        
+        // ✅ MOSTRAR botão "Gerar Documento" por padrão
+        // Quando for "Links Úteis", o documents.js vai esconder ele
+        const generateBtn = document.getElementById('generate-document');
+        if (generateBtn) {
+            generateBtn.classList.remove('hidden');
+        }
     }
 
     hideAllScreens() {
@@ -338,7 +349,17 @@ class SupervisaoApp {
 
     // Documentos
     selectDocumentType(documentType) {
-        // Verificar acesso aos templates
+        console.log(`📄 Documento selecionado: ${documentType}`);
+        
+        // CASO ESPECIAL: LINKS ÚTEIS (não precisa de verificação de acesso)
+        if (documentType === 'links_uteis') {
+            APP_STATE.currentDocumentType = documentType;
+            this.populateDocumentForm(documentType);
+            this.showFormScreen();
+            return;
+        }
+        
+        // Verificar acesso aos templates para outros documentos
         if (!UTILS.checkTemplateAccess()) {
             UTILS.showNotification('Acesso aos templates não concedido. Solicite acesso nas configurações.', 'error');
             this.showConfigScreen();
@@ -351,27 +372,13 @@ class SupervisaoApp {
     }
 
     populateDocumentForm(documentType) {
-        const form = document.getElementById('document-form');
-        const title = document.getElementById('form-title');
-        
-        // Atualizar título
-        title.innerHTML = `<i class="fas fa-edit"></i> ${DOCUMENT_NAMES[documentType]} - Preencha os Dados`;
-        
-        // Limpar formulário
-        form.innerHTML = '';
-        
-        // Adicionar campos
-        const fields = DOCUMENT_FIELDS[documentType];
-        fields.forEach(field => {
-            const fieldHTML = DOCUMENT_HANDLERS.createFieldHTML(field);
-            form.innerHTML += fieldHTML;
-        });
-
-        // Configurar campos dinamicamente
-        this.setupFormFields(documentType);
+        // Esta função será chamada pelo documents.js
+        // O documents.js agora cuida de mostrar os formulários ou links
+        DOCUMENT_HANDLERS.populateDocumentForm(documentType);
     }
 
     setupFormFields(documentType) {
+        // Esta função será chamada pelo documents.js
         const fields = DOCUMENT_FIELDS[documentType];
         
         fields.forEach(field => {
@@ -415,6 +422,12 @@ class SupervisaoApp {
     }
 
     async generateDocument() {
+        // Se for Links Úteis, não gerar documento
+        if (APP_STATE.currentDocumentType === 'links_uteis') {
+            UTILS.showNotification('Esta funcionalidade não se aplica a Links Úteis.', 'info');
+            return;
+        }
+        
         const validation = DOCUMENT_HANDLERS.validateForm(APP_STATE.currentDocumentType);
         
         if (!validation.isValid) {
@@ -648,6 +661,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     background-color: var(--cinza-claro);
                     color: var(--cinza-escuro);
                     cursor: not-allowed;
+                }
+                
+                /* Estilo para quando o botão está oculto */
+                .hidden {
+                    display: none !important;
                 }
             `;
             document.head.appendChild(dynamicStyles);
