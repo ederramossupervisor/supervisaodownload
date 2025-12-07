@@ -1,7 +1,7 @@
 // Serviço de API para comunicação com Google Apps Script
 class ApiService {
     constructor() {
-        this.cloudFunctionUrl = 'https://southamerica-east1-sistema-documentos-sreac.cloudfunctions.net/supervisaoSp';
+        this.baseUrl = CONFIG.webAppUrl;
         this.isDevelopment = false; // MODO PRODUÇÃO
         console.log('🌐 API Service - Modo:', this.isDevelopment ? 'DESENVOLVIMENTO' : 'PRODUÇÃO');
     }
@@ -17,7 +17,7 @@ class ApiService {
         try {
             console.log('🚀 Enviando para Cloud Function...');
             
-            const response = await fetch(this.cloudFunctionUrl, {
+            const response = await fetch(CONFIG.cloudFunctions.generateDocument, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,9 +32,9 @@ class ApiService {
             const result = await response.json();
             
             if (result.success) {
-                return result;
+                return result.data; // ✅ Dados do Apps Script
             } else {
-                throw new Error(result.error || 'Erro desconhecido');
+                throw new Error(result.error);
             }
 
         } catch (error) {
@@ -78,45 +78,44 @@ class ApiService {
     }
 
     async makeRequest(payload) {
-        if (this.isDevelopment) {
-            console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
-            return this.simulateResponse(payload);
-        }
-        
-        console.log('🚀 MODO PRODUÇÃO - Enviando para Cloud Function');
-        
-        try {
-            // ✅ FORMATO CORRETO PARA A CLOUD FUNCTION
-            const requestBody = {
-                documentType: payload.documentType || 'test',
-                formData: payload.formData || {teste: 'dados'},
-                userEmail: payload.userEmail || 'test@educador.edu.es.gov.br'
-            };
-
-            console.log('📤 Enviando dados:', requestBody);
-            
-            const response = await fetch(this.cloudFunctionUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (!response.ok) {
-                throw new Error(`Erro HTTP: ${response.status}`);
-            }
-
-            const result = await response.json();
-            console.log('📥 Resposta recebida:', result);
-            return result;
-
-        } catch (error) {
-            console.error('❌ Erro na requisição:', error);
-            throw error;
-        }
+    if (this.isDevelopment) {
+        console.log('🎯 MODO DESENVOLVIMENTO - Simulando resposta');
+        return this.simulateResponse(payload);
     }
+    
+    console.log('🚀 MODO PRODUÇÃO - Enviando para Cloud Function');
+    
+    try {
+        // ✅ FORMATO CORRETO PARA A CLOUD FUNCTION
+        const requestBody = {
+            documentType: payload.documentType || 'test',
+            formData: payload.formData || {teste: 'dados'},
+            userEmail: payload.userEmail || 'test@educador.edu.es.gov.br'
+        };
 
+        console.log('📤 Enviando dados:', requestBody);
+        
+        const response = await fetch(CONFIG.cloudFunctions.generateDocument, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('📥 Resposta recebida:', result);
+        return result;
+
+    } catch (error) {
+        console.error('❌ Erro na requisição:', error);
+        throw error;
+    }
+}
     // ✅ SIMULAÇÃO PARA MODO DESENVOLVIMENTO
     simulateResponse(payload) {
         switch (payload.action) {
@@ -140,10 +139,7 @@ class ApiService {
     simulateDocumentGeneration(payload) {
         const { documentType, formData } = payload;
         const timestamp = new Date().getTime();
-        
-        // ✅ Nome genérico se DOCUMENT_NAMES não estiver disponível
-        const docName = this.getDocumentName(documentType);
-        const filename = `${docName}_${timestamp}.pdf`;
+        const filename = `${DOCUMENT_NAMES[documentType]}_${timestamp}.pdf`;
         
         console.log('📄 Simulando geração de:', filename);
         
@@ -157,63 +153,40 @@ class ApiService {
         };
     }
 
-    // ✅ NOVA FUNÇÃO: Obter nome do documento
-    getDocumentName(documentType) {
-        // Tenta usar DOCUMENT_NAMES se disponível
-        if (typeof DOCUMENT_NAMES !== 'undefined' && DOCUMENT_NAMES[documentType]) {
-            return DOCUMENT_NAMES[documentType];
-        }
-        
-        // Fallback: nomes básicos
-        const fallbackNames = {
-            'cuidador': 'Cuidador',
-            'justificativa': 'Justificativa',
-            'parecer': 'Parecer',
-            'regularizacao_aee': 'Regularizacao_AEE',
-            'viagem_pedagogica': 'Viagem_Pedagogica',
-            'manifestacao': 'Manifestacao',
-            'eletivas': 'Eletivas',
-            'projeto': 'Projeto',
-            'links_uteis': 'Links_Uteis'
-        };
-        
-        return fallbackNames[documentType] || documentType;
-    }
-
     simulateAccessRequest(payload) {
-        console.log('📧 Simulando envio de email');
+        console.log('📧 Simulando envio de email para:', CONFIG.adminEmail);
         return {
             success: true,
             message: '✅ Solicitação de acesso enviada! (Modo Desenvolvimento)'
         };
     }
 
-    // Testar conexão
-    async testConnection() {
-        console.log('🧪 Testando conexão com Cloud Function...');
+    // api.js - MODIFIQUE O testConnection
+async testConnection() {
+    console.log('🧪 Testando conexão com Cloud Function...');
+    
+    try {
+        // ✅ TESTE SIMPLES DIRETO
+        const response = await fetch(CONFIG.cloudFunctions.generateDocument, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                documentType: 'cuidador',
+                userEmail: 'test@educador.edu.es.gov.br',
+                formData: {teste: 'conexao'}
+            })
+        });
         
-        try {
-            // ✅ TESTE SIMPLES DIRETO
-            const response = await fetch(this.cloudFunctionUrl, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    documentType: 'cuidador',
-                    userEmail: 'test@educador.edu.es.gov.br',
-                    formData: {teste: 'conexao'}
-                })
-            });
-            
-            if (response.ok) {
-                console.log('✅ Cloud Function respondendo!');
-                return true;
-            } else {
-                console.log('⚠️ Cloud Function com status:', response.status);
-                return true; // ✅ Ainda assim continua, pode ser erro nos dados
-            }
-        } catch (error) {
-            console.log('⚠️ Erro na conexão:', error.message);
-            return true; // ✅ Continua mesmo com erro
+        if (response.ok) {
+            console.log('✅ Cloud Function respondendo!');
+            return true;
+        } else {
+            console.log('⚠️ Cloud Function com status:', response.status);
+            return true; // ✅ Ainda assim continua, pode ser erro nos dados
         }
+    } catch (error) {
+        console.log('⚠️ Erro na conexão:', error.message);
+        return true; // ✅ Continua mesmo com erro
     }
+}
 }
