@@ -1637,3 +1637,26 @@ footer {
         max-height: 120px;
     }
 }
+/* === ESTILOS PARA OS LINKS ÚTEIS === */
+.links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.link-item .btn {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.link-item .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.link-item .btn i {
+    font-size: 1.2rem;
+    width: 24px;
+}
