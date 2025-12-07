@@ -1,36 +1,45 @@
+
+// Aplicação principal - Controle de fluxo e eventos
 class SupervisaoApp {
     constructor() {
-        this.selectedSchools = [];
+        this.selectedSchools = []; // Para controle temporário no modal
         this.initializeApp();
         this.bindEvents();
         this.checkSavedConfig();
     }
 
+    // Inicialização da aplicação
     initializeApp() {
         console.log(`${CONFIG.appName} v${CONFIG.version} inicializando...`);
-        this.initSchoolSelector();
+        this.initSchoolSelector(); // Novo sistema de seleção
         this.createDocumentCards();
     }
 
+    // Vincular eventos
     bindEvents() {
+        // Navegação principal
         document.getElementById('enter-btn').addEventListener('click', () => this.showConfigScreen());
         document.getElementById('back-to-welcome').addEventListener('click', () => this.showWelcomeScreen());
         document.getElementById('config-btn').addEventListener('click', () => this.showConfigScreen());
         document.getElementById('back-to-main').addEventListener('click', () => this.showMainScreen());
-        document.getElementById('back-form').addEventListener('click', () => this.showMainScreen());
 
+        // Configuração
         document.getElementById('save-config').addEventListener('click', () => this.saveConfiguration());
         document.getElementById('request-access-btn').addEventListener('click', () => this.showAccessModal());
 
+        // Formulário de documentos
         document.getElementById('generate-document').addEventListener('click', () => this.generateDocument());
 
+        // Modais
         document.getElementById('download-pdf').addEventListener('click', () => this.downloadPDF());
         document.getElementById('access-form').addEventListener('submit', (e) => this.handleAccessRequest(e));
 
+        // Fechar modais
         document.querySelectorAll('.close').forEach(closeBtn => {
             closeBtn.addEventListener('click', (e) => this.closeModal(e.target.closest('.modal')));
         });
 
+        // Fechar modais ao clicar fora
         window.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal')) {
                 this.closeModal(e.target);
@@ -38,7 +47,9 @@ class SupervisaoApp {
         });
     }
 
-    // SISTEMA DE SELEÇÃO DE ESCOLAS (mantido igual)
+    // ===== NOVO SISTEMA DE SELEÇÃO DE ESCOLAS =====
+
+    // Inicializar o sistema de seleção de escolas
     initSchoolSelector() {
         const schoolBtn = document.getElementById('school-selector-btn');
         const schoolsModal = document.getElementById('schools-modal');
@@ -48,8 +59,10 @@ class SupervisaoApp {
         const searchInput = document.getElementById('school-search');
         const closeBtn = schoolsModal.querySelector('.close');
 
+        // Carregar escolas
         this.loadSchools();
 
+        // Event listeners
         schoolBtn.addEventListener('click', () => this.openSchoolsModal());
         confirmBtn.addEventListener('click', () => this.confirmSchoolSelection());
         cancelBtn.addEventListener('click', () => this.closeSchoolsModal());
@@ -57,6 +70,7 @@ class SupervisaoApp {
         closeBtn.addEventListener('click', () => this.closeSchoolsModal());
         searchInput.addEventListener('input', (e) => this.filterSchools(e.target.value));
 
+        // Fechar modal ao clicar fora
         schoolsModal.addEventListener('click', (e) => {
             if (e.target === schoolsModal) {
                 this.closeSchoolsModal();
@@ -64,17 +78,21 @@ class SupervisaoApp {
         });
     }
 
+    // Carregar lista de escolas
     loadSchools() {
+        // Usar SCHOOLS_DATA existente
         APP_STATE.allSchools = SCHOOLS_DATA.map(school => school.name);
         
+        // Carregar escolas salvas anteriormente
         const savedConfig = UTILS.loadConfig();
         if (savedConfig && savedConfig.schools) {
             APP_STATE.selectedSchools = savedConfig.schools;
-            this.selectedSchools = [...savedConfig.schools];
+            this.selectedSchools = [...savedConfig.schools]; // Cópia para controle temporário
             this.updateSchoolSelectionDisplay();
         }
     }
 
+    // Abrir modal de escolas
     openSchoolsModal() {
         const modal = document.getElementById('schools-modal');
         const schoolBtn = document.getElementById('school-selector-btn');
@@ -85,31 +103,38 @@ class SupervisaoApp {
         this.updateSelectionCounters();
     }
 
+    // Fechar modal de escolas
     closeSchoolsModal() {
         const modal = document.getElementById('schools-modal');
         const schoolBtn = document.getElementById('school-selector-btn');
         
         modal.classList.add('hidden');
         schoolBtn.classList.remove('active');
+        
+        // Restaurar seleção temporária para o estado atual
         this.selectedSchools = [...APP_STATE.selectedSchools];
     }
 
+    // Confirmar seleção de escolas
     confirmSchoolSelection() {
         APP_STATE.selectedSchools = [...this.selectedSchools];
         this.updateSchoolSelectionDisplay();
         this.closeSchoolsModal();
     }
 
+    // Limpar seleção
     clearSchoolSelection() {
         this.selectedSchools = [];
         this.renderSchoolsList();
         this.updateSelectionCounters();
     }
 
+    // Filtrar escolas
     filterSchools(searchTerm) {
         this.renderSchoolsList(searchTerm);
     }
 
+    // Renderizar lista de escolas
     renderSchoolsList(filter = '') {
         const container = document.getElementById('schools-checklist');
         const filteredSchools = APP_STATE.allSchools.filter(school => 
@@ -134,6 +159,7 @@ class SupervisaoApp {
             </div>
         `).join('');
 
+        // Adicionar event listeners aos itens
         container.querySelectorAll('.school-checkbox-item').forEach(item => {
             item.addEventListener('click', () => {
                 const school = item.dataset.school;
@@ -142,12 +168,15 @@ class SupervisaoApp {
         });
     }
 
+    // Alternar seleção de escola
     toggleSchoolSelection(school) {
         const index = this.selectedSchools.indexOf(school);
         
         if (index > -1) {
+            // Remover se já estiver selecionada
             this.selectedSchools.splice(index, 1);
         } else {
+            // Adicionar se não estiver selecionada
             this.selectedSchools.push(school);
         }
         
@@ -155,6 +184,7 @@ class SupervisaoApp {
         this.updateSelectionCounters();
     }
 
+    // Atualizar contadores
     updateSelectionCounters() {
         const selectedCounter = document.getElementById('selected-counter');
         const totalCounter = document.getElementById('total-counter');
@@ -165,10 +195,12 @@ class SupervisaoApp {
         if (countNumber) countNumber.textContent = this.selectedSchools.length;
     }
 
+    // Atualizar display da seleção
     updateSchoolSelectionDisplay() {
         const previewContainer = document.getElementById('selected-schools-preview');
         const selectorText = document.getElementById('school-selector-text');
         
+        // Atualizar texto do botão
         if (selectorText) {
             if (APP_STATE.selectedSchools.length === 0) {
                 selectorText.textContent = 'Selecionar Escolas';
@@ -179,6 +211,7 @@ class SupervisaoApp {
             }
         }
         
+        // Atualizar preview
         if (previewContainer) {
             if (APP_STATE.selectedSchools.length === 0) {
                 previewContainer.innerHTML = '<div class="empty-preview">Nenhuma escola selecionada</div>';
@@ -195,6 +228,7 @@ class SupervisaoApp {
         this.updateSelectionCounters();
     }
 
+    // Remover escola do preview
     removeSchoolFromPreview(school) {
         const index = APP_STATE.selectedSchools.indexOf(school);
         if (index > -1) {
@@ -205,6 +239,9 @@ class SupervisaoApp {
         }
     }
 
+    // ===== FIM DO NOVO SISTEMA DE SELEÇÃO =====
+
+    // Verificar se há configuração salva
     checkSavedConfig() {
         if (UTILS.loadConfig() && APP_STATE.configCompleted) {
             this.showMainScreen();
@@ -212,7 +249,7 @@ class SupervisaoApp {
         }
     }
 
-    // ✅ MODIFICAÇÃO PRINCIPAL: CARD COM BOTÕES DIRETO
+    // Criar cards de documentos
     createDocumentCards() {
         const container = document.querySelector('.document-types');
         container.innerHTML = '';
@@ -221,49 +258,16 @@ class SupervisaoApp {
             const card = document.createElement('div');
             card.className = 'document-type';
             card.setAttribute('data-type', docType);
-            
-            // CASO ESPECIAL: LINKS ÚTEIS COM BOTÕES DIRETO NO CARD
-            if (docType === 'links_uteis') {
-                card.innerHTML = `
-                    <div class="links-card-inner">
-                        <div class="card-header">
-                            <i class="${DOCUMENT_ICONS[docType]}"></i>
-                            <h3>${DOCUMENT_NAMES[docType]}</h3>
-                        </div>
-                        <div class="card-links-container">
-                            <p class="card-links-description">Acesso rápido aos sistemas:</p>
-                            <div class="card-links-grid">
-                                ${this.createCardLinks()}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                // Não adiciona evento de clique - os botões já estão visíveis
-            } else {
-                // Cards normais (abrem formulário)
-                card.innerHTML = `
-                    <i class="${DOCUMENT_ICONS[docType]}"></i>
-                    <h3>${DOCUMENT_NAMES[docType]}</h3>
-                `;
-                card.addEventListener('click', () => this.selectDocumentType(docType));
-            }
-            
+            card.innerHTML = `
+                <i class="${DOCUMENT_ICONS[docType]}"></i>
+                <h3>${DOCUMENT_NAMES[docType]}</h3>
+            `;
+            card.addEventListener('click', () => this.selectDocumentType(docType));
             container.appendChild(card);
         });
     }
 
-    // ✅ NOVA FUNÇÃO: Criar botões dentro do card
-    createCardLinks() {
-        return Object.entries(USEFUL_LINKS).map(([nome, url]) => `
-            <button class="card-link-btn" onclick="window.open('${url}', '_blank', 'noopener,noreferrer')" 
-                    title="${url}">
-                <i class="fas fa-external-link-alt"></i>
-                <span>${nome}</span>
-            </button>
-        `).join('');
-    }
-
+    // Navegação entre telas
     showWelcomeScreen() {
         this.hideAllScreens();
         document.getElementById('welcome-screen').classList.remove('hidden');
@@ -276,6 +280,7 @@ class SupervisaoApp {
     }
 
     showMainScreen() {
+        // Verificar se a configuração está completa
         if (!APP_STATE.configCompleted) {
             UTILS.showNotification('Complete a configuração primeiro!', 'error');
             this.showConfigScreen();
@@ -284,17 +289,11 @@ class SupervisaoApp {
 
         this.hideAllScreens();
         document.getElementById('main-screen').classList.remove('hidden');
-        document.getElementById('generate-document').classList.remove('hidden');
     }
 
     showFormScreen() {
         this.hideAllScreens();
         document.getElementById('form-screen').classList.remove('hidden');
-        
-        const generateBtn = document.getElementById('generate-document');
-        if (generateBtn) {
-            generateBtn.classList.remove('hidden');
-        }
     }
 
     hideAllScreens() {
@@ -303,13 +302,16 @@ class SupervisaoApp {
         });
     }
 
+    // Configuração do usuário
     loadConfigIntoForm() {
         document.getElementById('supervisor-name').value = APP_STATE.supervisorName;
+        // O display das escolas é atualizado automaticamente pelo novo sistema
     }
 
     saveConfiguration() {
         const supervisorName = document.getElementById('supervisor-name').value.trim();
         
+        // Validações
         if (!supervisorName) {
             UTILS.showNotification('Por favor, informe seu nome completo.', 'error');
             document.getElementById('supervisor-name').focus();
@@ -321,6 +323,7 @@ class SupervisaoApp {
             return;
         }
 
+        // Salvar configuração
         APP_STATE.supervisorName = supervisorName;
         APP_STATE.configCompleted = true;
         
@@ -334,15 +337,9 @@ class SupervisaoApp {
         }
     }
 
+    // Documentos
     selectDocumentType(documentType) {
-        console.log(`📄 Documento selecionado: ${documentType}`);
-        
-        // ✅ LINKS ÚTEIS: Não abre formulário (botões já estão no card)
-        if (documentType === 'links_uteis') {
-            UTILS.showNotification('Os links já estão disponíveis no card!', 'info');
-            return;
-        }
-        
+        // Verificar acesso aos templates
         if (!UTILS.checkTemplateAccess()) {
             UTILS.showNotification('Acesso aos templates não concedido. Solicite acesso nas configurações.', 'error');
             this.showConfigScreen();
@@ -355,7 +352,24 @@ class SupervisaoApp {
     }
 
     populateDocumentForm(documentType) {
-        DOCUMENT_HANDLERS.populateDocumentForm(documentType);
+        const form = document.getElementById('document-form');
+        const title = document.getElementById('form-title');
+        
+        // Atualizar título
+        title.innerHTML = `<i class="fas fa-edit"></i> ${DOCUMENT_NAMES[documentType]} - Preencha os Dados`;
+        
+        // Limpar formulário
+        form.innerHTML = '';
+        
+        // Adicionar campos
+        const fields = DOCUMENT_FIELDS[documentType];
+        fields.forEach(field => {
+            const fieldHTML = DOCUMENT_HANDLERS.createFieldHTML(field);
+            form.innerHTML += fieldHTML;
+        });
+
+        // Configurar campos dinamicamente
+        this.setupFormFields(documentType);
     }
 
     setupFormFields(documentType) {
@@ -365,13 +379,18 @@ class SupervisaoApp {
             const input = document.querySelector(`[name="${field.name}"]`);
             if (!input) return;
 
+            // Configurar dropdowns
             if (field.type === 'dropdown') {
                 DOCUMENT_HANDLERS.populateDropdown(input, field.name);
             }
 
+            // Configurar auto-preenchimento
             DOCUMENT_HANDLERS.setupAutoFill(field, input);
+
+            // Configurar geração automática
             DOCUMENT_HANDLERS.setupAutoGenerate(field, input);
 
+            // Configurar eventos de change para campos que afetam outros
             if (field.name === "Nome da Escola") {
                 input.addEventListener('change', () => this.handleSchoolChange());
             }
@@ -383,6 +402,7 @@ class SupervisaoApp {
         const selectedSchool = UTILS.getSchoolData(schoolField.value);
         
         if (selectedSchool) {
+            // Preencher campos relacionados automaticamente
             const municipalityField = document.querySelector('[name="Nome do Município"]');
             if (municipalityField) {
                 municipalityField.value = selectedSchool.city;
@@ -396,11 +416,6 @@ class SupervisaoApp {
     }
 
     async generateDocument() {
-        if (APP_STATE.currentDocumentType === 'links_uteis') {
-            UTILS.showNotification('Esta funcionalidade não se aplica a Links Úteis.', 'info');
-            return;
-        }
-        
         const validation = DOCUMENT_HANDLERS.validateForm(APP_STATE.currentDocumentType);
         
         if (!validation.isValid) {
@@ -411,6 +426,7 @@ class SupervisaoApp {
             return;
         }
 
+        // Coletar dados
         APP_STATE.formData = DOCUMENT_HANDLERS.collectFormData(APP_STATE.currentDocumentType);
 
         try {
@@ -418,15 +434,18 @@ class SupervisaoApp {
             console.log('📄 Tipo:', APP_STATE.currentDocumentType);
             console.log('📋 Dados:', APP_STATE.formData);
             
+            // Mostrar loading
             const generateBtn = document.getElementById('generate-document');
             const originalText = generateBtn.innerHTML;
             generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Documento...';
             generateBtn.disabled = true;
 
+            // Usar seu email real
             const userEmail = 'eder.ramos@educador.edu.es.gov.br';
             console.log('📧 Email usado:', userEmail);
             console.log('🌐 Chamando API...');
             
+            // Gerar documento real usando a API
             const result = await DOCUMENT_HANDLERS.createPDF(
                 APP_STATE.currentDocumentType, 
                 APP_STATE.formData,
@@ -440,6 +459,7 @@ class SupervisaoApp {
                 console.log('🎯 Documento gerado com sucesso!');
                 console.log('🔗 Propriedades disponíveis:', Object.keys(result));
                 
+                // Mostrar modal de download
                 this.showDownloadModal();
                 UTILS.showNotification('Documento gerado com sucesso!', 'success');
             } else {
@@ -450,12 +470,14 @@ class SupervisaoApp {
             console.error('💥 ERRO COMPLETO:', error);
             UTILS.showNotification(error.message || 'Erro ao gerar documento. Tente novamente.', 'error');
         } finally {
+            // Restaurar botão
             const generateBtn = document.getElementById('generate-document');
             generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
             generateBtn.disabled = false;
         }
     }
 
+    // Download de documentos
     async downloadPDF() {
         if (!APP_STATE.generatedDocument) {
             UTILS.showNotification('Nenhum documento gerado para download.', 'error');
@@ -463,16 +485,19 @@ class SupervisaoApp {
         }
 
         try {
+            // Mostrar loading no botão de download
             const pdfBtn = document.getElementById('download-pdf');
             const originalText = pdfBtn.innerHTML;
             pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Baixando...';
             pdfBtn.disabled = true;
 
+            // Fazer download do PDF
             DOCUMENT_HANDLERS.downloadFile(
                 APP_STATE.generatedDocument.filename,
                 APP_STATE.generatedDocument.url
             );
 
+            // Fechar modal e limpar após um breve delay
             setTimeout(() => {
                 this.closeModal(document.getElementById('download-modal'));
                 DOCUMENT_HANDLERS.clearForm();
@@ -484,12 +509,14 @@ class SupervisaoApp {
             console.error('Erro ao baixar PDF:', error);
             UTILS.showNotification('Erro ao baixar PDF. Tente novamente.', 'error');
         } finally {
+            // Restaurar botão
             const pdfBtn = document.getElementById('download-pdf');
             pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Baixar PDF';
             pdfBtn.disabled = false;
         }
     }
 
+    // Solicitação de acesso
     async handleAccessRequest(e) {
         e.preventDefault();
 
@@ -497,6 +524,7 @@ class SupervisaoApp {
         const email = document.getElementById('requester-email').value.trim();
         const role = document.getElementById('requester-role').value.trim();
 
+        // Validações
         if (!name || !email || !role) {
             UTILS.showNotification('Preencha todos os campos!', 'error');
             return;
@@ -522,6 +550,7 @@ class SupervisaoApp {
                 requestedAt: new Date().toISOString()
             };
 
+            // Enviar solicitação via API
             const result = await API_SERVICE.requestAccess(requestData);
 
             if (result.success) {
@@ -529,6 +558,7 @@ class SupervisaoApp {
                 this.closeModal(document.getElementById('access-modal'));
                 document.getElementById('access-form').reset();
                 
+                // Marcar que o acesso foi solicitado
                 APP_STATE.accessRequested = true;
                 UTILS.saveConfig();
             } else {
@@ -545,6 +575,7 @@ class SupervisaoApp {
         }
     }
 
+    // Utilitários
     showDownloadModal() {
         console.log('📁 Mostrando modal de download...');
         const modal = document.getElementById('download-modal');
@@ -563,9 +594,11 @@ class SupervisaoApp {
     }
 }
 
+// ✅ INICIALIZAÇÃO CORRIGIDA - Aguarda todos os scripts carregarem
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔄 Verificando carregamento dos scripts...');
     
+    // Aguardar um pouco para garantir que todos os scripts carregaram
     setTimeout(() => {
         if (typeof DOCUMENT_FIELDS === 'undefined') {
             console.error('❌ DOCUMENT_FIELDS não carregado!');
@@ -586,6 +619,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ Todos os scripts carregados - Iniciando aplicação...');
         window.supervisaoApp = new SupervisaoApp();
                    
+        // Adicionar estilos dinâmicos
         if (!document.querySelector('.dynamic-styles')) {
             const dynamicStyles = document.createElement('style');
             dynamicStyles.className = 'dynamic-styles';
@@ -610,14 +644,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     100% { transform: rotate(360deg); }
                 }
 
+                /* Melhorar visualização dos campos readonly */
                 input[readonly], textarea[readonly] {
                     background-color: var(--cinza-claro);
                     color: var(--cinza-escuro);
                     cursor: not-allowed;
-                }
-                
-                .hidden {
-                    display: none !important;
                 }
             `;
             document.head.appendChild(dynamicStyles);
