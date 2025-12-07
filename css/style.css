@@ -1663,27 +1663,28 @@ footer {
 /* === ESTILOS PARA OS BOTÕES DENTRO DO CARD LINKS ÚTEIS === */
 .document-type .links-buttons {
     margin-top: 15px;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 colunas */
     gap: 8px;
 }
 
 .document-type .links-buttons .btn {
-    padding: 12px 15px;
-    font-size: 0.9rem;
-    text-align: left;
+    padding: 8px 12px; /* Menor padding */
+    font-size: 0.85rem; /* Fonte menor */
+    text-align: center; /* Texto centralizado */
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     transition: all 0.3s ease;
     text-decoration: none;
     border-radius: 8px;
+    min-height: 40px; /* Altura fixa */
 }
 
 .document-type .links-buttons .btn i {
-    margin-right: 10px;
-    font-size: 1rem;
-    width: 20px;
+    margin-right: 8px;
+    font-size: 0.9rem; /* Ícone menor */
+    width: 16px;
     text-align: center;
 }
 
@@ -1692,15 +1693,15 @@ footer {
     box-shadow: 0 5px 10px rgba(0,0,0,0.1);
 }
 
-/* Ajustar altura do card para caber os botões */
+/* REMOVER o min-height que estava forçando o card a ser maior */
 .document-type[data-type="links_uteis"] {
-    padding-bottom: 25px;
-    min-height: 450px; /* Um pouco mais alto para caber todos os botões */
+    padding-bottom: 15px;
 }
 
-/* Quando o card de links úteis for hover, não aplicar o hover normal dos outros cards */
+/* Manter o card com mesmo comportamento dos outros */
 .document-type[data-type="links_uteis"]:hover {
-    transform: none; /* Remove a elevação do hover padrão */
-    background: linear-gradient(135deg, var(--branco) 0%, var(--cinza-claro) 100%);
-    border-color: transparent;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    background: var(--branco);
+    border-color: var(--azul);
 }
