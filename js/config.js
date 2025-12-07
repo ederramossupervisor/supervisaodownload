@@ -43,7 +43,14 @@ const SCHOOLS_DATA = [
     { name: "EEEM MATA FRIA", city: "Afonso Cláudio", director: "Jonatas André Drescher" },
     { name: "EEEM SOBREIRO", city: "Laranja da Terra", director: "Jonatas André Drescher" }
 ];
-
+const USEFUL_LINKS = {
+    "AGENDA": "https://docs.google.com/spreadsheets/d/19qp1JvmUod_iasnI0GwFronxrcYWHp9oVg8T_PXoS48/edit?usp=sharing",
+    "SIGAE": "https://sigae.institutounibanco.org.br/",
+    "Outlook": "https://outlook.office.com/mail/",
+    "SEGES": "https://seges.sedu.es.gov.br/users/sign_in",
+    "DRIVE": "https://drive.google.com/drive/home",
+    "EDOCS": "https://sso.acesso.gov.br/login?client_id=acessocidadao.es.gov.br&authorization_id=19af64bde0d"
+];
 // Opções para campos dropdown
 const DROPDOWN_OPTIONS = {
     "Nome da Escola": SCHOOLS_DATA.map(school => school.name),
@@ -65,7 +72,8 @@ const DOCUMENT_ICONS = {
     viagem_pedagogica: "fas fa-bus",
     manifestacao: "fas fa-comment-alt",
     eletivas: "fas fa-book-open",
-    projeto: "fas fa-project-diagram"
+    projeto: "fas fa-project-diagram",
+    links_uteis: "fas fa-link"
 };
 
 // Nomes amigáveis para os documentos
@@ -77,7 +85,8 @@ const DOCUMENT_NAMES = {
     viagem_pedagogica: "Viagem Pedagógica",
     manifestacao: "Manifestação",
     eletivas: "Eletivas",
-    projeto: "Projeto"
+    projeto: "Projeto",
+    links_uteis: "Links Úteis"
 };
 
 // Estado da aplicação
