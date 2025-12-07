@@ -1664,44 +1664,61 @@ footer {
 .document-type .links-buttons {
     margin-top: 15px;
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 colunas */
-    gap: 8px;
+    grid-template-columns: 1fr 1fr; /* 2 colunas: esquerda e direita */
+    gap: 8px 15px; /* 8px vertical, 15px horizontal */
 }
 
 .document-type .links-buttons .btn {
-    padding: 8px 12px; /* Menor padding */
-    font-size: 0.85rem; /* Fonte menor */
-    text-align: center; /* Texto centralizado */
+    padding: 6px 10px; /* Muito compacto */
+    font-size: 0.75rem; /* Fonte bem pequena */
+    text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
     text-decoration: none;
-    border-radius: 8px;
-    min-height: 40px; /* Altura fixa */
+    border-radius: 6px;
+    min-height: 32px; /* Altura mínima reduzida */
+    white-space: nowrap; /* Não quebra texto */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .document-type .links-buttons .btn i {
-    margin-right: 8px;
-    font-size: 0.9rem; /* Ícone menor */
-    width: 16px;
+    margin-right: 6px;
+    font-size: 0.8rem; /* Ícone pequeno */
+    width: 14px;
     text-align: center;
 }
 
 .document-type .links-buttons .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
 
-/* REMOVER o min-height que estava forçando o card a ser maior */
+/* Card mantém mesmo tamanho */
 .document-type[data-type="links_uteis"] {
     padding-bottom: 15px;
+    min-height: auto !important; /* Remove qualquer altura mínima forçada */
 }
 
-/* Manter o card com mesmo comportamento dos outros */
+/* Manter hover igual aos outros cards */
 .document-type[data-type="links_uteis"]:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
     background: var(--branco);
     border-color: var(--azul);
+}
+
+/* Ajustar posicionamento dos botões - 3 à esquerda, 3 à direita */
+.document-type .links-buttons .btn:nth-child(1),
+.document-type .links-buttons .btn:nth-child(2),
+.document-type .links-buttons .btn:nth-child(3) {
+    /* Primeiros 3 botões ficam à esquerda */
+}
+
+.document-type .links-buttons .btn:nth-child(4),
+.document-type .links-buttons .btn:nth-child(5),
+.document-type .links-buttons .btn:nth-child(6) {
+    /* Últimos 3 botões ficam à direita */
 }
