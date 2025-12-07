@@ -429,6 +429,11 @@ const DOCUMENT_FIELDS = {
             required: true,
             placeholder: "Digite o nome do projeto"
         }
+        
+    ],
+            links_uteis: [
+        // Este array fica vazio porque não teremos campos de formulário
+        // Só teremos botões com links
     ]
 };
 
