@@ -1660,3 +1660,47 @@ footer {
     font-size: 1.2rem;
     width: 24px;
 }
+/* === ESTILOS PARA OS BOTÕES DENTRO DO CARD LINKS ÚTEIS === */
+.document-type .links-buttons {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.document-type .links-buttons .btn {
+    padding: 12px 15px;
+    font-size: 0.9rem;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.document-type .links-buttons .btn i {
+    margin-right: 10px;
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.document-type .links-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+/* Ajustar altura do card para caber os botões */
+.document-type[data-type="links_uteis"] {
+    padding-bottom: 25px;
+    min-height: 450px; /* Um pouco mais alto para caber todos os botões */
+}
+
+/* Quando o card de links úteis for hover, não aplicar o hover normal dos outros cards */
+.document-type[data-type="links_uteis"]:hover {
+    transform: none; /* Remove a elevação do hover padrão */
+    background: linear-gradient(135deg, var(--branco) 0%, var(--cinza-claro) 100%);
+    border-color: transparent;
+}
