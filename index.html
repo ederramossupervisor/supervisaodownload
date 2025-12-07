@@ -124,26 +124,22 @@
 
             <!-- Tela de Preenchimento de Campos -->
             <div id="form-screen" class="card hidden">
+                
+                
                 <div class="form-header">
                     <h2 id="form-title"><i class="fas fa-edit"></i> Preencha os Dados do Documento</h2>
                     <button class="btn btn-secondary" id="back-to-main">
-                        <i class="fas fa-arrow-left"></i> Voltar para Documentos
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </button>
                 </div>
                 
                 <form id="document-form">
                     <!-- Os campos serão preenchidos dinamicamente via JavaScript -->
                 </form>
-
-                <div class="form-actions" id="form-actions">
-                    <!-- Este botão será mostrado/oculto dinamicamente -->
+                
+                <div class="form-actions">
                     <button class="btn btn-primary" id="generate-document">
                         <i class="fas fa-file-pdf"></i> Gerar Documento
-                    </button>
-                    
-                    <!-- Este botão sempre aparece -->
-                    <button class="btn btn-secondary" id="back-form">
-                        <i class="fas fa-arrow-left"></i> Voltar
                     </button>
                 </div>
             </div>
@@ -214,11 +210,11 @@
                 <!-- Contadores -->
                 <div class="selection-info">
                     <div class="selection-counter">
-                        <span id="selected-counter">0</span> de
+                     <span id="selected-counter">0</span> de
                         <span id="total-counter">0</span> escolas selecionadas
                     </div>
                     <button type="button" class="btn-clear" id="clear-selection">
-                        <i class="fas fa-times"></i> Limpar seleção
+                         <i class="fas fa-times"></i> Limpar seleção
                     </button>
                 </div>
                 
