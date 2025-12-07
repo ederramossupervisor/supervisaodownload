@@ -338,7 +338,14 @@ class SupervisaoApp {
     }
 
     // Documentos
+        // Documentos
     selectDocumentType(documentType) {
+        // SE for o card "links_uteis", mostrar os botões diretamente
+        if (documentType === 'links_uteis') {
+            this.showLinksUteisScreen();
+            return; // ← Para aqui, não executa o restante
+        }
+        
         // Verificar acesso aos templates
         if (!UTILS.checkTemplateAccess()) {
             UTILS.showNotification('Acesso aos templates não concedido. Solicite acesso nas configurações.', 'error');
@@ -349,6 +356,104 @@ class SupervisaoApp {
         APP_STATE.currentDocumentType = documentType;
         this.populateDocumentForm(documentType);
         this.showFormScreen();
+    }
+        // === NOVA FUNÇÃO PARA MOSTRAR OS LINKS ===
+    showLinksUteisScreen() {
+        // Esconder todas as telas
+        this.hideAllScreens();
+        
+        // Criar HTML dos links úteis
+        const linksHtml = `
+            <div class="card">
+                <div class="form-header">
+                    <h2><i class="fas fa-link"></i> Links Úteis</h2>
+                    <button class="btn btn-secondary" id="back-to-main-from-links">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </button>
+                </div>
+                
+                <div class="links-container" style="margin-top: 20px;">
+                    <!-- AGENDA -->
+                    <div class="link-item" style="margin-bottom: 15px;">
+                        <a href="https://docs.google.com/spreadsheets/d/19qp1JvmUod_iasnI0GwFronxrcYWHp9oVg8T_PXoS48/edit?usp=sharing" 
+                           target="_blank" 
+                           class="btn btn-secondary" 
+                           style="width: 100%; text-align: left; justify-content: flex-start;">
+                            <i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>
+                            AGENDA
+                        </a>
+                    </div>
+                    
+                    <!-- SIGAE -->
+                    <div class="link-item" style="margin-bottom: 15px;">
+                        <a href="https://sigae.institutounibanco.org.br/" 
+                           target="_blank" 
+                           class="btn btn-secondary" 
+                           style="width: 100%; text-align: left; justify-content: flex-start;">
+                            <i class="fas fa-chart-line" style="margin-right: 10px;"></i>
+                            SIGAE
+                        </a>
+                    </div>
+                    
+                    <!-- Outlook -->
+                    <div class="link-item" style="margin-bottom: 15px;">
+                        <a href="https://outlook.office.com/mail/" 
+                           target="_blank" 
+                           class="btn btn-secondary" 
+                           style="width: 100%; text-align: left; justify-content: flex-start;">
+                            <i class="fas fa-envelope" style="margin-right: 10px;"></i>
+                            Outlook
+                        </a>
+                    </div>
+                    
+                    <!-- SEGES -->
+                    <div class="link-item" style="margin-bottom: 15px;">
+                        <a href="https://seges.sedu.es.gov.br/users/sign_in" 
+                           target="_blank" 
+                           class="btn btn-secondary" 
+                           style="width: 100%; text-align: left; justify-content: flex-start;">
+                            <i class="fas fa-user-shield" style="margin-right: 10px;"></i>
+                            SEGES
+                        </a>
+                    </div>
+                    
+                    <!-- DRIVE -->
+                    <div class="link-item" style="margin-bottom: 15px;">
+                        <a href="https://drive.google.com/drive/home" 
+                           target="_blank" 
+                           class="btn btn-secondary" 
+                           style="width: 100%; text-align: left; justify-content: flex-start;">
+                            <i class="fas fa-hdd" style="margin-right: 10px;"></i>
+                            DRIVE
+                        </a>
+                    </div>
+                    
+                    <!-- EDOCS -->
+                    <div class="link-item" style="margin-bottom: 15px;">
+                        <a href="https://sso.acesso.gov.br/login?client_id=acessocidadao.es.gov.br&authorization_id=19af64bde0d" 
+                           target="_blank" 
+                           class="btn btn-secondary" 
+                           style="width: 100%; text-align: left; justify-content: flex-start;">
+                            <i class="fas fa-file-alt" style="margin-right: 10px;"></i>
+                            EDOCS
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Adicionar ao conteúdo principal
+        const contentDiv = document.querySelector('.content');
+        const newDiv = document.createElement('div');
+        newDiv.id = 'links-uteis-screen';
+        newDiv.innerHTML = linksHtml;
+        contentDiv.appendChild(newDiv);
+        
+        // Adicionar evento ao botão "Voltar"
+        document.getElementById('back-to-main-from-links').addEventListener('click', () => {
+            document.getElementById('links-uteis-screen').remove();
+            this.showMainScreen();
+        });
     }
 
     populateDocumentForm(documentType) {
