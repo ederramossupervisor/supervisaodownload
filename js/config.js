@@ -2,16 +2,12 @@ const CONFIG = {
     adminEmail: 'eder.ramos@educador.edu.es.gov.br',
     appName: 'Sistema Supervisão',
     version: '2.0.0',
-    
-    // ✅ URL DA SUA CLOUD FUNCTION (FUNCIONANDO!)
     cloudFunctions: {
         generateDocument: 'https://southamerica-east1-sistema-documentos-sreac.cloudfunctions.net/supervisaoSp'
     },
-    
     adminEmails: ['eder.ramos@educador.edu.es.gov.br']
 };
 
-// Dados das escolas
 const SCHOOLS_DATA = [
     { name: "CEEFMTI AFONSO CLÁUDIO", city: "Afonso Cláudio", director: "Allan Dyoni Dehete Many" },
     { name: "CEEFMTI ELISA PAIVA", city: "Conceição do Castelo", director: "Rosangela Vargas Davel Pinto" },
@@ -54,7 +50,6 @@ const USEFUL_LINKS = {
     "EDOCS": "https://sso.acesso.gov.br/login?client_id=acessocidadao.es.gov.br&authorization_id=19af64bde0d"
 };
 
-// Opções para campos dropdown
 const DROPDOWN_OPTIONS = {
     "Nome da Escola": SCHOOLS_DATA.map(school => school.name),
     "Motivo da contratação": ["lista esgotada"],
@@ -66,7 +61,6 @@ const DROPDOWN_OPTIONS = {
     ]
 };
 
-// Ícones para cada tipo de documento
 const DOCUMENT_ICONS = {
     cuidador: "fas fa-user-nurse",
     justificativa: "fas fa-file-signature",
@@ -79,7 +73,6 @@ const DOCUMENT_ICONS = {
     links_uteis: "fas fa-link"
 };
 
-// Nomes amigáveis para os documentos
 const DOCUMENT_NAMES = {
     cuidador: "Cuidador",
     justificativa: "Justificativa",
@@ -92,7 +85,6 @@ const DOCUMENT_NAMES = {
     links_uteis: "Links Úteis"
 };
 
-// Estado da aplicação
 let APP_STATE = {
     supervisorName: "",
     selectedSchools: [],
@@ -104,9 +96,7 @@ let APP_STATE = {
     generatedDocument: null
 };
 
-// Funções de utilitário
 const UTILS = {
-    // Salvar configuração no localStorage
     saveConfig: function() {
         try {
             const config = {
@@ -126,7 +116,6 @@ const UTILS = {
         }
     },
 
-    // Carregar configuração do localStorage
     loadConfig: function() {
         try {
             const savedConfig = localStorage.getItem('supervisaoConfig');
@@ -148,7 +137,6 @@ const UTILS = {
         }
     },
 
-    // Limpar configuração
     clearConfig: function() {
         try {
             localStorage.removeItem('supervisaoConfig');
@@ -163,20 +151,16 @@ const UTILS = {
         }
     },
 
-    // Validar email institucional
     validateInstitutionalEmail: function(email) {
         return email.endsWith('@educador.edu.es.gov.br') || email.endsWith('@edu.es.gov.br');
     },
 
-    // Formatar data para o padrão brasileiro
     formatDate: function(date) {
         if (!date) return '';
-        
         const d = new Date(date);
         return d.toLocaleDateString('pt-BR');
     },
 
-    // Gerar número de ofício automático (exemplo)
     generateOfficeNumber: function() {
         const now = new Date();
         const year = now.getFullYear();
@@ -184,26 +168,19 @@ const UTILS = {
         return `OFÍCIO ${random}/${year}`;
     },
 
-    // Obter dados de uma escola pelo nome
     getSchoolData: function(schoolName) {
         return SCHOOLS_DATA.find(school => school.name === schoolName) || null;
     },
 
-    // Verificar se o usuário tem acesso aos templates
     checkTemplateAccess: function() {
-        // ✅ CORREÇÃO: Administradores têm acesso imediato
         const userEmail = 'eder.ramos@educador.edu.es.gov.br';
         if (CONFIG.adminEmails && CONFIG.adminEmails.includes(userEmail)) {
             return true;
         }
-        
-        // Para outros usuários, verificar se solicitaram acesso
         return APP_STATE.accessRequested || APP_STATE.hasAccess;
     },
 
-    // Mostrar notificação
     showNotification: function(message, type = 'info') {
-        // Criar elemento de notificação
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
@@ -213,7 +190,6 @@ const UTILS = {
             </div>
         `;
 
-        // Adicionar estilos da notificação
         if (!document.querySelector('.notification-styles')) {
             const styles = document.createElement('style');
             styles.className = 'notification-styles';
@@ -250,7 +226,6 @@ const UTILS = {
 
         document.body.appendChild(notification);
 
-        // Remover após 5 segundos
         setTimeout(() => {
             notification.style.animation = 'slideOutRight 0.3s ease';
             setTimeout(() => {
@@ -262,7 +237,6 @@ const UTILS = {
     }
 };
 
-// Adicionar estilos para a animação de saída da notificação
 if (!document.querySelector('.notification-animations')) {
     const animationStyles = document.createElement('style');
     animationStyles.className = 'notification-animations';
