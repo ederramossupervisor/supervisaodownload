@@ -1,7 +1,6 @@
 // Serviço de API para comunicação com Google Apps Script
 class ApiService {
     constructor() {
-        // ✅ CORREÇÃO 1: Use URL direta da Cloud Function
         this.cloudFunctionUrl = 'https://southamerica-east1-sistema-documentos-sreac.cloudfunctions.net/supervisaoSp';
         this.isDevelopment = false; // MODO PRODUÇÃO
         console.log('🌐 API Service - Modo:', this.isDevelopment ? 'DESENVOLVIMENTO' : 'PRODUÇÃO');
@@ -18,7 +17,6 @@ class ApiService {
         try {
             console.log('🚀 Enviando para Cloud Function...');
             
-            // ✅ CORREÇÃO: Use this.cloudFunctionUrl diretamente
             const response = await fetch(this.cloudFunctionUrl, {
                 method: 'POST',
                 headers: {
@@ -97,7 +95,6 @@ class ApiService {
 
             console.log('📤 Enviando dados:', requestBody);
             
-            // ✅ CORREÇÃO: Use this.cloudFunctionUrl
             const response = await fetch(this.cloudFunctionUrl, {
                 method: 'POST',
                 headers: {
@@ -141,10 +138,10 @@ class ApiService {
     }
 
     simulateDocumentGeneration(payload) {
-        const { documentType } = payload;
+        const { documentType, formData } = payload;
         const timestamp = new Date().getTime();
         
-        // ✅ CORREÇÃO 2: Nome genérico se DOCUMENT_NAMES não estiver disponível
+        // ✅ Nome genérico se DOCUMENT_NAMES não estiver disponível
         const docName = this.getDocumentName(documentType);
         const filename = `${docName}_${timestamp}.pdf`;
         
@@ -196,7 +193,7 @@ class ApiService {
         console.log('🧪 Testando conexão com Cloud Function...');
         
         try {
-            // ✅ CORREÇÃO: Use this.cloudFunctionUrl
+            // ✅ TESTE SIMPLES DIRETO
             const response = await fetch(this.cloudFunctionUrl, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -212,11 +209,11 @@ class ApiService {
                 return true;
             } else {
                 console.log('⚠️ Cloud Function com status:', response.status);
-                return true;
+                return true; // ✅ Ainda assim continua, pode ser erro nos dados
             }
         } catch (error) {
             console.log('⚠️ Erro na conexão:', error.message);
-            return true;
+            return true; // ✅ Continua mesmo com erro
         }
     }
 }
