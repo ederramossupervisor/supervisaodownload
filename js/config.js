@@ -10,6 +10,7 @@ const CONFIG = {
     
     adminEmails: ['eder.ramos@educador.edu.es.gov.br']
 };
+
 // Dados das escolas
 const SCHOOLS_DATA = [
     { name: "CEEFMTI AFONSO CLÁUDIO", city: "Afonso Cláudio", director: "Allan Dyoni Dehete Many" },
@@ -43,6 +44,7 @@ const SCHOOLS_DATA = [
     { name: "EEEM MATA FRIA", city: "Afonso Cláudio", director: "Jonatas André Drescher" },
     { name: "EEEM SOBREIRO", city: "Laranja da Terra", director: "Jonatas André Drescher" }
 ];
+
 const USEFUL_LINKS = {
     "AGENDA": "https://docs.google.com/spreadsheets/d/19qp1JvmUod_iasnI0GwFronxrcYWHp9oVg8T_PXoS48/edit?usp=sharing",
     "SIGAE": "https://sigae.institutounibanco.org.br/",
@@ -50,7 +52,8 @@ const USEFUL_LINKS = {
     "SEGES": "https://seges.sedu.es.gov.br/users/sign_in",
     "DRIVE": "https://drive.google.com/drive/home",
     "EDOCS": "https://sso.acesso.gov.br/login?client_id=acessocidadao.es.gov.br&authorization_id=19af64bde0d"
-];
+};
+
 // Opções para campos dropdown
 const DROPDOWN_OPTIONS = {
     "Nome da Escola": SCHOOLS_DATA.map(school => school.name),
