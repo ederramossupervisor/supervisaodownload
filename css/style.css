@@ -1660,46 +1660,50 @@ footer {
     font-size: 1.2rem;
     width: 24px;
 }
-/* === ESTILOS PARA OS BOTÕES DENTRO DO CARD LINKS ÚTEIS === */
+/* === ESTILOS PARA BOTÕES QUADRADOS NO CARD LINKS ÚTEIS === */
 .document-type .links-buttons {
     margin-top: 15px;
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 colunas: esquerda e direita */
-    gap: 8px 15px; /* 8px vertical, 15px horizontal */
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas - 2 linhas de 3 botões */
+    gap: 6px; /* Espaço menor entre botões */
+    justify-items: center; /* Centraliza os botões */
 }
 
 .document-type .links-buttons .btn {
-    padding: 6px 10px; /* Muito compacto */
-    font-size: 0.75rem; /* Fonte bem pequena */
+    padding: 0; /* Remove padding interno */
+    font-size: 0.7rem; /* Fonte bem pequena */
     text-align: center;
     display: flex;
+    flex-direction: column; /* Ícone em cima, texto embaixo */
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
     text-decoration: none;
-    border-radius: 6px;
-    min-height: 32px; /* Altura mínima reduzida */
-    white-space: nowrap; /* Não quebra texto */
+    border-radius: 5px; /* Cantos levemente arredondados */
+    width: 60px; /* Largura fixa - QUADRADO */
+    height: 60px; /* Altura igual à largura - QUADRADO */
+    white-space: normal; /* Permite quebra de linha */
+    line-height: 1.2;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .document-type .links-buttons .btn i {
-    margin-right: 6px;
-    font-size: 0.8rem; /* Ícone pequeno */
-    width: 14px;
-    text-align: center;
+    margin-right: 0; /* Remove margem lateral */
+    margin-bottom: 4px; /* Espaço entre ícone e texto */
+    font-size: 1rem; /* Ícone um pouco maior para destaque */
+    display: block; /* Garante que o ícone fique em linha própria */
 }
 
 .document-type .links-buttons .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    transform: translateY(-3px) scale(1.05); /* Efeito de levantar e crescer */
+    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
 }
 
-/* Card mantém mesmo tamanho */
+/* Card mantém mesmo tamanho - IMPORTANTE! */
 .document-type[data-type="links_uteis"] {
     padding-bottom: 15px;
-    min-height: auto !important; /* Remove qualquer altura mínima forçada */
+    min-height: auto !important;
+    padding: 20px 15px; /* Um pouco menos de padding para caber os botões */
 }
 
 /* Manter hover igual aos outros cards */
@@ -1710,6 +1714,10 @@ footer {
     border-color: var(--azul);
 }
 
+/* Efeito de "pressionado" ao clicar */
+.document-type .links-buttons .btn:active {
+    transform: translateY(-1px) scale(0.98);
+}
 /* Ajustar posicionamento dos botões - 3 à esquerda, 3 à direita */
 .document-type .links-buttons .btn:nth-child(1),
 .document-type .links-buttons .btn:nth-child(2),
