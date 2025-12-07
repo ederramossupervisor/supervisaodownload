@@ -40,12 +40,12 @@ const DOCUMENT_FIELDS = {
             defaultValue: "today"
         },
         { 
-    name: "Número do Ofício", 
-    type: "text", 
-    required: true,
-    placeholder: "Ex.: 013",
-    
-},
+            name: "Número do Ofício", 
+            type: "text", 
+            required: true,
+            placeholder: "Ex.: 013",
+            
+        },
         { 
             name: "Nome do(a) Aluno(a)", 
             type: "text", 
@@ -429,7 +429,9 @@ const DOCUMENT_FIELDS = {
             required: true,
             placeholder: "Digite o nome do projeto"
         }
-    ]
+    ],
+
+    links_uteis: []  // ← NOVO CARD: SEM CAMPOS, APENAS LINKS
 };
 
 // Mapeamento de série para etapa de ensino
@@ -456,81 +458,127 @@ const SERIE_TO_ETAPA = {
 // Funções específicas para manipulação de documentos
 const DOCUMENT_HANDLERS = {
     // ✅ FUNÇÃO ATUALIZADA PARA SUPORTAR ATRIBUTOS
-createFieldHTML: function(field) {
-    const fieldId = `field-${field.name.replace(/\s+/g, '-').toLowerCase()}`;
-    let fieldHTML = '';
-    
-    // Construir atributos adicionais
-    let additionalAttributes = '';
-    if (field.attributes) {
-        Object.keys(field.attributes).forEach(attr => {
-            additionalAttributes += ` ${attr}="${field.attributes[attr]}"`;
-        });
-    }
+    createFieldHTML: function(field) {
+        const fieldId = `field-${field.name.replace(/\s+/g, '-').toLowerCase()}`;
+        let fieldHTML = '';
+        
+        // Construir atributos adicionais
+        let additionalAttributes = '';
+        if (field.attributes) {
+            Object.keys(field.attributes).forEach(attr => {
+                additionalAttributes += ` ${attr}="${field.attributes[attr]}"`;
+            });
+        }
 
-    switch (field.type) {
-        case 'dropdown':
-            fieldHTML = `
-                <select id="${fieldId}" name="${field.name}" 
-                        ${field.required ? 'required' : ''}
-                        ${additionalAttributes}
-                        class="form-field dropdown-field">
-                    <option value="">${field.placeholder || `Selecione ${field.name}`}</option>
-                </select>
+        switch (field.type) {
+            case 'dropdown':
+                fieldHTML = `
+                    <select id="${fieldId}" name="${field.name}" 
+                            ${field.required ? 'required' : ''}
+                            ${additionalAttributes}
+                            class="form-field dropdown-field">
+                        <option value="">${field.placeholder || `Selecione ${field.name}`}</option>
+                    </select>
+                `;
+                break;
+
+            case 'textarea':
+                fieldHTML = `
+                    <textarea id="${fieldId}" name="${field.name}" 
+                              ${field.required ? 'required' : ''}
+                              ${field.readOnly ? 'readonly' : ''}
+                              ${additionalAttributes}
+                              rows="${field.rows || 4}"
+                              placeholder="${field.placeholder || ''}"
+                              class="form-field textarea-field">${field.defaultValue || ''}</textarea>
+                `;
+                break;
+
+            case 'date':
+                const defaultValue = field.defaultValue === 'today' ? 
+                    new Date().toISOString().split('T')[0] : 
+                    (field.defaultValue || '');
+                
+                fieldHTML = `
+                    <input type="date" id="${fieldId}" name="${field.name}" 
+                           ${field.required ? 'required' : ''}
+                           ${field.readOnly ? 'readonly' : ''}
+                           ${additionalAttributes}
+                           value="${defaultValue}"
+                           placeholder="${field.placeholder || ''}"
+                           class="form-field date-field">
+                `;
+                break;
+
+            default:
+                fieldHTML = `
+                    <input type="${field.type}" id="${fieldId}" name="${field.name}" 
+                           ${field.required ? 'required' : ''}
+                           ${field.readOnly ? 'readonly' : ''}
+                           ${additionalAttributes}
+                           value="${field.defaultValue || ''}"
+                           placeholder="${field.placeholder || ''}"
+                           class="form-field text-field">
+                `;
+        }
+
+        return `
+            <div class="form-group field-group" data-field-name="${field.name}">
+                <label for="${fieldId}">
+                    ${field.name} 
+                    ${field.required ? '<span class="required-asterisk">*</span>' : ''}
+                </label>
+                ${fieldHTML}
+                ${field.autoGenerate ? '<small class="field-hint">Este campo será gerado automaticamente</small>' : ''}
+            </div>
+        `;
+    },
+
+    // ✅ FUNÇÃO ATUALIZADA COM SUPORTE PARA LINKS ÚTEIS
+    populateDocumentForm: function(documentType) {
+        const form = document.getElementById('document-form');
+        const title = document.getElementById('form-title');
+        
+        // Atualizar título
+        title.innerHTML = `<i class="${DOCUMENT_ICONS[documentType]}"></i> ${DOCUMENT_NAMES[documentType]}`;
+        
+        // Limpar formulário
+        form.innerHTML = '';
+        
+        // CASO ESPECIAL: LINKS ÚTEIS
+        if (documentType === 'links_uteis') {
+            form.innerHTML = `
+                <div class="links-container">
+                    <p class="links-description">Acesse rapidamente os principais sistemas utilizados:</p>
+                    <div class="links-grid" id="links-grid">
+                        ${LINK_HANDLERS.createLinksInterface()}
+                    </div>
+                    <div class="links-note">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Todos os links abrem em uma nova aba</span>
+                    </div>
+                </div>
             `;
-            break;
-
-        case 'textarea':
-            fieldHTML = `
-                <textarea id="${fieldId}" name="${field.name}" 
-                          ${field.required ? 'required' : ''}
-                          ${field.readOnly ? 'readonly' : ''}
-                          ${additionalAttributes}
-                          rows="${field.rows || 4}"
-                          placeholder="${field.placeholder || ''}"
-                          class="form-field textarea-field">${field.defaultValue || ''}</textarea>
-            `;
-            break;
-
-        case 'date':
-            const defaultValue = field.defaultValue === 'today' ? 
-                new Date().toISOString().split('T')[0] : 
-                (field.defaultValue || '');
             
-            fieldHTML = `
-                <input type="date" id="${fieldId}" name="${field.name}" 
-                       ${field.required ? 'required' : ''}
-                       ${field.readOnly ? 'readonly' : ''}
-                       ${additionalAttributes}
-                       value="${defaultValue}"
-                       placeholder="${field.placeholder || ''}"
-                       class="form-field date-field">
-            `;
-            break;
+            // Esconder botão de gerar documento para links úteis
+            document.getElementById('generate-document').classList.add('hidden');
+            return;
+        }
+        
+        // Mostrar botão de gerar documento para outros documentos
+        document.getElementById('generate-document').classList.remove('hidden');
+        
+        // Adicionar campos para documentos normais
+        const fields = DOCUMENT_FIELDS[documentType];
+        fields.forEach(field => {
+            const fieldHTML = this.createFieldHTML(field);
+            form.innerHTML += fieldHTML;
+        });
 
-        default:
-            fieldHTML = `
-                <input type="${field.type}" id="${fieldId}" name="${field.name}" 
-                       ${field.required ? 'required' : ''}
-                       ${field.readOnly ? 'readonly' : ''}
-                       ${additionalAttributes}
-                       value="${field.defaultValue || ''}"
-                       placeholder="${field.placeholder || ''}"
-                       class="form-field text-field">
-            `;
-    }
+        // Configurar campos dinamicamente
+        this.setupFormFields(documentType);
+    },
 
-    return `
-        <div class="form-group field-group" data-field-name="${field.name}">
-            <label for="${fieldId}">
-                ${field.name} 
-                ${field.required ? '<span class="required-asterisk">*</span>' : ''}
-            </label>
-            ${fieldHTML}
-            ${field.autoGenerate ? '<small class="field-hint">Este campo será gerado automaticamente</small>' : ''}
-        </div>
-    `;
-},
     // Preencher opções de dropdown
     populateDropdown: function(selectElement, fieldName) {
         const options = DROPDOWN_OPTIONS[fieldName] || [];
@@ -602,8 +650,58 @@ createFieldHTML: function(field) {
         }
     },
 
+    // Configurar campos do formulário
+    setupFormFields: function(documentType) {
+        const fields = DOCUMENT_FIELDS[documentType];
+        
+        fields.forEach(field => {
+            const input = document.querySelector(`[name="${field.name}"]`);
+            if (!input) return;
+
+            // Configurar dropdowns
+            if (field.type === 'dropdown') {
+                this.populateDropdown(input, field.name);
+            }
+
+            // Configurar auto-preenchimento
+            this.setupAutoFill(field, input);
+
+            // Configurar geração automática
+            this.setupAutoGenerate(field, input);
+
+            // Configurar eventos de change para campos que afetam outros
+            if (field.name === "Nome da Escola") {
+                input.addEventListener('change', () => this.handleSchoolChange());
+            }
+        });
+    },
+
+    // Lidar com mudança de escola
+    handleSchoolChange: function() {
+        const schoolField = document.querySelector('[name="Nome da Escola"]');
+        const selectedSchool = UTILS.getSchoolData(schoolField.value);
+        
+        if (selectedSchool) {
+            // Preencher campos relacionados automaticamente
+            const municipalityField = document.querySelector('[name="Nome do Município"]');
+            if (municipalityField) {
+                municipalityField.value = selectedSchool.city;
+            }
+
+            const directorField = document.querySelector('[name="Nome do Diretor"]');
+            if (directorField) {
+                directorField.value = selectedSchool.director;
+            }
+        }
+    },
+
     // Validar formulário completo
     validateForm: function(documentType) {
+        // Não validar formulário para links úteis
+        if (documentType === 'links_uteis') {
+            return { isValid: true, errors: [] };
+        }
+        
         const fields = DOCUMENT_FIELDS[documentType];
         let isValid = true;
         const errors = [];
@@ -634,6 +732,11 @@ createFieldHTML: function(field) {
 
     // Coletar dados do formulário
     collectFormData: function(documentType) {
+        // Não coletar dados para links úteis
+        if (documentType === 'links_uteis') {
+            return {};
+        }
+        
         const formData = {};
         const fields = DOCUMENT_FIELDS[documentType];
 
@@ -765,10 +868,44 @@ createFieldHTML: function(field) {
             console.log('✅ Formulário limpo!');
         }
         
+        // Mostrar novamente o botão de gerar documento
+        document.getElementById('generate-document').classList.remove('hidden');
+        
         // Limpar também os dados do estado
         APP_STATE.formData = {};
         APP_STATE.currentDocumentType = "";
         APP_STATE.generatedDocument = null;
+    }
+};
+
+// ✅ NOVO: HANDLERS PARA LINKS ÚTEIS
+const LINK_HANDLERS = {
+    // Função para abrir links em nova aba
+    openLink: function(url) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    },
+    
+    // Criar interface dos links
+    createLinksInterface: function() {
+        return Object.entries(USEFUL_LINKS).map(([nome, url]) => `
+            <div class="link-card" data-url="${url}">
+                <div class="link-icon">
+                    <i class="fas fa-external-link-alt"></i>
+                </div>
+                <div class="link-content">
+                    <h3>${nome}</h3>
+                    <p class="link-url">${this.shortenURL(url)}</p>
+                </div>
+                <button class="btn-link" onclick="LINK_HANDLERS.openLink('${url}')">
+                    <i class="fas fa-external-link-alt"></i> Acessar
+                </button>
+            </div>
+        `).join('');
+    },
+    
+    // Encurtar URL para exibição
+    shortenURL: function(url) {
+        return url.replace('https://', '').replace('http://', '').substring(0, 30) + '...';
     }
 };
 
