@@ -261,66 +261,60 @@ class SupervisaoApp {
             
             // SE for o card "links_uteis", adicionar os botões DIRETAMENTE
             if (docType === 'links_uteis') {
-                card.innerHTML = `
-                    <i class="${DOCUMENT_ICONS[docType]}"></i>
-                    <h3>${DOCUMENT_NAMES[docType]}</h3>
-                    <div class="links-buttons" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                        <!-- AGENDA -->
-                        <a href="https://docs.google.com/spreadsheets/d/19qp1JvmUod_iasnI0GwFronxrcYWHp9oVg8T_PXoS48/edit?usp=sharing" 
-                           target="_blank" 
-                           class="btn btn-secondary" 
-                           style="padding: 10px 15px; font-size: 0.9rem; text-align: left; justify-content: flex-start;">
-                            <i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>
-                            AGENDA
-                        </a>
-                        
-                        <!-- SIGAE -->
-                        <a href="https://sigae.institutounibanco.org.br/" 
-                           target="_blank" 
-                           class="btn btn-secondary" 
-                           style="padding: 10px 15px; font-size: 0.9rem; text-align: left; justify-content: flex-start;">
-                            <i class="fas fa-chart-line" style="margin-right: 8px;"></i>
-                            SIGAE
-                        </a>
-                        
-                        <!-- Outlook -->
-                        <a href="https://outlook.office.com/mail/" 
-                           target="_blank" 
-                           class="btn btn-secondary" 
-                           style="padding: 10px 15px; font-size: 0.9rem; text-align: left; justify-content: flex-start;">
-                            <i class="fas fa-envelope" style="margin-right: 8px;"></i>
-                            Outlook
-                        </a>
-                        
-                        <!-- SEGES -->
-                        <a href="https://seges.sedu.es.gov.br/users/sign_in" 
-                           target="_blank" 
-                           class="btn btn-secondary" 
-                           style="padding: 10px 15px; font-size: 0.9rem; text-align: left; justify-content: flex-start;">
-                            <i class="fas fa-user-shield" style="margin-right: 8px;"></i>
-                            SEGES
-                        </a>
-                        
-                        <!-- DRIVE -->
-                        <a href="https://drive.google.com/drive/home" 
-                           target="_blank" 
-                           class="btn btn-secondary" 
-                           style="padding: 10px 15px; font-size: 0.9rem; text-align: left; justify-content: flex-start;">
-                            <i class="fas fa-hdd" style="margin-right: 8px;"></i>
-                            DRIVE
-                        </a>
-                        
-                        <!-- EDOCS -->
-                        <a href="https://sso.acesso.gov.br/login?client_id=acessocidadao.es.gov.br&authorization_id=19af64bde0d" 
-                           target="_blank" 
-                           class="btn btn-secondary" 
-                           style="padding: 10px 15px; font-size: 0.9rem; text-align: left; justify-content: flex-start;">
-                            <i class="fas fa-file-alt" style="margin-right: 8px;"></i>
-                            EDOCS
-                        </a>
-                    </div>
-                `;
-            } else {
+    card.innerHTML = `
+        <i class="${DOCUMENT_ICONS[docType]}"></i>
+        <h3>${DOCUMENT_NAMES[docType]}</h3>
+        <div class="links-buttons">
+            <!-- AGENDA -->
+            <a href="https://docs.google.com/spreadsheets/d/19qp1JvmUod_iasnI0GwFronxrcYWHp9oVg8T_PXoS48/edit?usp=sharing" 
+               target="_blank" 
+               class="btn btn-secondary">
+                <i class="fas fa-calendar-alt"></i>
+                AGENDA
+            </a>
+            
+            <!-- SIGAE -->
+            <a href="https://sigae.institutounibanco.org.br/" 
+               target="_blank" 
+               class="btn btn-secondary">
+                <i class="fas fa-chart-line"></i>
+                SIGAE
+            </a>
+            
+            <!-- Outlook -->
+            <a href="https://outlook.office.com/mail/" 
+               target="_blank" 
+               class="btn btn-secondary">
+                <i class="fas fa-envelope"></i>
+                Outlook
+            </a>
+            
+            <!-- SEGES -->
+            <a href="https://seges.sedu.es.gov.br/users/sign_in" 
+               target="_blank" 
+               class="btn btn-secondary">
+                <i class="fas fa-user-shield"></i>
+                SEGES
+            </a>
+            
+            <!-- DRIVE -->
+            <a href="https://drive.google.com/drive/home" 
+               target="_blank" 
+               class="btn btn-secondary">
+                <i class="fas fa-hdd"></i>
+                DRIVE
+            </a>
+            
+            <!-- EDOCS -->
+            <a href="https://sso.acesso.gov.br/login?client_id=acessocidadao.es.gov.br&authorization_id=19af64bde0d" 
+               target="_blank" 
+               class="btn btn-secondary">
+                <i class="fas fa-file-alt"></i>
+                EDOCS
+            </a>
+        </div>
+    `;
+} else {
                 // Para os outros cards, manter o formato normal
                 card.innerHTML = `
                     <i class="${DOCUMENT_ICONS[docType]}"></i>
