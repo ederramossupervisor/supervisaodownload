@@ -65,7 +65,8 @@ const DOCUMENT_ICONS = {
     viagem_pedagogica: "fas fa-bus",
     manifestacao: "fas fa-comment-alt",
     eletivas: "fas fa-book-open",
-    projeto: "fas fa-project-diagram"
+    projeto: "fas fa-project-diagram",
+    links_uteis: "fas fa-link"
 };
 
 // Nomes amigáveis para os documentos
@@ -77,7 +78,8 @@ const DOCUMENT_NAMES = {
     viagem_pedagogica: "Viagem Pedagógica",
     manifestacao: "Manifestação",
     eletivas: "Eletivas",
-    projeto: "Projeto"
+    projeto: "Projeto",
+    links_uteis: "Links Úteis"
 };
 
 // Estado da aplicação
