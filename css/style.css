@@ -1664,69 +1664,52 @@ footer {
 .document-type .links-buttons {
     margin-top: 15px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 colunas - 2 linhas de 3 botões */
-    gap: 6px; /* Espaço menor entre botões */
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas */
+    gap: 5px; /* Espaço ainda menor */
     justify-items: center; /* Centraliza os botões */
+    align-items: center; /* Alinha verticalmente */
 }
 
 .document-type .links-buttons .btn {
-    padding: 0; /* Remove padding interno */
-    font-size: 0.7rem; /* Fonte bem pequena */
+    padding: 0;
+    font-size: 0.65rem; /* Fonte menor */
     text-align: center;
     display: flex;
-    flex-direction: column; /* Ícone em cima, texto embaixo */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
     text-decoration: none;
-    border-radius: 5px; /* Cantos levemente arredondados */
-    width: 60px; /* Largura fixa - QUADRADO */
-    height: 60px; /* Altura igual à largura - QUADRADO */
-    white-space: normal; /* Permite quebra de linha */
-    line-height: 1.2;
+    border-radius: 4px; /* Cantos menos arredondados */
+    width: 50px; /* MAIS PEQUENO: 50px */
+    height: 50px; /* MAIS PEQUENO: 50px */
+    white-space: normal;
+    line-height: 1.1;
     overflow: hidden;
 }
 
 .document-type .links-buttons .btn i {
-    margin-right: 0; /* Remove margem lateral */
-    margin-bottom: 4px; /* Espaço entre ícone e texto */
-    font-size: 1rem; /* Ícone um pouco maior para destaque */
-    display: block; /* Garante que o ícone fique em linha própria */
+    margin-right: 0;
+    margin-bottom: 3px; /* Espaço menor */
+    font-size: 0.9rem; /* Ícone menor */
+    display: block;
 }
 
 .document-type .links-buttons .btn:hover {
-    transform: translateY(-3px) scale(1.05); /* Efeito de levantar e crescer */
-    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
 }
 
-/* Card mantém mesmo tamanho - IMPORTANTE! */
+/* IMPORTANTE: Card com mesmo padding dos outros */
 .document-type[data-type="links_uteis"] {
-    padding-bottom: 15px;
+    padding: 30px 20px; /* MESMO padding dos outros cards */
     min-height: auto !important;
-    padding: 20px 15px; /* Um pouco menos de padding para caber os botões */
 }
 
-/* Manter hover igual aos outros cards */
+/* Hover igual aos outros cards */
 .document-type[data-type="links_uteis"]:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px) scale(1.02);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
     background: var(--branco);
     border-color: var(--azul);
-}
-
-/* Efeito de "pressionado" ao clicar */
-.document-type .links-buttons .btn:active {
-    transform: translateY(-1px) scale(0.98);
-}
-/* Ajustar posicionamento dos botões - 3 à esquerda, 3 à direita */
-.document-type .links-buttons .btn:nth-child(1),
-.document-type .links-buttons .btn:nth-child(2),
-.document-type .links-buttons .btn:nth-child(3) {
-    /* Primeiros 3 botões ficam à esquerda */
-}
-
-.document-type .links-buttons .btn:nth-child(4),
-.document-type .links-buttons .btn:nth-child(5),
-.document-type .links-buttons .btn:nth-child(6) {
-    /* Últimos 3 botões ficam à direita */
 }
