@@ -1,3 +1,54 @@
+// ========== SPLASH SCREEN CONTROL ==========
+document.addEventListener('DOMContentLoaded', function() {
+  // Adicionar classe para mostrar a splash
+  document.body.classList.remove('app-loaded');
+  
+  // Esconder splash quando tudo carregar (incluindo imagens)
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.body.classList.add('app-loaded');
+      
+      // Iniciar a aplicação após a splash
+      setTimeout(initializeMainApp, 300);
+    }, 1500);
+  });
+  
+  // Fallback: se a página já estiver carregada
+  if (document.readyState === 'complete') {
+    setTimeout(function() {
+      document.body.classList.add('app-loaded');
+      initializeMainApp();
+    }, 1500);
+  }
+});
+
+// ========== APLICAÇÃO PRINCIPAL ==========
+function initializeMainApp() {
+  console.log('🎬 Splash screen escondida - Iniciando aplicação...');
+  
+  // Verificar se todos os scripts necessários estão carregados
+  const requiredScripts = [
+    'CONFIG', 'SCHOOLS_DATA', 'DOCUMENT_FIELDS', 'ApiService',
+    'UTILS', 'DOCUMENT_HANDLERS', 'API_SERVICE'
+  ];
+  
+  let allLoaded = true;
+  requiredScripts.forEach(script => {
+    if (typeof window[script] === 'undefined') {
+      console.warn(`⚠️ ${script} ainda não carregado`);
+      allLoaded = false;
+    }
+  });
+  
+  if (!allLoaded) {
+    // Aguardar mais um pouco
+    setTimeout(initializeMainApp, 500);
+    return;
+  }
+  
+  // Inicializar aplicação
+  window.supervisaoApp = new SupervisaoApp();
+}
 
 // Aplicação principal - Controle de fluxo e eventos
 class SupervisaoApp {
@@ -13,6 +64,11 @@ class SupervisaoApp {
         console.log(`${CONFIG.appName} v${CONFIG.version} inicializando...`);
         this.initSchoolSelector(); // Novo sistema de seleção
         this.createDocumentCards();
+        
+        // Mostrar notificação de inicialização
+        setTimeout(() => {
+            UTILS.showNotification('Sistema Supervisão carregado com sucesso!', 'success');
+        }, 1000);
     }
 
     // Vincular eventos
@@ -338,7 +394,6 @@ class SupervisaoApp {
     }
 
     // Documentos
-        // Documentos
     selectDocumentType(documentType) {
         // SE for o card "links_uteis", mostrar os botões diretamente
         if (documentType === 'links_uteis') {
@@ -357,7 +412,8 @@ class SupervisaoApp {
         this.populateDocumentForm(documentType);
         this.showFormScreen();
     }
-        // === NOVA FUNÇÃO PARA MOSTRAR OS LINKS ===
+    
+    // === NOVA FUNÇÃO PARA MOSTRAR OS LINKS ===
     showLinksUteisScreen() {
         // Esconder todas as telas
         this.hideAllScreens();
@@ -699,64 +755,37 @@ class SupervisaoApp {
     }
 }
 
-// ✅ INICIALIZAÇÃO CORRIGIDA - Aguarda todos os scripts carregarem
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔄 Verificando carregamento dos scripts...');
-    
-    // Aguardar um pouco para garantir que todos os scripts carregaram
-    setTimeout(() => {
-        if (typeof DOCUMENT_FIELDS === 'undefined') {
-            console.error('❌ DOCUMENT_FIELDS não carregado!');
-            console.log('📋 Scripts carregados:', {
-                CONFIG: typeof CONFIG,
-                SCHOOLS_DATA: typeof SCHOOLS_DATA, 
-                DOCUMENT_FIELDS: typeof DOCUMENT_FIELDS,
-                ApiService: typeof ApiService
-            });
-            return;
+// Adicionar estilos dinâmicos
+if (!document.querySelector('.dynamic-styles')) {
+    const dynamicStyles = document.createElement('style');
+    dynamicStyles.className = 'dynamic-styles';
+    dynamicStyles.textContent = `
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
         }
         
-        if (typeof ApiService === 'undefined') {
-            console.error('❌ ApiService não carregado!');
-            return;
+        .btn:disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
         }
         
-        console.log('✅ Todos os scripts carregados - Iniciando aplicação...');
-        window.supervisaoApp = new SupervisaoApp();
-                   
-        // Adicionar estilos dinâmicos
-        if (!document.querySelector('.dynamic-styles')) {
-            const dynamicStyles = document.createElement('style');
-            dynamicStyles.className = 'dynamic-styles';
-            dynamicStyles.textContent = `
-                .btn:disabled {
-                    opacity: 0.6;
-                    cursor: not-allowed;
-                    transform: none !important;
-                }
-                
-                .btn:disabled:hover {
-                    transform: none !important;
-                    box-shadow: none !important;
-                }
-                
-                .fa-spin {
-                    animation: fa-spin 1s infinite linear;
-                }
-                
-                @keyframes fa-spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
+        .fa-spin {
+            animation: fa-spin 1s infinite linear;
+        }
+        
+        @keyframes fa-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-                /* Melhorar visualização dos campos readonly */
-                input[readonly], textarea[readonly] {
-                    background-color: var(--cinza-claro);
-                    color: var(--cinza-escuro);
-                    cursor: not-allowed;
-                }
-            `;
-            document.head.appendChild(dynamicStyles);
+        /* Melhorar visualização dos campos readonly */
+        input[readonly], textarea[readonly] {
+            background-color: var(--cinza-claro);
+            color: var(--cinza-escuro);
+            cursor: not-allowed;
         }
-    }, 500);
-});
+    `;
+    document.head.appendChild(dynamicStyles);
+}
