@@ -1,219 +1,8 @@
-// ========== SPLASH SCREEN CONTROL ==========
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 DOM carregado - Configurando splash screen...');
-    
-    // Garantir que a splash está visível inicialmente
-    document.body.classList.remove('app-loaded');
-    
-    // Aguardar os scripts carregarem
-    setTimeout(checkIfScriptsLoaded, 100);
-});
 
-// ========== VERIFICAR SE SCRIPTS CARREGARAM ==========
-let checkCount = 0;
-const maxChecks = 50; // 5 segundos máximo
-
-function checkIfScriptsLoaded() {
-    checkCount++;
-    
-    // Verificar scripts essenciais
-    const scripts = {
-        'CONFIG': window.CONFIG,
-        'SCHOOLS_DATA': window.SCHOOLS_DATA,
-        'DOCUMENT_FIELDS': window.DOCUMENT_FIELDS,
-        'DOCUMENT_ICONS': window.DOCUMENT_ICONS,
-        'DOCUMENT_NAMES': window.DOCUMENT_NAMES,
-        'DROPDOWN_OPTIONS': window.DROPDOWN_OPTIONS,
-        'APP_STATE': window.APP_STATE,
-        'UTILS': window.UTILS,
-        'DOCUMENT_HANDLERS': window.DOCUMENT_HANDLERS,
-        'API_SERVICE': window.API_SERVICE
-    };
-    
-    let missingScripts = [];
-    let loadedScripts = [];
-    
-    for (const [name, script] of Object.entries(scripts)) {
-        if (typeof script === 'undefined') {
-            missingScripts.push(name);
-        } else {
-            loadedScripts.push(name);
-        }
-    }
-    
-    console.log(`🔍 Verificação ${checkCount}/${maxChecks}`);
-    console.log(`✅ Carregados: ${loadedScripts.length} scripts`);
-    
-    if (loadedScripts.length > 0) {
-        console.log('✅ Scripts:', loadedScripts.join(', '));
-    }
-    
-    if (missingScripts.length > 0) {
-        console.log(`⏳ Aguardando: ${missingScripts.length} scripts`);
-    }
-    
-    // Se todos scripts essenciais carregaram OU timeout
-    if (missingScripts.length === 0 || checkCount >= maxChecks) {
-        if (missingScripts.length > 0) {
-            console.warn(`⚠️ Alguns scripts não carregaram: ${missingScripts.join(', ')}`);
-            console.log('🔄 Iniciando mesmo assim...');
-        }
-        
-        // Iniciar aplicação
-        setTimeout(initializeApp, 500);
-    } else {
-        // Continuar verificando
-        setTimeout(checkIfScriptsLoaded, 100);
-    }
-}
-
-// ========== INICIALIZAR APLICAÇÃO ==========
-function initializeApp() {
-    console.log('🎬 Inicializando aplicação...');
-    
-    // Esconder splash screen
-    document.body.classList.add('app-loaded');
-    
-    // Criar variáveis básicas se não existirem
-    ensureBasicVariables();
-    
-    // Inicializar a aplicação principal
-    setTimeout(function() {
-        try {
-            window.supervisaoApp = new SupervisaoApp();
-            console.log('✅ Aplicação inicializada com sucesso!');
-            
-            // Mostrar notificação de boas-vindas
-            setTimeout(() => {
-                if (window.UTILS && window.UTILS.showNotification) {
-                    UTILS.showNotification('Sistema Supervisão carregado!', 'success');
-                }
-            }, 1000);
-            
-        } catch (error) {
-            console.error('💥 Erro ao inicializar aplicação:', error);
-            showErrorMessage('Erro ao carregar o sistema. Recarregue a página.');
-        }
-    }, 300);
-}
-
-// ========== GARANTIR VARIÁVEIS BÁSICAS ==========
-function ensureBasicVariables() {
-    // Se CONFIG não existir, criar básico
-    if (typeof window.CONFIG === 'undefined') {
-        console.warn('⚠️ CONFIG não encontrado - criando básico');
-        window.CONFIG = {
-            appName: 'Sistema Supervisão',
-            version: '1.0.0',
-            cloudFunctions: {
-                generateDocument: 'https://southamerica-east1-sistema-documentos-sreac.cloudfunctions.net/supervisaoSp'
-            }
-        };
-    }
-    
-    // Se SCHOOLS_DATA não existir, criar array vazio
-    if (typeof window.SCHOOLS_DATA === 'undefined') {
-        console.warn('⚠️ SCHOOLS_DATA não encontrado - criando vazio');
-        window.SCHOOLS_DATA = [];
-    }
-    
-    // Se DOCUMENT_FIELDS não existir, criar básico
-    if (typeof window.DOCUMENT_FIELDS === 'undefined') {
-        console.warn('⚠️ DOCUMENT_FIELDS não encontrado - criando básico');
-        window.DOCUMENT_FIELDS = {
-            'links_uteis': []
-        };
-    }
-    
-    // Se DOCUMENT_ICONS não existir, criar básico
-    if (typeof window.DOCUMENT_ICONS === 'undefined') {
-        console.warn('⚠️ DOCUMENT_ICONS não encontrado - criando básico');
-        window.DOCUMENT_ICONS = {
-            'links_uteis': 'fas fa-link'
-        };
-    }
-    
-    // Se DOCUMENT_NAMES não existir, criar básico
-    if (typeof window.DOCUMENT_NAMES === 'undefined') {
-        console.warn('⚠️ DOCUMENT_NAMES não encontrado - criando básico');
-        window.DOCUMENT_NAMES = {
-            'links_uteis': 'Links Úteis'
-        };
-    }
-    
-    // Se APP_STATE não existir, criar
-    if (typeof window.APP_STATE === 'undefined') {
-        console.warn('⚠️ APP_STATE não encontrado - criando');
-        window.APP_STATE = {
-            supervisorName: '',
-            selectedSchools: [],
-            currentDocumentType: '',
-            formData: {},
-            hasAccess: false,
-            configCompleted: false,
-            accessRequested: false,
-            generatedDocument: null,
-            allSchools: SCHOOLS_DATA ? SCHOOLS_DATA.map(school => school.name) : []
-        };
-    }
-    
-    // Se UTILS não existir, criar básico
-    if (typeof window.UTILS === 'undefined') {
-        console.warn('⚠️ UTILS não encontrado - criando básico');
-        window.UTILS = {
-            showNotification: function(message, type) {
-                console.log(`[${type}] ${message}`);
-                // Criar notificação básica
-                const notification = document.createElement('div');
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: ${type === 'error' ? '#f44336' : type === 'success' ? '#4CAF50' : '#2196F3'};
-                    color: white;
-                    padding: 15px;
-                    border-radius: 5px;
-                    z-index: 10000;
-                    max-width: 300px;
-                `;
-                notification.textContent = message;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            },
-            loadConfig: function() {
-                try {
-                    const config = localStorage.getItem('supervisaoConfig');
-                    return config ? JSON.parse(config) : null;
-                } catch (e) {
-                    return null;
-                }
-            },
-            saveConfig: function() {
-                try {
-                    localStorage.setItem('supervisaoConfig', JSON.stringify({
-                        supervisorName: APP_STATE.supervisorName,
-                        selectedSchools: APP_STATE.selectedSchools,
-                        configCompleted: APP_STATE.configCompleted,
-                        accessRequested: APP_STATE.accessRequested,
-                        hasAccess: APP_STATE.hasAccess
-                    }));
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            },
-            checkTemplateAccess: function() {
-                return APP_STATE.accessRequested || APP_STATE.hasAccess || true;
-            }
-        };
-    }
-}
-
-// ========== APLICAÇÃO PRINCIPAL ==========
+// Aplicação principal - Controle de fluxo e eventos
 class SupervisaoApp {
     constructor() {
-        console.log('🏗️  Construindo SupervisaoApp...');
-        this.selectedSchools = [];
+        this.selectedSchools = []; // Para controle temporário no modal
         this.initializeApp();
         this.bindEvents();
         this.checkSavedConfig();
@@ -222,40 +11,28 @@ class SupervisaoApp {
     // Inicialização da aplicação
     initializeApp() {
         console.log(`${CONFIG.appName} v${CONFIG.version} inicializando...`);
-        this.initSchoolSelector();
+        this.initSchoolSelector(); // Novo sistema de seleção
         this.createDocumentCards();
     }
 
     // Vincular eventos
     bindEvents() {
         // Navegação principal
-        const enterBtn = document.getElementById('enter-btn');
-        const backToWelcome = document.getElementById('back-to-welcome');
-        const configBtn = document.getElementById('config-btn');
-        const backToMain = document.getElementById('back-to-main');
-        
-        if (enterBtn) enterBtn.addEventListener('click', () => this.showConfigScreen());
-        if (backToWelcome) backToWelcome.addEventListener('click', () => this.showWelcomeScreen());
-        if (configBtn) configBtn.addEventListener('click', () => this.showConfigScreen());
-        if (backToMain) backToMain.addEventListener('click', () => this.showMainScreen());
+        document.getElementById('enter-btn').addEventListener('click', () => this.showConfigScreen());
+        document.getElementById('back-to-welcome').addEventListener('click', () => this.showWelcomeScreen());
+        document.getElementById('config-btn').addEventListener('click', () => this.showConfigScreen());
+        document.getElementById('back-to-main').addEventListener('click', () => this.showMainScreen());
 
         // Configuração
-        const saveConfig = document.getElementById('save-config');
-        const requestAccessBtn = document.getElementById('request-access-btn');
-        
-        if (saveConfig) saveConfig.addEventListener('click', () => this.saveConfiguration());
-        if (requestAccessBtn) requestAccessBtn.addEventListener('click', () => this.showAccessModal());
+        document.getElementById('save-config').addEventListener('click', () => this.saveConfiguration());
+        document.getElementById('request-access-btn').addEventListener('click', () => this.showAccessModal());
 
         // Formulário de documentos
-        const generateDocument = document.getElementById('generate-document');
-        if (generateDocument) generateDocument.addEventListener('click', () => this.generateDocument());
+        document.getElementById('generate-document').addEventListener('click', () => this.generateDocument());
 
         // Modais
-        const downloadPdf = document.getElementById('download-pdf');
-        const accessForm = document.getElementById('access-form');
-        
-        if (downloadPdf) downloadPdf.addEventListener('click', () => this.downloadPDF());
-        if (accessForm) accessForm.addEventListener('submit', (e) => this.handleAccessRequest(e));
+        document.getElementById('download-pdf').addEventListener('click', () => this.downloadPDF());
+        document.getElementById('access-form').addEventListener('submit', (e) => this.handleAccessRequest(e));
 
         // Fechar modais
         document.querySelectorAll('.close').forEach(closeBtn => {
@@ -270,7 +47,9 @@ class SupervisaoApp {
         });
     }
 
-    // ===== SISTEMA DE SELEÇÃO DE ESCOLAS =====
+    // ===== NOVO SISTEMA DE SELEÇÃO DE ESCOLAS =====
+
+    // Inicializar o sistema de seleção de escolas
     initSchoolSelector() {
         const schoolBtn = document.getElementById('school-selector-btn');
         const schoolsModal = document.getElementById('schools-modal');
@@ -278,45 +57,37 @@ class SupervisaoApp {
         const cancelBtn = document.getElementById('cancel-schools');
         const clearBtn = document.getElementById('clear-selection');
         const searchInput = document.getElementById('school-search');
-        const closeBtn = schoolsModal ? schoolsModal.querySelector('.close') : null;
+        const closeBtn = schoolsModal.querySelector('.close');
 
         // Carregar escolas
         this.loadSchools();
 
         // Event listeners
-        if (schoolBtn) schoolBtn.addEventListener('click', () => this.openSchoolsModal());
-        if (confirmBtn) confirmBtn.addEventListener('click', () => this.confirmSchoolSelection());
-        if (cancelBtn) cancelBtn.addEventListener('click', () => this.closeSchoolsModal());
-        if (clearBtn) clearBtn.addEventListener('click', () => this.clearSchoolSelection());
-        if (closeBtn) closeBtn.addEventListener('click', () => this.closeSchoolsModal());
-        if (searchInput) searchInput.addEventListener('input', (e) => this.filterSchools(e.target.value));
+        schoolBtn.addEventListener('click', () => this.openSchoolsModal());
+        confirmBtn.addEventListener('click', () => this.confirmSchoolSelection());
+        cancelBtn.addEventListener('click', () => this.closeSchoolsModal());
+        clearBtn.addEventListener('click', () => this.clearSchoolSelection());
+        closeBtn.addEventListener('click', () => this.closeSchoolsModal());
+        searchInput.addEventListener('input', (e) => this.filterSchools(e.target.value));
 
         // Fechar modal ao clicar fora
-        if (schoolsModal) {
-            schoolsModal.addEventListener('click', (e) => {
-                if (e.target === schoolsModal) {
-                    this.closeSchoolsModal();
-                }
-            });
-        }
+        schoolsModal.addEventListener('click', (e) => {
+            if (e.target === schoolsModal) {
+                this.closeSchoolsModal();
+            }
+        });
     }
 
     // Carregar lista de escolas
     loadSchools() {
-        // Usar SCHOOLS_DATA existente ou criar vazio
-        if (SCHOOLS_DATA && SCHOOLS_DATA.length > 0) {
-            // Certificar que APP_STATE.allSchools existe
-            if (!APP_STATE.allSchools) {
-                APP_STATE.allSchools = [];
-            }
-            APP_STATE.allSchools = SCHOOLS_DATA.map(school => school.name);
-        }
+        // Usar SCHOOLS_DATA existente
+        APP_STATE.allSchools = SCHOOLS_DATA.map(school => school.name);
         
         // Carregar escolas salvas anteriormente
         const savedConfig = UTILS.loadConfig();
-        if (savedConfig && savedConfig.selectedSchools) {
-            APP_STATE.selectedSchools = savedConfig.selectedSchools;
-            this.selectedSchools = [...savedConfig.selectedSchools];
+        if (savedConfig && savedConfig.schools) {
+            APP_STATE.selectedSchools = savedConfig.schools;
+            this.selectedSchools = [...savedConfig.schools]; // Cópia para controle temporário
             this.updateSchoolSelectionDisplay();
         }
     }
@@ -326,8 +97,8 @@ class SupervisaoApp {
         const modal = document.getElementById('schools-modal');
         const schoolBtn = document.getElementById('school-selector-btn');
         
-        if (modal) modal.classList.remove('hidden');
-        if (schoolBtn) schoolBtn.classList.add('active');
+        modal.classList.remove('hidden');
+        schoolBtn.classList.add('active');
         this.renderSchoolsList();
         this.updateSelectionCounters();
     }
@@ -337,10 +108,10 @@ class SupervisaoApp {
         const modal = document.getElementById('schools-modal');
         const schoolBtn = document.getElementById('school-selector-btn');
         
-        if (modal) modal.classList.add('hidden');
-        if (schoolBtn) schoolBtn.classList.remove('active');
+        modal.classList.add('hidden');
+        schoolBtn.classList.remove('active');
         
-        // Restaurar seleção temporária
+        // Restaurar seleção temporária para o estado atual
         this.selectedSchools = [...APP_STATE.selectedSchools];
     }
 
@@ -366,14 +137,9 @@ class SupervisaoApp {
     // Renderizar lista de escolas
     renderSchoolsList(filter = '') {
         const container = document.getElementById('schools-checklist');
-        if (!container) return;
-        
-        let filteredSchools = [];
-        if (APP_STATE.allSchools && APP_STATE.allSchools.length > 0) {
-            filteredSchools = APP_STATE.allSchools.filter(school => 
-                school.toLowerCase().includes(filter.toLowerCase())
-            );
-        }
+        const filteredSchools = APP_STATE.allSchools.filter(school => 
+            school.toLowerCase().includes(filter.toLowerCase())
+        );
 
         if (filteredSchools.length === 0) {
             container.innerHTML = `
@@ -393,7 +159,7 @@ class SupervisaoApp {
             </div>
         `).join('');
 
-        // Adicionar event listeners
+        // Adicionar event listeners aos itens
         container.querySelectorAll('.school-checkbox-item').forEach(item => {
             item.addEventListener('click', () => {
                 const school = item.dataset.school;
@@ -407,13 +173,14 @@ class SupervisaoApp {
         const index = this.selectedSchools.indexOf(school);
         
         if (index > -1) {
+            // Remover se já estiver selecionada
             this.selectedSchools.splice(index, 1);
         } else {
+            // Adicionar se não estiver selecionada
             this.selectedSchools.push(school);
         }
         
-        const searchInput = document.getElementById('school-search');
-        this.renderSchoolsList(searchInput ? searchInput.value : '');
+        this.renderSchoolsList(document.getElementById('school-search').value);
         this.updateSelectionCounters();
     }
 
@@ -424,7 +191,7 @@ class SupervisaoApp {
         const countNumber = document.getElementById('count-number');
         
         if (selectedCounter) selectedCounter.textContent = this.selectedSchools.length;
-        if (totalCounter) totalCounter.textContent = APP_STATE.allSchools ? APP_STATE.allSchools.length : 0;
+        if (totalCounter) totalCounter.textContent = APP_STATE.allSchools.length;
         if (countNumber) countNumber.textContent = this.selectedSchools.length;
     }
 
@@ -468,21 +235,15 @@ class SupervisaoApp {
             APP_STATE.selectedSchools.splice(index, 1);
             this.selectedSchools.splice(index, 1);
             this.updateSchoolSelectionDisplay();
-            const searchInput = document.getElementById('school-search');
-            this.renderSchoolsList(searchInput ? searchInput.value : '');
+            this.renderSchoolsList(document.getElementById('school-search').value);
         }
     }
 
+    // ===== FIM DO NOVO SISTEMA DE SELEÇÃO =====
+
     // Verificar se há configuração salva
     checkSavedConfig() {
-        const config = UTILS.loadConfig();
-        if (config && config.configCompleted) {
-            APP_STATE.supervisorName = config.supervisorName || '';
-            APP_STATE.selectedSchools = config.selectedSchools || [];
-            APP_STATE.configCompleted = config.configCompleted || false;
-            APP_STATE.accessRequested = config.accessRequested || false;
-            
-            this.selectedSchools = [...APP_STATE.selectedSchools];
+        if (UTILS.loadConfig() && APP_STATE.configCompleted) {
             this.showMainScreen();
             UTILS.showNotification('Configuração carregada com sucesso!', 'success');
         }
@@ -491,8 +252,6 @@ class SupervisaoApp {
     // Criar cards de documentos
     createDocumentCards() {
         const container = document.querySelector('.document-types');
-        if (!container) return;
-        
         container.innerHTML = '';
 
         Object.keys(DOCUMENT_FIELDS).forEach(docType => {
@@ -500,8 +259,8 @@ class SupervisaoApp {
             card.className = 'document-type';
             card.setAttribute('data-type', docType);
             card.innerHTML = `
-                <i class="${DOCUMENT_ICONS[docType] || 'fas fa-file'}"></i>
-                <h3>${DOCUMENT_NAMES[docType] || docType}</h3>
+                <i class="${DOCUMENT_ICONS[docType]}"></i>
+                <h3>${DOCUMENT_NAMES[docType]}</h3>
             `;
             card.addEventListener('click', () => this.selectDocumentType(docType));
             container.appendChild(card);
@@ -511,17 +270,13 @@ class SupervisaoApp {
     // Navegação entre telas
     showWelcomeScreen() {
         this.hideAllScreens();
-        const welcomeScreen = document.getElementById('welcome-screen');
-        if (welcomeScreen) welcomeScreen.classList.remove('hidden');
+        document.getElementById('welcome-screen').classList.remove('hidden');
     }
 
     showConfigScreen() {
         this.hideAllScreens();
-        const configScreen = document.getElementById('config-screen');
-        if (configScreen) {
-            configScreen.classList.remove('hidden');
-            this.loadConfigIntoForm();
-        }
+        document.getElementById('config-screen').classList.remove('hidden');
+        this.loadConfigIntoForm();
     }
 
     showMainScreen() {
@@ -533,40 +288,33 @@ class SupervisaoApp {
         }
 
         this.hideAllScreens();
-        const mainScreen = document.getElementById('main-screen');
-        if (mainScreen) mainScreen.classList.remove('hidden');
+        document.getElementById('main-screen').classList.remove('hidden');
     }
 
     showFormScreen() {
         this.hideAllScreens();
-        const formScreen = document.getElementById('form-screen');
-        if (formScreen) formScreen.classList.remove('hidden');
+        document.getElementById('form-screen').classList.remove('hidden');
     }
 
     hideAllScreens() {
         document.querySelectorAll('.container .card, #main-screen').forEach(screen => {
             screen.classList.add('hidden');
         });
-        
-        // Remover tela de links se existir
-        const linksScreen = document.getElementById('links-uteis-screen');
-        if (linksScreen) linksScreen.remove();
     }
 
     // Configuração do usuário
     loadConfigIntoForm() {
-        const nameInput = document.getElementById('supervisor-name');
-        if (nameInput) nameInput.value = APP_STATE.supervisorName;
+        document.getElementById('supervisor-name').value = APP_STATE.supervisorName;
+        // O display das escolas é atualizado automaticamente pelo novo sistema
     }
 
     saveConfiguration() {
-        const supervisorNameInput = document.getElementById('supervisor-name');
-        const supervisorName = supervisorNameInput ? supervisorNameInput.value.trim() : '';
+        const supervisorName = document.getElementById('supervisor-name').value.trim();
         
         // Validações
         if (!supervisorName) {
             UTILS.showNotification('Por favor, informe seu nome completo.', 'error');
-            if (supervisorNameInput) supervisorNameInput.focus();
+            document.getElementById('supervisor-name').focus();
             return;
         }
 
@@ -590,11 +338,12 @@ class SupervisaoApp {
     }
 
     // Documentos
+        // Documentos
     selectDocumentType(documentType) {
         // SE for o card "links_uteis", mostrar os botões diretamente
         if (documentType === 'links_uteis') {
             this.showLinksUteisScreen();
-            return;
+            return; // ← Para aqui, não executa o restante
         }
         
         // Verificar acesso aos templates
@@ -608,8 +357,7 @@ class SupervisaoApp {
         this.populateDocumentForm(documentType);
         this.showFormScreen();
     }
-    
-    // Mostrar os links úteis
+        // === NOVA FUNÇÃO PARA MOSTRAR OS LINKS ===
     showLinksUteisScreen() {
         // Esconder todas as telas
         this.hideAllScreens();
@@ -696,53 +444,90 @@ class SupervisaoApp {
         
         // Adicionar ao conteúdo principal
         const contentDiv = document.querySelector('.content');
-        if (contentDiv) {
-            const newDiv = document.createElement('div');
-            newDiv.id = 'links-uteis-screen';
-            newDiv.innerHTML = linksHtml;
-            contentDiv.appendChild(newDiv);
-            
-            // Adicionar evento ao botão "Voltar"
-            const backBtn = document.getElementById('back-to-main-from-links');
-            if (backBtn) {
-                backBtn.addEventListener('click', () => {
-                    document.getElementById('links-uteis-screen').remove();
-                    this.showMainScreen();
-                });
-            }
-        }
+        const newDiv = document.createElement('div');
+        newDiv.id = 'links-uteis-screen';
+        newDiv.innerHTML = linksHtml;
+        contentDiv.appendChild(newDiv);
+        
+        // Adicionar evento ao botão "Voltar"
+        document.getElementById('back-to-main-from-links').addEventListener('click', () => {
+            document.getElementById('links-uteis-screen').remove();
+            this.showMainScreen();
+        });
     }
 
     populateDocumentForm(documentType) {
         const form = document.getElementById('document-form');
         const title = document.getElementById('form-title');
         
-        if (!form || !title) return;
-        
         // Atualizar título
-        title.innerHTML = `<i class="fas fa-edit"></i> ${DOCUMENT_NAMES[documentType] || documentType} - Preencha os Dados`;
+        title.innerHTML = `<i class="fas fa-edit"></i> ${DOCUMENT_NAMES[documentType]} - Preencha os Dados`;
         
         // Limpar formulário
         form.innerHTML = '';
         
         // Adicionar campos
-        const fields = DOCUMENT_FIELDS[documentType] || [];
+        const fields = DOCUMENT_FIELDS[documentType];
         fields.forEach(field => {
             const fieldHTML = DOCUMENT_HANDLERS.createFieldHTML(field);
             form.innerHTML += fieldHTML;
         });
+
+        // Configurar campos dinamicamente
+        this.setupFormFields(documentType);
+    }
+
+    setupFormFields(documentType) {
+        const fields = DOCUMENT_FIELDS[documentType];
+        
+        fields.forEach(field => {
+            const input = document.querySelector(`[name="${field.name}"]`);
+            if (!input) return;
+
+            // Configurar dropdowns
+            if (field.type === 'dropdown') {
+                DOCUMENT_HANDLERS.populateDropdown(input, field.name);
+            }
+
+            // Configurar auto-preenchimento
+            DOCUMENT_HANDLERS.setupAutoFill(field, input);
+
+            // Configurar geração automática
+            DOCUMENT_HANDLERS.setupAutoGenerate(field, input);
+
+            // Configurar eventos de change para campos que afetam outros
+            if (field.name === "Nome da Escola") {
+                input.addEventListener('change', () => this.handleSchoolChange());
+            }
+        });
+    }
+
+    handleSchoolChange() {
+        const schoolField = document.querySelector('[name="Nome da Escola"]');
+        const selectedSchool = UTILS.getSchoolData(schoolField.value);
+        
+        if (selectedSchool) {
+            // Preencher campos relacionados automaticamente
+            const municipalityField = document.querySelector('[name="Nome do Município"]');
+            if (municipalityField) {
+                municipalityField.value = selectedSchool.city;
+            }
+
+            const directorField = document.querySelector('[name="Nome do Diretor"]');
+            if (directorField) {
+                directorField.value = selectedSchool.director;
+            }
+        }
     }
 
     async generateDocument() {
-        if (!DOCUMENT_HANDLERS || !DOCUMENT_HANDLERS.validateForm) {
-            UTILS.showNotification('Sistema de documentos não disponível', 'error');
-            return;
-        }
-        
         const validation = DOCUMENT_HANDLERS.validateForm(APP_STATE.currentDocumentType);
         
         if (!validation.isValid) {
             UTILS.showNotification('Preencha todos os campos obrigatórios!', 'error');
+            validation.errors.forEach(error => {
+                console.error('Erro de validação:', error);
+            });
             return;
         }
 
@@ -750,48 +535,50 @@ class SupervisaoApp {
         APP_STATE.formData = DOCUMENT_HANDLERS.collectFormData(APP_STATE.currentDocumentType);
 
         try {
-            console.log('🔧 Gerando documento:', APP_STATE.currentDocumentType);
+            console.log('🔧 === INICIANDO GERAÇÃO DE DOCUMENTO ===');
+            console.log('📄 Tipo:', APP_STATE.currentDocumentType);
+            console.log('📋 Dados:', APP_STATE.formData);
             
             // Mostrar loading
             const generateBtn = document.getElementById('generate-document');
-            if (generateBtn) {
-                const originalText = generateBtn.innerHTML;
-                generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Documento...';
-                generateBtn.disabled = true;
+            const originalText = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Documento...';
+            generateBtn.disabled = true;
 
-                // Gerar documento
-                const result = await DOCUMENT_HANDLERS.createPDF(
-                    APP_STATE.currentDocumentType, 
-                    APP_STATE.formData,
-                    'eder.ramos@educador.edu.es.gov.br'
-                );
+            // Usar seu email real
+            const userEmail = 'eder.ramos@educador.edu.es.gov.br';
+            console.log('📧 Email usado:', userEmail);
+            console.log('🌐 Chamando API...');
+            
+            // Gerar documento real usando a API
+            const result = await DOCUMENT_HANDLERS.createPDF(
+                APP_STATE.currentDocumentType, 
+                APP_STATE.formData,
+                userEmail
+            );
 
-                if (result.success) {
-                    APP_STATE.generatedDocument = result;
-                    console.log('🎯 Documento gerado com sucesso!');
-                    
-                    // Mostrar modal de download
-                    this.showDownloadModal();
-                    UTILS.showNotification('Documento gerado com sucesso!', 'success');
-                } else {
-                    throw new Error('Falha na geração do documento');
-                }
+            console.log('📤 RESULTADO COMPLETO DA API:', result);
+
+            if (result.success) {
+                APP_STATE.generatedDocument = result;
+                console.log('🎯 Documento gerado com sucesso!');
+                console.log('🔗 Propriedades disponíveis:', Object.keys(result));
                 
-                // Restaurar botão
-                generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
-                generateBtn.disabled = false;
+                // Mostrar modal de download
+                this.showDownloadModal();
+                UTILS.showNotification('Documento gerado com sucesso!', 'success');
+            } else {
+                throw new Error('Falha na geração do documento: ' + (result.error || 'Erro desconhecido'));
             }
 
         } catch (error) {
-            console.error('💥 ERRO:', error);
-            UTILS.showNotification('Erro ao gerar documento. Tente novamente.', 'error');
-            
-            // Restaurar botão em caso de erro
+            console.error('💥 ERRO COMPLETO:', error);
+            UTILS.showNotification(error.message || 'Erro ao gerar documento. Tente novamente.', 'error');
+        } finally {
+            // Restaurar botão
             const generateBtn = document.getElementById('generate-document');
-            if (generateBtn) {
-                generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
-                generateBtn.disabled = false;
-            }
+            generateBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Gerar Documento';
+            generateBtn.disabled = false;
         }
     }
 
@@ -805,44 +592,32 @@ class SupervisaoApp {
         try {
             // Mostrar loading no botão de download
             const pdfBtn = document.getElementById('download-pdf');
-            if (pdfBtn) {
-                const originalText = pdfBtn.innerHTML;
-                pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Baixando...';
-                pdfBtn.disabled = true;
+            const originalText = pdfBtn.innerHTML;
+            pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Baixando...';
+            pdfBtn.disabled = true;
 
-                // Fazer download do PDF
-                DOCUMENT_HANDLERS.downloadFile(
-                    APP_STATE.generatedDocument.filename,
-                    APP_STATE.generatedDocument.url
-                );
+            // Fazer download do PDF
+            DOCUMENT_HANDLERS.downloadFile(
+                APP_STATE.generatedDocument.filename,
+                APP_STATE.generatedDocument.url
+            );
 
-                // Fechar modal e limpar
-                setTimeout(() => {
-                    this.closeModal(document.getElementById('download-modal'));
-                    if (DOCUMENT_HANDLERS.clearForm) {
-                        DOCUMENT_HANDLERS.clearForm();
-                    }
-                    this.showMainScreen();
-                    UTILS.showNotification('PDF baixado com sucesso!', 'success');
-                }, 1000);
-                
-                // Restaurar botão
-                setTimeout(() => {
-                    pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Baixar PDF';
-                    pdfBtn.disabled = false;
-                }, 1500);
-            }
+            // Fechar modal e limpar após um breve delay
+            setTimeout(() => {
+                this.closeModal(document.getElementById('download-modal'));
+                DOCUMENT_HANDLERS.clearForm();
+                this.showMainScreen();
+                UTILS.showNotification('PDF baixado com sucesso!', 'success');
+            }, 1000);
 
         } catch (error) {
             console.error('Erro ao baixar PDF:', error);
             UTILS.showNotification('Erro ao baixar PDF. Tente novamente.', 'error');
-            
-            // Restaurar botão em caso de erro
+        } finally {
+            // Restaurar botão
             const pdfBtn = document.getElementById('download-pdf');
-            if (pdfBtn) {
-                pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Baixar PDF';
-                pdfBtn.disabled = false;
-            }
+            pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Baixar PDF';
+            pdfBtn.disabled = false;
         }
     }
 
@@ -850,9 +625,9 @@ class SupervisaoApp {
     async handleAccessRequest(e) {
         e.preventDefault();
 
-        const name = document.getElementById('requester-name')?.value.trim() || '';
-        const email = document.getElementById('requester-email')?.value.trim() || '';
-        const role = document.getElementById('requester-role')?.value.trim() || '';
+        const name = document.getElementById('requester-name').value.trim();
+        const email = document.getElementById('requester-email').value.trim();
+        const role = document.getElementById('requester-role').value.trim();
 
         // Validações
         if (!name || !email || !role) {
@@ -867,51 +642,41 @@ class SupervisaoApp {
 
         try {
             const submitBtn = e.target.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-                submitBtn.disabled = true;
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            submitBtn.disabled = true;
 
-                const requestData = {
-                    name: name,
-                    email: email,
-                    role: role,
-                    supervisorName: APP_STATE.supervisorName,
-                    schools: APP_STATE.selectedSchools,
-                    requestedAt: new Date().toISOString()
-                };
+            const requestData = {
+                name: name,
+                email: email,
+                role: role,
+                supervisorName: APP_STATE.supervisorName,
+                schools: APP_STATE.selectedSchools,
+                requestedAt: new Date().toISOString()
+            };
 
-                // Simular sucesso
-                const result = { success: true };
-                console.log('📤 Enviando solicitação:', requestData);
+            // Enviar solicitação via API
+            const result = await API_SERVICE.requestAccess(requestData);
 
-                if (result.success) {
-                    UTILS.showNotification('Solicitação enviada com sucesso! O administrador será notificado.', 'success');
-                    this.closeModal(document.getElementById('access-modal'));
-                    document.getElementById('access-form').reset();
-                    
-                    // Marcar que o acesso foi solicitado
-                    APP_STATE.accessRequested = true;
-                    UTILS.saveConfig();
-                } else {
-                    throw new Error('Erro ao enviar solicitação');
-                }
+            if (result.success) {
+                UTILS.showNotification('Solicitação enviada com sucesso! O administrador será notificado.', 'success');
+                this.closeModal(document.getElementById('access-modal'));
+                document.getElementById('access-form').reset();
                 
-                // Restaurar botão
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitação';
-                submitBtn.disabled = false;
+                // Marcar que o acesso foi solicitado
+                APP_STATE.accessRequested = true;
+                UTILS.saveConfig();
+            } else {
+                throw new Error(result.error || 'Erro ao enviar solicitação');
             }
 
         } catch (error) {
             console.error('Erro ao enviar solicitação:', error);
-            UTILS.showNotification('Erro ao enviar solicitação. Tente novamente.', 'error');
-            
-            // Restaurar botão em caso de erro
+            UTILS.showNotification(error.message || 'Erro ao enviar solicitação. Tente novamente.', 'error');
+        } finally {
             const submitBtn = e.target.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitação';
-                submitBtn.disabled = false;
-            }
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitação';
+            submitBtn.disabled = false;
         }
     }
 
@@ -919,119 +684,79 @@ class SupervisaoApp {
     showDownloadModal() {
         console.log('📁 Mostrando modal de download...');
         const modal = document.getElementById('download-modal');
-        if (modal) modal.classList.remove('hidden');
+        modal.classList.remove('hidden');
     }
 
     showAccessModal() {
         console.log('🔑 Mostrando modal de acesso...');
         const modal = document.getElementById('access-modal');
-        if (modal) modal.classList.remove('hidden');
+        modal.classList.remove('hidden');
     }
 
     closeModal(modal) {
         console.log('❌ Fechando modal...');
-        if (modal) modal.classList.add('hidden');
+        modal.classList.add('hidden');
     }
 }
 
-// ========== FUNÇÃO DE ERRO ==========
-function showErrorMessage(message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.2);
-        text-align: center;
-        z-index: 10000;
-        max-width: 80%;
-    `;
-    errorDiv.innerHTML = `
-        <h3 style="color: #f44336; margin-bottom: 15px;">Erro no Sistema</h3>
-        <p style="margin-bottom: 20px;">${message}</p>
-        <button onclick="location.reload()" style="
-            background: #64b4f0;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        ">Recarregar Página</button>
-    `;
-    document.body.appendChild(errorDiv);
-}
+// ✅ INICIALIZAÇÃO CORRIGIDA - Aguarda todos os scripts carregarem
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔄 Verificando carregamento dos scripts...');
+    
+    // Aguardar um pouco para garantir que todos os scripts carregaram
+    setTimeout(() => {
+        if (typeof DOCUMENT_FIELDS === 'undefined') {
+            console.error('❌ DOCUMENT_FIELDS não carregado!');
+            console.log('📋 Scripts carregados:', {
+                CONFIG: typeof CONFIG,
+                SCHOOLS_DATA: typeof SCHOOLS_DATA, 
+                DOCUMENT_FIELDS: typeof DOCUMENT_FIELDS,
+                ApiService: typeof ApiService
+            });
+            return;
+        }
+        
+        if (typeof ApiService === 'undefined') {
+            console.error('❌ ApiService não carregado!');
+            return;
+        }
+        
+        console.log('✅ Todos os scripts carregados - Iniciando aplicação...');
+        window.supervisaoApp = new SupervisaoApp();
+                   
+        // Adicionar estilos dinâmicos
+        if (!document.querySelector('.dynamic-styles')) {
+            const dynamicStyles = document.createElement('style');
+            dynamicStyles.className = 'dynamic-styles';
+            dynamicStyles.textContent = `
+                .btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    transform: none !important;
+                }
+                
+                .btn:disabled:hover {
+                    transform: none !important;
+                    box-shadow: none !important;
+                }
+                
+                .fa-spin {
+                    animation: fa-spin 1s infinite linear;
+                }
+                
+                @keyframes fa-spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
 
-// ========== ADICIONAR ESTILOS DINÂMICOS ==========
-if (!document.querySelector('.dynamic-styles')) {
-    const dynamicStyles = document.createElement('style');
-    dynamicStyles.className = 'dynamic-styles';
-    dynamicStyles.textContent = `
-        /* Splash screen transitions */
-        body::before, body::after {
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+                /* Melhorar visualização dos campos readonly */
+                input[readonly], textarea[readonly] {
+                    background-color: var(--cinza-claro);
+                    color: var(--cinza-escuro);
+                    cursor: not-allowed;
+                }
+            `;
+            document.head.appendChild(dynamicStyles);
         }
-        
-        body.app-loaded::before,
-        body.app-loaded::after {
-            opacity: 0 !important;
-            visibility: hidden !important;
-            pointer-events: none !important;
-        }
-        
-        .container {
-            opacity: 0;
-            transition: opacity 0.5s ease-in 0.3s;
-        }
-        
-        body.app-loaded .container {
-            opacity: 1;
-        }
-        
-        /* Botões */
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        
-        .btn:disabled:hover {
-            transform: none !important;
-            box-shadow: none !important;
-        }
-        
-        /* Animações */
-        .fa-spin {
-            animation: fa-spin 1s infinite linear;
-        }
-        
-        @keyframes fa-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Campos de formulário */
-        input[readonly], textarea[readonly] {
-            background-color: #f5f5f5;
-            color: #666;
-            cursor: not-allowed;
-        }
-    `;
-    document.head.appendChild(dynamicStyles);
-}
-
-// ========== ADICIONAR FAVICON ==========
-if (!document.querySelector('link[rel="icon"]')) {
-    const favicon = document.createElement('link');
-    favicon.rel = 'icon';
-    favicon.type = 'image/x-icon';
-    favicon.href = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>';
-    document.head.appendChild(favicon);
-}
-
-// ========== EXPORTAR PARA ESCOPO GLOBAL ==========
-window.supervisaoApp = window.supervisaoApp || null;
+    }, 500);
+});
