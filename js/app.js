@@ -1,286 +1,76 @@
 // ========== SPLASH SCREEN CONTROL ==========
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 DOM carregado - Configurando splash screen...');
-  
-  // Garantir que a splash está visível inicialmente
-  document.body.classList.remove('app-loaded');
-  
-  // Verificar se já tem config salva (carregar rápido se tiver)
-  const hasSavedConfig = localStorage.getItem('supervisao_config');
-  
-  // Esconder splash quando TUDO carregar (scripts, imagens, etc)
-  window.addEventListener('load', function() {
-    console.log('📦 Página completamente carregada');
-    setTimeout(initializeAppAfterSplash, hasSavedConfig ? 1000 : 1500);
-  });
-  
-  // Fallback para páginas que já carregaram
-  if (document.readyState === 'complete') {
-    console.log('⚡ Página já carregada (readyState = complete)');
-    setTimeout(initializeAppAfterSplash, hasSavedConfig ? 800 : 1200);
-  }
-  
-  // Adicionar fallback de timeout (máximo 3 segundos)
-  setTimeout(function() {
-    if (!document.body.classList.contains('app-loaded')) {
-      console.log('⏰ Timeout da splash screen - Forçando continuar');
-      document.body.classList.add('app-loaded');
-      initializeAppAfterSplash();
-    }
-  }, 3000);
+    console.log('🚀 DOM carregado - Configurando splash screen...');
+    
+    // Garantir que a splash está visível inicialmente
+    document.body.classList.remove('app-loaded');
+    
+    // Aguardar 1.5 segundos para mostrar splash
+    setTimeout(checkAllScriptsLoaded, 1500);
 });
 
-// ========== INICIAR APLICAÇÃO APÓS SPLASH ==========
-function initializeAppAfterSplash() {
-  console.log('🎬 Escondendo splash screen e iniciando app...');
-  document.body.classList.add('app-loaded');
-  
-  // Aguardar um pouco mais para garantir scripts
-  setTimeout(checkAndInitializeApp, 300);
-}
-
-// ========== VERIFICAR E INICIAR APP ==========
-function checkAndInitializeApp() {
-  console.log('🔍 Verificando scripts necessários...');
-  
-  const requiredScripts = {
-    'CONFIG': window.CONFIG,
-    'SCHOOLS_DATA': window.SCHOOLS_DATA,
-    'DOCUMENT_FIELDS': window.DOCUMENT_FIELDS,
-    'ApiService': window.ApiService,
-    'UTILS': window.UTILS,
-    'DOCUMENT_HANDLERS': window.DOCUMENT_HANDLERS,
-    'API_SERVICE': window.API_SERVICE,
-    'APP_STATE': window.APP_STATE
-  };
-  
-  let allLoaded = true;
-  let missingScripts = [];
-  
-  for (const [name, script] of Object.entries(requiredScripts)) {
-    if (typeof script === 'undefined') {
-      console.warn(`⚠️ ${name} ainda não carregado`);
-      allLoaded = false;
-      missingScripts.push(name);
-    } else {
-      console.log(`✅ ${name} carregado`);
-    }
-  }
-  
-  if (!allLoaded) {
-    console.log(`⏳ Aguardando scripts: ${missingScripts.join(', ')}`);
+// ========== VERIFICAR SE TODOS SCRIPTS CARREGARAM ==========
+function checkAllScriptsLoaded() {
+    console.log('🔍 Verificando scripts carregados...');
     
-    // Tentar novamente após um delay
+    // Lista de scripts essenciais
+    const requiredScripts = [
+        'CONFIG', 'SCHOOLS_DATA', 'DOCUMENT_FIELDS', 
+        'DOCUMENT_ICONS', 'DOCUMENT_NAMES', 'DROPDOWN_OPTIONS',
+        'APP_STATE', 'UTILS', 'DOCUMENT_HANDLERS', 'API_SERVICE'
+    ];
+    
+    let missingScripts = [];
+    
+    requiredScripts.forEach(scriptName => {
+        if (typeof window[scriptName] === 'undefined') {
+            missingScripts.push(scriptName);
+            console.warn(`⚠️ ${scriptName} não carregado`);
+        }
+    });
+    
     if (missingScripts.length > 0) {
-      setTimeout(checkAndInitializeApp, 500);
+        console.log(`⏳ Aguardando: ${missingScripts.join(', ')}`);
+        
+        // Tentar novamente em 500ms
+        setTimeout(checkAllScriptsLoaded, 500);
+        
+        // Timeout máximo de 5 segundos
+        setTimeout(function() {
+            if (missingScripts.length > 0) {
+                console.log('🔄 Forçando inicialização mesmo sem alguns scripts...');
+                initializeApp();
+            }
+        }, 5000);
     } else {
-      // Tentativa final após 2 segundos
-      setTimeout(function() {
-        console.log('🔄 Tentando iniciar mesmo sem alguns scripts...');
-        tryInitializeApp();
-      }, 2000);
+        console.log('✅ Todos scripts carregados!');
+        initializeApp();
     }
-    return;
-  }
-  
-  // Todos carregados - iniciar app
-  tryInitializeApp();
 }
 
-// ========== TENTAR INICIAR APLICAÇÃO ==========
-function tryInitializeApp() {
-  try {
-    console.log('🚀 Inicializando SupervisaoApp...');
+// ========== INICIALIZAR APLICAÇÃO ==========
+function initializeApp() {
+    console.log('🎬 Inicializando aplicação...');
     
-    // Verificar se APP_STATE existe, senão criar básico
-    if (!window.APP_STATE) {
-      console.warn('⚠️ APP_STATE não definido - criando básico');
-      window.APP_STATE = {
-        supervisorName: '',
-        selectedSchools: [],
-        configCompleted: false,
-        accessRequested: false,
-        currentDocumentType: '',
-        formData: {},
-        generatedDocument: null,
-        allSchools: []
-      };
-    }
+    // Esconder splash screen
+    document.body.classList.add('app-loaded');
     
-    // Verificar se UTILS existe, senão criar básico
-    if (!window.UTILS) {
-      console.warn('⚠️ UTILS não definido - criando básico');
-      window.UTILS = {
-        showNotification: function(message, type) {
-          console.log(`[${type}] ${message}`);
-          // Criar notificação básica
-          const notification = document.createElement('div');
-          notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'error' ? '#f44336' : type === 'success' ? '#4CAF50' : '#2196F3'};
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            z-index: 10000;
-            max-width: 300px;
-          `;
-          notification.textContent = message;
-          document.body.appendChild(notification);
-          setTimeout(() => notification.remove(), 3000);
-        },
-        loadConfig: function() {
-          try {
-            const config = localStorage.getItem('supervisao_config');
-            return config ? JSON.parse(config) : null;
-          } catch (e) {
-            return null;
-          }
-        },
-        saveConfig: function() {
-          try {
-            localStorage.setItem('supervisao_config', JSON.stringify({
-              supervisorName: APP_STATE.supervisorName,
-              schools: APP_STATE.selectedSchools,
-              configCompleted: APP_STATE.configCompleted,
-              accessRequested: APP_STATE.accessRequested
-            }));
-            return true;
-          } catch (e) {
-            return false;
-          }
-        },
-        checkTemplateAccess: function() {
-          return APP_STATE.accessRequested || true;
-        },
-        validateInstitutionalEmail: function(email) {
-          return email.endsWith('@educador.edu.es.gov.br') || email.endsWith('@edu.es.gov.br');
-        },
-        getSchoolData: function(schoolName) {
-          if (!SCHOOLS_DATA) return null;
-          return SCHOOLS_DATA.find(school => school.name === schoolName) || null;
+    // Inicializar a aplicação principal
+    setTimeout(function() {
+        try {
+            window.supervisaoApp = new SupervisaoApp();
+            console.log('✅ Aplicação inicializada com sucesso!');
+            
+            // Mostrar notificação de boas-vindas
+            setTimeout(() => {
+                UTILS.showNotification('Sistema Supervisão carregado!', 'success');
+            }, 1000);
+            
+        } catch (error) {
+            console.error('💥 Erro ao inicializar aplicação:', error);
+            showErrorMessage('Erro ao carregar o sistema. Recarregue a página.');
         }
-      };
-    }
-    
-    // Verificar se DOCUMENT_FIELDS existe, senão criar básico
-    if (!window.DOCUMENT_FIELDS) {
-      console.warn('⚠️ DOCUMENT_FIELDS não definido - criando básico');
-      window.DOCUMENT_FIELDS = {
-        'links_uteis': []
-      };
-    }
-    
-    // Verificar se DOCUMENT_HANDLERS existe, senão criar básico
-    if (!window.DOCUMENT_HANDLERS) {
-      console.warn('⚠️ DOCUMENT_HANDLERS não definido - criando básico');
-      window.DOCUMENT_HANDLERS = {
-        createFieldHTML: function(field) {
-          return `<div class="form-group">
-                    <label>${field.name}</label>
-                    <input type="text" name="${field.name}" placeholder="Preencha este campo">
-                  </div>`;
-        },
-        validateForm: function() {
-          return { isValid: true, errors: [] };
-        },
-        collectFormData: function() {
-          return {};
-        },
-        createPDF: async function() {
-          return { success: true, filename: 'documento.pdf', url: '#' };
-        },
-        downloadFile: function(filename, url) {
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          a.click();
-        },
-        clearForm: function() {
-          const form = document.getElementById('document-form');
-          if (form) form.reset();
-        }
-      };
-    }
-    
-    // Verificar se CONFIG existe, senão criar básico
-    if (!window.CONFIG) {
-      console.warn('⚠️ CONFIG não definido - criando básico');
-      window.CONFIG = {
-        appName: 'Sistema Supervisão',
-        version: '1.0.0'
-      };
-    }
-    
-    // Verificar se SCHOOLS_DATA existe, senão criar básico
-    if (!window.SCHOOLS_DATA) {
-      console.warn('⚠️ SCHOOLS_DATA não definido - criando básico');
-      window.SCHOOLS_DATA = [];
-      APP_STATE.allSchools = [];
-    } else {
-      APP_STATE.allSchools = SCHOOLS_DATA.map(school => school.name);
-    }
-    
-    // Verificar se DOCUMENT_ICONS existe
-    if (!window.DOCUMENT_ICONS) {
-      window.DOCUMENT_ICONS = {
-        'links_uteis': 'fas fa-link'
-      };
-    }
-    
-    // Verificar se DOCUMENT_NAMES existe
-    if (!window.DOCUMENT_NAMES) {
-      window.DOCUMENT_NAMES = {
-        'links_uteis': 'Links Úteis'
-      };
-    }
-    
-    // Inicializar aplicação
-    window.supervisaoApp = new SupervisaoApp();
-    
-    // Mostrar notificação de inicialização
-    setTimeout(() => {
-      if (window.UTILS && window.UTILS.showNotification) {
-        UTILS.showNotification('Sistema Supervisão carregado com sucesso!', 'success');
-      }
-    }, 1000);
-    
-    console.log('✅ Aplicação inicializada com sucesso!');
-    
-  } catch (error) {
-    console.error('💥 ERRO na inicialização:', error);
-    
-    // Mostrar mensagem de erro amigável
-    const errorDiv = document.createElement('div');
-    errorDiv.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
-      text-align: center;
-      z-index: 10000;
-      max-width: 80%;
-    `;
-    errorDiv.innerHTML = `
-      <h3 style="color: #f44336; margin-bottom: 15px;">Erro ao carregar o sistema</h3>
-      <p style="margin-bottom: 20px;">Alguns recursos não carregaram corretamente.</p>
-      <button onclick="location.reload()" style="
-        background: #64b4f0;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-      ">Recarregar Página</button>
-    `;
-    document.body.appendChild(errorDiv);
-  }
+    }, 300);
 }
 
 // ========== APLICAÇÃO PRINCIPAL ==========
@@ -379,14 +169,18 @@ class SupervisaoApp {
     loadSchools() {
         // Usar SCHOOLS_DATA existente ou criar vazio
         if (SCHOOLS_DATA && SCHOOLS_DATA.length > 0) {
+            // Certificar que APP_STATE.allSchools existe
+            if (!APP_STATE.allSchools) {
+                APP_STATE.allSchools = [];
+            }
             APP_STATE.allSchools = SCHOOLS_DATA.map(school => school.name);
         }
         
         // Carregar escolas salvas anteriormente
         const savedConfig = UTILS.loadConfig();
-        if (savedConfig && savedConfig.schools) {
-            APP_STATE.selectedSchools = savedConfig.schools;
-            this.selectedSchools = [...savedConfig.schools];
+        if (savedConfig && savedConfig.selectedSchools) {
+            APP_STATE.selectedSchools = savedConfig.selectedSchools;
+            this.selectedSchools = [...savedConfig.selectedSchools];
             this.updateSchoolSelectionDisplay();
         }
     }
@@ -548,7 +342,7 @@ class SupervisaoApp {
         const config = UTILS.loadConfig();
         if (config && config.configCompleted) {
             APP_STATE.supervisorName = config.supervisorName || '';
-            APP_STATE.selectedSchools = config.schools || [];
+            APP_STATE.selectedSchools = config.selectedSchools || [];
             APP_STATE.configCompleted = config.configCompleted || false;
             APP_STATE.accessRequested = config.accessRequested || false;
             
@@ -1066,12 +860,44 @@ class SupervisaoApp {
     }
 }
 
-// Adicionar estilos dinâmicos
+// ========== FUNÇÃO DE ERRO ==========
+function showErrorMessage(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        text-align: center;
+        z-index: 10000;
+        max-width: 80%;
+    `;
+    errorDiv.innerHTML = `
+        <h3 style="color: #f44336; margin-bottom: 15px;">Erro no Sistema</h3>
+        <p style="margin-bottom: 20px;">${message}</p>
+        <button onclick="location.reload()" style="
+            background: #64b4f0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        ">Recarregar Página</button>
+    `;
+    document.body.appendChild(errorDiv);
+}
+
+// ========== ADICIONAR ESTILOS DINÂMICOS ==========
 if (!document.querySelector('.dynamic-styles')) {
     const dynamicStyles = document.createElement('style');
     dynamicStyles.className = 'dynamic-styles';
     dynamicStyles.textContent = `
-        /* Estilos da splash screen */
+        /* Splash screen transitions */
         body::before, body::after {
             transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
         }
@@ -1120,70 +946,11 @@ if (!document.querySelector('.dynamic-styles')) {
             color: #666;
             cursor: not-allowed;
         }
-        
-        /* Erro crítico */
-        .critical-error {
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* Estilos básicos para elementos da aplicação */
-        .hidden {
-            display: none !important;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .modal.hidden {
-            display: none;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .close {
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-        
-        .close:hover {
-            color: #333;
-        }
     `;
     document.head.appendChild(dynamicStyles);
 }
 
-// Adicionar favicon dinamicamente
+// ========== ADICIONAR FAVICON ==========
 if (!document.querySelector('link[rel="icon"]')) {
     const favicon = document.createElement('link');
     favicon.rel = 'icon';
@@ -1192,5 +959,5 @@ if (!document.querySelector('link[rel="icon"]')) {
     document.head.appendChild(favicon);
 }
 
-// Registrar o app globalmente
+// ========== EXPORTAR PARA ESCOPO GLOBAL ==========
 window.supervisaoApp = window.supervisaoApp || null;
