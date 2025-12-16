@@ -1,14 +1,16 @@
 // Service Worker para GitHub Pages
 const CACHE_NAME = 'supervisao-v1';
 const urlsToCache = [
-  '/supervisaodownload/',
-  '/supervisaodownload/index.html',
-  '/supervisaodownload/css/style.css',
-  '/supervisaodownload/js/config.js',
-  '/supervisaodownload/js/documents.js', 
-  '/supervisaodownload/js/api.js',
-  '/supervisaodownload/js/app.js',
-  '/supervisaodownload/manifest.json'
+  './',
+  './index.html',
+  './css/style.css',
+  './js/config.js',
+  './js/api.js',
+  './js/documents.js',
+  './js/app.js',
+  './manifest.json',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
 ];
 
 self.addEventListener('install', function(event) {
