@@ -2,7 +2,8 @@
 // Aplicação principal - Controle de fluxo e eventos
 class SupervisaoApp {
     constructor() {
-        this.selectedSchools = []; // Para controle temporário no modal
+        this.selectedSchools = [];
+        this.showSplashScreen();  // ← LINHA NOVA AQUI
         this.initializeApp();
         this.bindEvents();
         this.checkSavedConfig();
@@ -242,11 +243,22 @@ class SupervisaoApp {
     // ===== FIM DO NOVO SISTEMA DE SELEÇÃO =====
 
     // Verificar se há configuração salva
-    checkSavedConfig() {
-        if (UTILS.loadConfig() && APP_STATE.configCompleted) {
-            this.showMainScreen();
-            UTILS.showNotification('Configuração carregada com sucesso!', 'success');
-        }
+        checkSavedConfig() {
+        // Aguardar um pouco para splash ser visível
+        setTimeout(() => {
+            if (UTILS.loadConfig() && APP_STATE.configCompleted) {
+                this.hideSplashScreen();  // ← LINHA NOVA
+                setTimeout(() => {
+                    this.showMainScreen();
+                    UTILS.showNotification('Configuração carregada com sucesso!', 'success');
+                }, 300);
+            } else {
+                this.hideSplashScreen();  // ← LINHA NOVA
+                setTimeout(() => {
+                    this.showWelcomeScreen();
+                }, 300);
+            }
+        }, 1500); // Mostra splash por pelo menos 1.5 segundos
     }
 
     // Criar cards de documentos
@@ -722,6 +734,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         console.log('✅ Todos os scripts carregados - Iniciando aplicação...');
+            // ===== FUNÇÕES DA SPLASH SCREEN =====
+    
+    showSplashScreen() {
+        console.log('🔄 Mostrando splash screen...');
+        // A splash screen já está visível por padrão no HTML
+        // Só precisamos garantir que não está escondida
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.classList.remove('hidden');
+        }
+    }
+
+    hideSplashScreen() {
+        console.log('✅ Escondendo splash screen...');
+        const splash = document.getElementById('splash-screen');
+        
+        if (splash) {
+            // Adiciona classe para iniciar a animação de fade out
+            splash.classList.add('hidden');
+            
+            // Remove completamente do DOM após a animação
+            setTimeout(() => {
+                if (splash.parentNode) {
+                    splash.style.display = 'none';
+                    console.log('🗑️ Splash screen removida');
+                }
+            }, 500); // 500ms = tempo da animação CSS
+        }
+    }
         window.supervisaoApp = new SupervisaoApp();
                    
         // Adicionar estilos dinâmicos
