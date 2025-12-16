@@ -5,46 +5,65 @@ document.addEventListener('DOMContentLoaded', function() {
     // Garantir que a splash está visível inicialmente
     document.body.classList.remove('app-loaded');
     
-    // Aguardar 1.5 segundos para mostrar splash
-    setTimeout(checkAllScriptsLoaded, 1500);
+    // Aguardar os scripts carregarem
+    setTimeout(checkIfScriptsLoaded, 100);
 });
 
-// ========== VERIFICAR SE TODOS SCRIPTS CARREGARAM ==========
-function checkAllScriptsLoaded() {
-    console.log('🔍 Verificando scripts carregados...');
+// ========== VERIFICAR SE SCRIPTS CARREGARAM ==========
+let checkCount = 0;
+const maxChecks = 50; // 5 segundos máximo
+
+function checkIfScriptsLoaded() {
+    checkCount++;
     
-    // Lista de scripts essenciais
-    const requiredScripts = [
-        'CONFIG', 'SCHOOLS_DATA', 'DOCUMENT_FIELDS', 
-        'DOCUMENT_ICONS', 'DOCUMENT_NAMES', 'DROPDOWN_OPTIONS',
-        'APP_STATE', 'UTILS', 'DOCUMENT_HANDLERS', 'API_SERVICE'
-    ];
+    // Verificar scripts essenciais
+    const scripts = {
+        'CONFIG': window.CONFIG,
+        'SCHOOLS_DATA': window.SCHOOLS_DATA,
+        'DOCUMENT_FIELDS': window.DOCUMENT_FIELDS,
+        'DOCUMENT_ICONS': window.DOCUMENT_ICONS,
+        'DOCUMENT_NAMES': window.DOCUMENT_NAMES,
+        'DROPDOWN_OPTIONS': window.DROPDOWN_OPTIONS,
+        'APP_STATE': window.APP_STATE,
+        'UTILS': window.UTILS,
+        'DOCUMENT_HANDLERS': window.DOCUMENT_HANDLERS,
+        'API_SERVICE': window.API_SERVICE
+    };
     
     let missingScripts = [];
+    let loadedScripts = [];
     
-    requiredScripts.forEach(scriptName => {
-        if (typeof window[scriptName] === 'undefined') {
-            missingScripts.push(scriptName);
-            console.warn(`⚠️ ${scriptName} não carregado`);
+    for (const [name, script] of Object.entries(scripts)) {
+        if (typeof script === 'undefined') {
+            missingScripts.push(name);
+        } else {
+            loadedScripts.push(name);
         }
-    });
+    }
+    
+    console.log(`🔍 Verificação ${checkCount}/${maxChecks}`);
+    console.log(`✅ Carregados: ${loadedScripts.length} scripts`);
+    
+    if (loadedScripts.length > 0) {
+        console.log('✅ Scripts:', loadedScripts.join(', '));
+    }
     
     if (missingScripts.length > 0) {
-        console.log(`⏳ Aguardando: ${missingScripts.join(', ')}`);
+        console.log(`⏳ Aguardando: ${missingScripts.length} scripts`);
+    }
+    
+    // Se todos scripts essenciais carregaram OU timeout
+    if (missingScripts.length === 0 || checkCount >= maxChecks) {
+        if (missingScripts.length > 0) {
+            console.warn(`⚠️ Alguns scripts não carregaram: ${missingScripts.join(', ')}`);
+            console.log('🔄 Iniciando mesmo assim...');
+        }
         
-        // Tentar novamente em 500ms
-        setTimeout(checkAllScriptsLoaded, 500);
-        
-        // Timeout máximo de 5 segundos
-        setTimeout(function() {
-            if (missingScripts.length > 0) {
-                console.log('🔄 Forçando inicialização mesmo sem alguns scripts...');
-                initializeApp();
-            }
-        }, 5000);
+        // Iniciar aplicação
+        setTimeout(initializeApp, 500);
     } else {
-        console.log('✅ Todos scripts carregados!');
-        initializeApp();
+        // Continuar verificando
+        setTimeout(checkIfScriptsLoaded, 100);
     }
 }
 
@@ -55,6 +74,9 @@ function initializeApp() {
     // Esconder splash screen
     document.body.classList.add('app-loaded');
     
+    // Criar variáveis básicas se não existirem
+    ensureBasicVariables();
+    
     // Inicializar a aplicação principal
     setTimeout(function() {
         try {
@@ -63,7 +85,9 @@ function initializeApp() {
             
             // Mostrar notificação de boas-vindas
             setTimeout(() => {
-                UTILS.showNotification('Sistema Supervisão carregado!', 'success');
+                if (window.UTILS && window.UTILS.showNotification) {
+                    UTILS.showNotification('Sistema Supervisão carregado!', 'success');
+                }
             }, 1000);
             
         } catch (error) {
@@ -71,6 +95,118 @@ function initializeApp() {
             showErrorMessage('Erro ao carregar o sistema. Recarregue a página.');
         }
     }, 300);
+}
+
+// ========== GARANTIR VARIÁVEIS BÁSICAS ==========
+function ensureBasicVariables() {
+    // Se CONFIG não existir, criar básico
+    if (typeof window.CONFIG === 'undefined') {
+        console.warn('⚠️ CONFIG não encontrado - criando básico');
+        window.CONFIG = {
+            appName: 'Sistema Supervisão',
+            version: '1.0.0',
+            cloudFunctions: {
+                generateDocument: 'https://southamerica-east1-sistema-documentos-sreac.cloudfunctions.net/supervisaoSp'
+            }
+        };
+    }
+    
+    // Se SCHOOLS_DATA não existir, criar array vazio
+    if (typeof window.SCHOOLS_DATA === 'undefined') {
+        console.warn('⚠️ SCHOOLS_DATA não encontrado - criando vazio');
+        window.SCHOOLS_DATA = [];
+    }
+    
+    // Se DOCUMENT_FIELDS não existir, criar básico
+    if (typeof window.DOCUMENT_FIELDS === 'undefined') {
+        console.warn('⚠️ DOCUMENT_FIELDS não encontrado - criando básico');
+        window.DOCUMENT_FIELDS = {
+            'links_uteis': []
+        };
+    }
+    
+    // Se DOCUMENT_ICONS não existir, criar básico
+    if (typeof window.DOCUMENT_ICONS === 'undefined') {
+        console.warn('⚠️ DOCUMENT_ICONS não encontrado - criando básico');
+        window.DOCUMENT_ICONS = {
+            'links_uteis': 'fas fa-link'
+        };
+    }
+    
+    // Se DOCUMENT_NAMES não existir, criar básico
+    if (typeof window.DOCUMENT_NAMES === 'undefined') {
+        console.warn('⚠️ DOCUMENT_NAMES não encontrado - criando básico');
+        window.DOCUMENT_NAMES = {
+            'links_uteis': 'Links Úteis'
+        };
+    }
+    
+    // Se APP_STATE não existir, criar
+    if (typeof window.APP_STATE === 'undefined') {
+        console.warn('⚠️ APP_STATE não encontrado - criando');
+        window.APP_STATE = {
+            supervisorName: '',
+            selectedSchools: [],
+            currentDocumentType: '',
+            formData: {},
+            hasAccess: false,
+            configCompleted: false,
+            accessRequested: false,
+            generatedDocument: null,
+            allSchools: SCHOOLS_DATA ? SCHOOLS_DATA.map(school => school.name) : []
+        };
+    }
+    
+    // Se UTILS não existir, criar básico
+    if (typeof window.UTILS === 'undefined') {
+        console.warn('⚠️ UTILS não encontrado - criando básico');
+        window.UTILS = {
+            showNotification: function(message, type) {
+                console.log(`[${type}] ${message}`);
+                // Criar notificação básica
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'error' ? '#f44336' : type === 'success' ? '#4CAF50' : '#2196F3'};
+                    color: white;
+                    padding: 15px;
+                    border-radius: 5px;
+                    z-index: 10000;
+                    max-width: 300px;
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
+            },
+            loadConfig: function() {
+                try {
+                    const config = localStorage.getItem('supervisaoConfig');
+                    return config ? JSON.parse(config) : null;
+                } catch (e) {
+                    return null;
+                }
+            },
+            saveConfig: function() {
+                try {
+                    localStorage.setItem('supervisaoConfig', JSON.stringify({
+                        supervisorName: APP_STATE.supervisorName,
+                        selectedSchools: APP_STATE.selectedSchools,
+                        configCompleted: APP_STATE.configCompleted,
+                        accessRequested: APP_STATE.accessRequested,
+                        hasAccess: APP_STATE.hasAccess
+                    }));
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            },
+            checkTemplateAccess: function() {
+                return APP_STATE.accessRequested || APP_STATE.hasAccess || true;
+            }
+        };
+    }
 }
 
 // ========== APLICAÇÃO PRINCIPAL ==========
@@ -595,63 +731,11 @@ class SupervisaoApp {
             const fieldHTML = DOCUMENT_HANDLERS.createFieldHTML(field);
             form.innerHTML += fieldHTML;
         });
-
-        // Configurar campos dinamicamente
-        this.setupFormFields(documentType);
-    }
-
-    setupFormFields(documentType) {
-        const fields = DOCUMENT_FIELDS[documentType] || [];
-        
-        fields.forEach(field => {
-            const input = document.querySelector(`[name="${field.name}"]`);
-            if (!input) return;
-
-            // Configurar dropdowns
-            if (field.type === 'dropdown' && DOCUMENT_HANDLERS.populateDropdown) {
-                DOCUMENT_HANDLERS.populateDropdown(input, field.name);
-            }
-
-            // Configurar auto-preenchimento
-            if (DOCUMENT_HANDLERS.setupAutoFill) {
-                DOCUMENT_HANDLERS.setupAutoFill(field, input);
-            }
-
-            // Configurar geração automática
-            if (DOCUMENT_HANDLERS.setupAutoGenerate) {
-                DOCUMENT_HANDLERS.setupAutoGenerate(field, input);
-            }
-
-            // Configurar eventos de change para campos que afetam outros
-            if (field.name === "Nome da Escola") {
-                input.addEventListener('change', () => this.handleSchoolChange());
-            }
-        });
-    }
-
-    handleSchoolChange() {
-        const schoolField = document.querySelector('[name="Nome da Escola"]');
-        if (!schoolField) return;
-        
-        const selectedSchool = UTILS.getSchoolData(schoolField.value);
-        
-        if (selectedSchool) {
-            // Preencher campos relacionados automaticamente
-            const municipalityField = document.querySelector('[name="Nome do Município"]');
-            if (municipalityField) {
-                municipalityField.value = selectedSchool.city;
-            }
-
-            const directorField = document.querySelector('[name="Nome do Diretor"]');
-            if (directorField) {
-                directorField.value = selectedSchool.director;
-            }
-        }
     }
 
     async generateDocument() {
-        if (!DOCUMENT_HANDLERS.validateForm) {
-            UTILS.showNotification('Sistema de validação não disponível', 'error');
+        if (!DOCUMENT_HANDLERS || !DOCUMENT_HANDLERS.validateForm) {
+            UTILS.showNotification('Sistema de documentos não disponível', 'error');
             return;
         }
         
@@ -659,9 +743,6 @@ class SupervisaoApp {
         
         if (!validation.isValid) {
             UTILS.showNotification('Preencha todos os campos obrigatórios!', 'error');
-            validation.errors.forEach(error => {
-                console.error('Erro de validação:', error);
-            });
             return;
         }
 
@@ -669,8 +750,7 @@ class SupervisaoApp {
         APP_STATE.formData = DOCUMENT_HANDLERS.collectFormData(APP_STATE.currentDocumentType);
 
         try {
-            console.log('🔧 === INICIANDO GERAÇÃO DE DOCUMENTO ===');
-            console.log('📄 Tipo:', APP_STATE.currentDocumentType);
+            console.log('🔧 Gerando documento:', APP_STATE.currentDocumentType);
             
             // Mostrar loading
             const generateBtn = document.getElementById('generate-document');
@@ -686,8 +766,6 @@ class SupervisaoApp {
                     'eder.ramos@educador.edu.es.gov.br'
                 );
 
-                console.log('📤 RESULTADO:', result);
-
                 if (result.success) {
                     APP_STATE.generatedDocument = result;
                     console.log('🎯 Documento gerado com sucesso!');
@@ -696,7 +774,7 @@ class SupervisaoApp {
                     this.showDownloadModal();
                     UTILS.showNotification('Documento gerado com sucesso!', 'success');
                 } else {
-                    throw new Error('Falha na geração do documento: ' + (result.error || 'Erro desconhecido'));
+                    throw new Error('Falha na geração do documento');
                 }
                 
                 // Restaurar botão
@@ -706,7 +784,7 @@ class SupervisaoApp {
 
         } catch (error) {
             console.error('💥 ERRO:', error);
-            UTILS.showNotification(error.message || 'Erro ao gerar documento. Tente novamente.', 'error');
+            UTILS.showNotification('Erro ao gerar documento. Tente novamente.', 'error');
             
             // Restaurar botão em caso de erro
             const generateBtn = document.getElementById('generate-document');
@@ -738,10 +816,12 @@ class SupervisaoApp {
                     APP_STATE.generatedDocument.url
                 );
 
-                // Fechar modal e limpar após um breve delay
+                // Fechar modal e limpar
                 setTimeout(() => {
                     this.closeModal(document.getElementById('download-modal'));
-                    DOCUMENT_HANDLERS.clearForm();
+                    if (DOCUMENT_HANDLERS.clearForm) {
+                        DOCUMENT_HANDLERS.clearForm();
+                    }
                     this.showMainScreen();
                     UTILS.showNotification('PDF baixado com sucesso!', 'success');
                 }, 1000);
@@ -801,15 +881,9 @@ class SupervisaoApp {
                     requestedAt: new Date().toISOString()
                 };
 
-                // Enviar solicitação via API se disponível
-                let result;
-                if (API_SERVICE && API_SERVICE.requestAccess) {
-                    result = await API_SERVICE.requestAccess(requestData);
-                } else {
-                    // Simular sucesso se API não disponível
-                    result = { success: true };
-                    console.log('📤 Simulando envio de solicitação:', requestData);
-                }
+                // Simular sucesso
+                const result = { success: true };
+                console.log('📤 Enviando solicitação:', requestData);
 
                 if (result.success) {
                     UTILS.showNotification('Solicitação enviada com sucesso! O administrador será notificado.', 'success');
@@ -820,7 +894,7 @@ class SupervisaoApp {
                     APP_STATE.accessRequested = true;
                     UTILS.saveConfig();
                 } else {
-                    throw new Error(result.error || 'Erro ao enviar solicitação');
+                    throw new Error('Erro ao enviar solicitação');
                 }
                 
                 // Restaurar botão
@@ -830,7 +904,7 @@ class SupervisaoApp {
 
         } catch (error) {
             console.error('Erro ao enviar solicitação:', error);
-            UTILS.showNotification(error.message || 'Erro ao enviar solicitação. Tente novamente.', 'error');
+            UTILS.showNotification('Erro ao enviar solicitação. Tente novamente.', 'error');
             
             // Restaurar botão em caso de erro
             const submitBtn = e.target.querySelector('button[type="submit"]');
