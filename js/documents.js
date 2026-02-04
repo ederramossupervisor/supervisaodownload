@@ -937,33 +937,3 @@ if (!document.querySelector('.field-error-styles')) {
     `;
     document.head.appendChild(errorStyles);
 }
-
-// ✅ FUNÇÃO DE DEBUG - REMOVA APÓS CORRIGIR O PROBLEMA
-function debugAutoFillIssue() {
-    console.log('🔧 ========== DEBUG AUTO-FILL ==========');
-    
-    // Verificar configuração do campo
-    const camposLocalizacao = DOCUMENT_FIELDS.localizacao_provisoria;
-    console.log('📋 Campos da Localização Provisória:', camposLocalizacao);
-    
-    // Verificar o campo específico
-    const campoEscola = camposLocalizacao.find(f => f.name === "Escola de Interesse");
-    console.log('🎯 Configuração do campo "Escola de Interesse":', campoEscola);
-    
-    if (campoEscola && campoEscola.autoFill) {
-        console.log('✅ Auto-fill configurado:', campoEscola.autoFill);
-        console.log('📍 Campo destino:', campoEscola.autoFill.field);
-        
-        // Verificar se o campo destino existe
-        const campoDestino = document.querySelector(`[name="${campoEscola.autoFill.field}"]`);
-        console.log('🔍 Campo destino encontrado?', campoDestino);
-    }
-    
-    // Verificar UTILS.getSchoolData
-    console.log('🧪 Teste UTILS.getSchoolData:', UTILS.getSchoolData('EEEFM ÁLVARO CASTELO'));
-    
-    console.log('🔧 ========== FIM DEBUG ==========');
-}
-
-// Para testar, descomente a linha abaixo:
-// debugAutoFillIssue();
