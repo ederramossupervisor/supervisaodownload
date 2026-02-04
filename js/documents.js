@@ -40,12 +40,12 @@ const DOCUMENT_FIELDS = {
             defaultValue: "today"
         },
         { 
-    name: "Número do Ofício", 
-    type: "text", 
-    required: true,
-    placeholder: "Ex.: 013",
-    
-},
+            name: "Número do Ofício", 
+            type: "text", 
+            required: true,
+            placeholder: "Ex.: 013",
+            
+        },
         { 
             name: "Nome do(a) Aluno(a)", 
             type: "text", 
@@ -431,7 +431,7 @@ const DOCUMENT_FIELDS = {
         }
         
     ],
-      localizacao_provisoria: [
+    localizacao_provisoria: [
         { 
             name: "Escola de Interesse",  // ✅ Nome mais claro
             type: "dropdown", 
@@ -524,84 +524,88 @@ const SERIE_TO_ETAPA = {
 // Funções específicas para manipulação de documentos
 const DOCUMENT_HANDLERS = {
     // ✅ FUNÇÃO ATUALIZADA PARA SUPORTAR ATRIBUTOS
-createFieldHTML: function(field) {
-    const fieldId = `field-${field.name.replace(/\s+/g, '-').toLowerCase()}`;
-    let fieldHTML = '';
-    
-    // Construir atributos adicionais
-    let additionalAttributes = '';
-    if (field.attributes) {
-        Object.keys(field.attributes).forEach(attr => {
-            additionalAttributes += ` ${attr}="${field.attributes[attr]}"`;
-        });
-    }
+    createFieldHTML: function(field) {
+        const fieldId = `field-${field.name.replace(/\s+/g, '-').toLowerCase()}`;
+        let fieldHTML = '';
+        
+        // Construir atributos adicionais
+        let additionalAttributes = '';
+        if (field.attributes) {
+            Object.keys(field.attributes).forEach(attr => {
+                additionalAttributes += ` ${attr}="${field.attributes[attr]}"`;
+            });
+        }
 
-    switch (field.type) {
-        case 'dropdown':
-            fieldHTML = `
-                <select id="${fieldId}" name="${field.name}" 
-                        ${field.required ? 'required' : ''}
-                        ${additionalAttributes}
-                        class="form-field dropdown-field">
-                    <option value="">${field.placeholder || `Selecione ${field.name}`}</option>
-                </select>
-            `;
-            break;
+        switch (field.type) {
+            case 'dropdown':
+                fieldHTML = `
+                    <select id="${fieldId}" name="${field.name}" 
+                            ${field.required ? 'required' : ''}
+                            ${additionalAttributes}
+                            class="form-field dropdown-field">
+                        <option value="">${field.placeholder || `Selecione ${field.name}`}</option>
+                    </select>
+                `;
+                break;
 
-        case 'textarea':
-            fieldHTML = `
-                <textarea id="${fieldId}" name="${field.name}" 
-                          ${field.required ? 'required' : ''}
-                          ${field.readOnly ? 'readonly' : ''}
-                          ${additionalAttributes}
-                          rows="${field.rows || 4}"
-                          placeholder="${field.placeholder || ''}"
-                          class="form-field textarea-field">${field.defaultValue || ''}</textarea>
-            `;
-            break;
+            case 'textarea':
+                fieldHTML = `
+                    <textarea id="${fieldId}" name="${field.name}" 
+                              ${field.required ? 'required' : ''}
+                              ${field.readOnly ? 'readonly' : ''}
+                              ${additionalAttributes}
+                              rows="${field.rows || 4}"
+                              placeholder="${field.placeholder || ''}"
+                              class="form-field textarea-field">${field.defaultValue || ''}</textarea>
+                `;
+                break;
 
-        case 'date':
-            const defaultValue = field.defaultValue === 'today' ? 
-                new Date().toISOString().split('T')[0] : 
-                (field.defaultValue || '');
-            
-            fieldHTML = `
-                <input type="date" id="${fieldId}" name="${field.name}" 
-                       ${field.required ? 'required' : ''}
-                       ${field.readOnly ? 'readonly' : ''}
-                       ${additionalAttributes}
-                       value="${defaultValue}"
-                       placeholder="${field.placeholder || ''}"
-                       class="form-field date-field">
-            `;
-            break;
+            case 'date':
+                const defaultValue = field.defaultValue === 'today' ? 
+                    new Date().toISOString().split('T')[0] : 
+                    (field.defaultValue || '');
+                
+                fieldHTML = `
+                    <input type="date" id="${fieldId}" name="${field.name}" 
+                           ${field.required ? 'required' : ''}
+                           ${field.readOnly ? 'readonly' : ''}
+                           ${additionalAttributes}
+                           value="${defaultValue}"
+                           placeholder="${field.placeholder || ''}"
+                           class="form-field date-field">
+                `;
+                break;
 
-        default:
-            fieldHTML = `
-                <input type="${field.type}" id="${fieldId}" name="${field.name}" 
-                       ${field.required ? 'required' : ''}
-                       ${field.readOnly ? 'readonly' : ''}
-                       ${additionalAttributes}
-                       value="${field.defaultValue || ''}"
-                       placeholder="${field.placeholder || ''}"
-                       class="form-field text-field">
-            `;
-    }
+            default:
+                fieldHTML = `
+                    <input type="${field.type}" id="${fieldId}" name="${field.name}" 
+                           ${field.required ? 'required' : ''}
+                           ${field.readOnly ? 'readonly' : ''}
+                           ${additionalAttributes}
+                           value="${field.defaultValue || ''}"
+                           placeholder="${field.placeholder || ''}"
+                           class="form-field text-field">
+                `;
+        }
 
-    return `
-        <div class="form-group field-group" data-field-name="${field.name}">
-            <label for="${fieldId}">
-                ${field.name} 
-                ${field.required ? '<span class="required-asterisk">*</span>' : ''}
-            </label>
-            ${fieldHTML}
-            ${field.autoGenerate ? '<small class="field-hint">Este campo será gerado automaticamente</small>' : ''}
-        </div>
-    `;
-},
-    // Preencher opções de dropdown
+        return `
+            <div class="form-group field-group" data-field-name="${field.name}">
+                <label for="${fieldId}">
+                    ${field.name} 
+                    ${field.required ? '<span class="required-asterisk">*</span>' : ''}
+                </label>
+                ${fieldHTML}
+                ${field.autoGenerate ? '<small class="field-hint">Este campo será gerado automaticamente</small>' : ''}
+            </div>
+        `;
+    },
+
+    // ✅ Preencher opções de dropdown - VERSÃO CORRIGIDA
     populateDropdown: function(selectElement, fieldName) {
+        console.log(`🔍 Populando dropdown: ${fieldName}`);
+        
         const options = DROPDOWN_OPTIONS[fieldName] || [];
+        console.log(`📋 Opções disponíveis para ${fieldName}:`, options.length);
         
         // Limpar opções existentes (exceto a primeira)
         while (selectElement.options.length > 1) {
@@ -616,51 +620,107 @@ createFieldHTML: function(field) {
             selectElement.appendChild(optionElement);
         });
 
-        // Se for dropdown de escolas, filtrar pelas escolas selecionadas na configuração
-        if (fieldName === "Nome da Escola" && APP_STATE.selectedSchools.length > 0) {
+        // ✅ ATUALIZADO: Filtrar para QUALQUER dropdown de escola
+        const escolaFields = ["Nome da Escola", "Escola de Interesse"];
+        if (escolaFields.includes(fieldName) && APP_STATE.selectedSchools.length > 0) {
+            console.log(`🎯 Filtrando ${fieldName} por escolas selecionadas:`, APP_STATE.selectedSchools);
+            
             Array.from(selectElement.options).forEach(option => {
                 if (option.value && !APP_STATE.selectedSchools.includes(option.value)) {
                     option.style.display = 'none';
                 }
             });
         }
+        
+        console.log(`✅ Dropdown ${fieldName} populado com ${options.length} opções`);
     },
 
-    // Preencher opções de dropdown - ✅ VERSÃO ATUALIZADA
-populateDropdown: function(selectElement, fieldName) {
-    console.log(`🔍 Populando dropdown: ${fieldName}`);
-    
-    const options = DROPDOWN_OPTIONS[fieldName] || [];
-    console.log(`📋 Opções disponíveis:`, options);
-    
-    // Limpar opções existentes (exceto a primeira)
-    while (selectElement.options.length > 1) {
-        selectElement.remove(1);
-    }
+    // ✅ Configurar auto-preenchimento de campos - VERSÃO CORRIGIDA
+    setupAutoFill: function(field, inputElement) {
+        if (!field.autoFill) return;
 
-    // Adicionar novas opções
-    options.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option;
-        optionElement.textContent = option;
-        selectElement.appendChild(optionElement);
-    });
-
-    // ✅ ATUALIZADO: Filtrar para QUALQUER dropdown de escola
-    const escolaFields = ["Nome da Escola", "Escola de Interesse"];
-    if (escolaFields.includes(fieldName) && APP_STATE.selectedSchools.length > 0) {
-        console.log(`🎯 Filtrando ${fieldName} por escolas selecionadas:`, APP_STATE.selectedSchools);
+        const autoFillConfig = field.autoFill;
         
-        Array.from(selectElement.options).forEach(option => {
-            if (option.value && !APP_STATE.selectedSchools.includes(option.value)) {
-                option.style.display = 'none';
+        console.log(`🔍 Configurando auto-fill para: ${field.name}`);
+        console.log(`📋 Configuração:`, autoFillConfig);
+
+        if (autoFillConfig.source === 'config') {
+            // Preencher com dados da configuração
+            if (autoFillConfig.property === 'supervisorName') {
+                inputElement.value = APP_STATE.supervisorName || '';
+                console.log(`✅ Preenchido ${field.name}: ${inputElement.value}`);
             }
-        });
-    }
-    
-    console.log(`✅ Dropdown ${fieldName} populado com ${options.length} opções`);
-},
-    
+            
+        } else if (autoFillConfig.source === 'school' && autoFillConfig.field) {
+            // ✅ CORREÇÃO: O inputElement é o SELECT (Escola de Interesse)
+            // O autoFillConfig.field é o campo DESTINO (Escola de Interesse (Cidade))
+            
+            console.log(`🎯 Escola: ${field.name} → Cidade: ${autoFillConfig.field}`);
+            
+            // Adicionar evento de change ao SELECT (inputElement)
+            inputElement.addEventListener('change', function() {
+                console.log(`🔄 Escola alterada: ${this.value}`);
+                
+                const selectedSchool = UTILS.getSchoolData(this.value);
+                console.log(`📋 Dados da escola:`, selectedSchool);
+                
+                if (selectedSchool) {
+                    // Encontrar o campo de cidade pelo nome exato
+                    const targetFieldName = autoFillConfig.field;
+                    const targetInput = document.querySelector(`[name="${targetFieldName}"]`);
+                    
+                    console.log(`📍 Procurando campo: ${targetFieldName}`, targetInput);
+                    
+                    if (targetInput) {
+                        targetInput.value = selectedSchool[autoFillConfig.property] || '';
+                        console.log(`✅ Auto-preenchido: ${targetFieldName} = ${targetInput.value}`);
+                    } else {
+                        console.warn(`⚠️ Campo de destino não encontrado: ${targetFieldName}`);
+                    }
+                } else {
+                    console.warn(`⚠️ Escola não encontrada: ${this.value}`);
+                }
+            });
+            
+            // ✅ PREENCHER IMEDIATAMENTE SE JÁ HOUVER VALOR
+            if (inputElement.value) {
+                console.log(`⚡ Preenchendo valor inicial: ${inputElement.value}`);
+                const selectedSchool = UTILS.getSchoolData(inputElement.value);
+                if (selectedSchool) {
+                    const targetInput = document.querySelector(`[name="${autoFillConfig.field}"]`);
+                    if (targetInput) {
+                        targetInput.value = selectedSchool[autoFillConfig.property] || '';
+                        console.log(`✅ Preenchido inicialmente: ${targetInput.value}`);
+                    }
+                }
+            }
+            
+        } else if (autoFillConfig.source === 'serie' && autoFillConfig.field) {
+            // Configurar evento para quando série for selecionada
+            console.log(`🎯 Série: ${field.name} → Etapa: ${autoFillConfig.field}`);
+            
+            inputElement.addEventListener('change', function() {
+                const etapaField = document.querySelector(`[name="${autoFillConfig.field}"]`);
+                if (etapaField && this.value) {
+                    const etapa = SERIE_TO_ETAPA[this.value] || '';
+                    etapaField.value = etapa;
+                    console.log(`✅ Etapa preenchida: ${etapa}`);
+                }
+            });
+            
+            // Preencher imediatamente se já houver valor
+            if (inputElement.value) {
+                const etapaField = document.querySelector(`[name="${autoFillConfig.field}"]`);
+                if (etapaField && inputElement.value) {
+                    const etapa = SERIE_TO_ETAPA[inputElement.value] || '';
+                    etapaField.value = etapa;
+                }
+            }
+        }
+        
+        console.log(`✅ Auto-fill configurado para: ${field.name}`);
+    },
+
     // Configurar geração automática de campos
     setupAutoGenerate: function(field, inputElement) {
         if (!field.autoGenerate) return;
@@ -877,3 +937,33 @@ if (!document.querySelector('.field-error-styles')) {
     `;
     document.head.appendChild(errorStyles);
 }
+
+// ✅ FUNÇÃO DE DEBUG - REMOVA APÓS CORRIGIR O PROBLEMA
+function debugAutoFillIssue() {
+    console.log('🔧 ========== DEBUG AUTO-FILL ==========');
+    
+    // Verificar configuração do campo
+    const camposLocalizacao = DOCUMENT_FIELDS.localizacao_provisoria;
+    console.log('📋 Campos da Localização Provisória:', camposLocalizacao);
+    
+    // Verificar o campo específico
+    const campoEscola = camposLocalizacao.find(f => f.name === "Escola de Interesse");
+    console.log('🎯 Configuração do campo "Escola de Interesse":', campoEscola);
+    
+    if (campoEscola && campoEscola.autoFill) {
+        console.log('✅ Auto-fill configurado:', campoEscola.autoFill);
+        console.log('📍 Campo destino:', campoEscola.autoFill.field);
+        
+        // Verificar se o campo destino existe
+        const campoDestino = document.querySelector(`[name="${campoEscola.autoFill.field}"]`);
+        console.log('🔍 Campo destino encontrado?', campoDestino);
+    }
+    
+    // Verificar UTILS.getSchoolData
+    console.log('🧪 Teste UTILS.getSchoolData:', UTILS.getSchoolData('EEEFM ÁLVARO CASTELO'));
+    
+    console.log('🔧 ========== FIM DEBUG ==========');
+}
+
+// Para testar, descomente a linha abaixo:
+// debugAutoFillIssue();
