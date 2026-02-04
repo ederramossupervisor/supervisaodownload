@@ -432,76 +432,76 @@ const DOCUMENT_FIELDS = {
         
     ],
      localizacao_provisoria: [
-        { 
-            name: "Escola de Interesse", 
-            type: "dropdown", 
-            required: true,
-            placeholder: "Selecione a escola de interesse",
-            options: "Escola de Interesse",
-            autoFill: {
-                field: "Escola de Interesse (Cidade)",
-                source: "school",
-                property: "city"
-            }
-        },
-        { 
-            name: "Escola de Interesse (Cidade)", 
-            type: "text", 
-            required: true,
-            readOnly: true,
-            placeholder: "Preenchido automaticamente"
-        },
-        { 
-            name: "Nome do professor", 
-            type: "text", 
-            required: true,
-            placeholder: "Digite o nome completo do professor"
-        },
-        { 
-            name: "Número Funcional", 
-            type: "text", 
-            required: true,
-            placeholder: "Digite o número funcional do professor"
-        },
-        { 
-            name: "Escola Atual", 
-            type: "dropdown", 
-            required: true,
-            placeholder: "Selecione a escola atual do professor",
-            options: "Escola Atual",
-            autoFill: {
-                field: "Escola Atual (Cidade)",
-                source: "school",
-                property: "city"
-            }
-        },
-        { 
-            name: "Escola Atual (Cidade)", 
-            type: "text", 
-            required: true,
-            readOnly: true,
-            placeholder: "Preenchido automaticamente"
-        },
-        { 
-            name: "Data", 
-            type: "date", 
-            required: true,
-            defaultValue: "today",
-            placeholder: "Data do documento"
-        },
-        { 
-            name: "Nome do Supervisor", 
-            type: "text", 
-            required: true,
-            autoFill: {
-                source: "config",
-                property: "supervisorName"
-            },
-            readOnly: true,
-            placeholder: "Preenchido automaticamente"
+    { 
+        name: "Nome da Escola",  // ✅ Escola de Interesse - SAME PLACEHOLDER
+        type: "dropdown", 
+        required: true,
+        placeholder: "Selecione a ESCOLA DE INTERESSE (nova localização)",
+        options: "Nome da Escola",
+        autoFill: {
+            field: "Nome do Município",  // ✅ Município da Escola de Interesse
+            source: "school",
+            property: "city"
         }
-    ],
-            links_uteis: [
+    },
+    { 
+        name: "Nome do Município",  // ✅ Município da Escola de Interesse - SAME PLACEHOLDER
+        type: "text", 
+        required: true,
+        readOnly: true,
+        placeholder: "Município preenchido automaticamente"
+    },
+    { 
+        name: "Nome indicado",  // ✅ Correto
+        type: "text", 
+        required: true,
+        placeholder: "Digite o nome completo do professor"
+    },
+    { 
+        name: "Número Funcional",  // ✅ Correto
+        type: "text", 
+        required: true,
+        placeholder: "Digite o número funcional do professor"
+    },
+    { 
+        name: "Nome da Escola Atual",  // ⚠️ IMPORTANTE: Campo NOVO para escola atual
+        type: "dropdown", 
+        required: true,
+        placeholder: "Selecione a ESCOLA ATUAL do professor",
+        options: "Nome da Escola",
+        autoFill: {
+            field: "Nome do Município Atual",  // Campo novo para município atual
+            source: "school",
+            property: "city"
+        }
+    },
+    { 
+        name: "Nome do Município Atual",  // ⚠️ IMPORTANTE: Campo NOVO para município atual
+        type: "text", 
+        required: true,
+        readOnly: true,
+        placeholder: "Município atual preenchido automaticamente"
+    },
+    { 
+        name: "Data",  // ✅ Correto
+        type: "date", 
+        required: true,
+        defaultValue: "today",
+        placeholder: "Data do documento"
+    },
+    { 
+        name: "Nome do Supervisor",  // ✅ Correto
+        type: "text", 
+        required: true,
+        autoFill: {
+            source: "config",
+            property: "supervisorName"
+        },
+        readOnly: true,
+        placeholder: "Preenchido automaticamente"
+    }
+],
+    links_uteis: [
         // Este array fica vazio porque não teremos campos de formulário
         // Só teremos botões com links
     ]
