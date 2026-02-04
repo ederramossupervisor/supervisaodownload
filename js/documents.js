@@ -626,40 +626,41 @@ createFieldHTML: function(field) {
         }
     },
 
-    // Configurar auto-preenchimento de campos
-    setupAutoFill: function(field, inputElement) {
-        if (!field.autoFill) return;
+    // Preencher opções de dropdown - ✅ VERSÃO ATUALIZADA
+populateDropdown: function(selectElement, fieldName) {
+    console.log(`🔍 Populando dropdown: ${fieldName}`);
+    
+    const options = DROPDOWN_OPTIONS[fieldName] || [];
+    console.log(`📋 Opções disponíveis:`, options);
+    
+    // Limpar opções existentes (exceto a primeira)
+    while (selectElement.options.length > 1) {
+        selectElement.remove(1);
+    }
 
-        const autoFillConfig = field.autoFill;
+    // Adicionar novas opções
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        selectElement.appendChild(optionElement);
+    });
 
-        if (autoFillConfig.source === 'config') {
-            // Preencher com dados da configuração
-            if (autoFillConfig.property === 'supervisorName') {
-                inputElement.value = APP_STATE.supervisorName;
+    // ✅ ATUALIZADO: Filtrar para QUALQUER dropdown de escola
+    const escolaFields = ["Nome da Escola", "Escola de Interesse"];
+    if (escolaFields.includes(fieldName) && APP_STATE.selectedSchools.length > 0) {
+        console.log(`🎯 Filtrando ${fieldName} por escolas selecionadas:`, APP_STATE.selectedSchools);
+        
+        Array.from(selectElement.options).forEach(option => {
+            if (option.value && !APP_STATE.selectedSchools.includes(option.value)) {
+                option.style.display = 'none';
             }
-        } else if (autoFillConfig.source === 'school' && autoFillConfig.field) {
-            // Configurar evento para quando escola for selecionada
-            const schoolField = document.querySelector(`[name="${autoFillConfig.field}"]`);
-            if (schoolField) {
-                schoolField.addEventListener('change', function() {
-                    const selectedSchool = UTILS.getSchoolData(this.value);
-                    if (selectedSchool) {
-                        inputElement.value = selectedSchool[autoFillConfig.property];
-                    }
-                });
-            }
-        } else if (autoFillConfig.source === 'serie' && autoFillConfig.field) {
-            // Configurar evento para quando série for selecionada
-            inputElement.addEventListener('change', function() {
-                const etapaField = document.querySelector(`[name="${autoFillConfig.field}"]`);
-                if (etapaField && this.value) {
-                    const etapa = SERIE_TO_ETAPA[this.value] || '';
-                    etapaField.value = etapa;
-                }
-            });
-        }
-    },
-
+        });
+    }
+    
+    console.log(`✅ Dropdown ${fieldName} populado com ${options.length} opções`);
+},
+    
     // Configurar geração automática de campos
     setupAutoGenerate: function(field, inputElement) {
         if (!field.autoGenerate) return;
