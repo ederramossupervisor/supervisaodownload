@@ -431,69 +431,68 @@ const DOCUMENT_FIELDS = {
         }
         
     ],
-     localizacao_provisoria: [
-    { 
-        name: "Escola de Interesse",  // ✅ Nova localização (dropdown)
-        type: "dropdown", 
-        required: true,
-        placeholder: "Selecione a ESCOLA DE INTERESSE (nova localização)",
-        options: "Nome da Escola",
-        autoFill: {
-            field: "Escola de Interesse (Cidade)",
-            source: "school", 
-            property: "city"
-        }
-    },
-    { 
-        name: "Escola de Interesse (Cidade)",  // ✅ Cidade da nova escola (auto)
-        type: "text", 
-        required: true,
-        readOnly: true,
-        placeholder: "Cidade preenchida automaticamente"
-    },
-    { 
-        name: "Nome do professor",  // ✅ Campo renomeado
-        type: "text", 
-        required: true,
-        placeholder: "Digite o nome completo do professor"
-    },
-    { 
-        name: "Número Funcional",  // ✅ Mantido igual
-        type: "text", 
-        required: true,
-        placeholder: "Digite o número funcional do professor"
-    },
-    { 
-        name: "Escola Atual",  // ✅ Campo editável (não dropdown)
-        type: "text", 
-        required: true,
-        placeholder: "Digite o nome da escola atual do professor"
-    },
-    { 
-        name: "Escola Atual (Cidade)",  // ✅ Campo editável
-        type: "text", 
-        required: true,
-        placeholder: "Digite a cidade da escola atual"
-    },
-    { 
-        name: "Data",  // ✅ Seguindo padrão dos outros modelos
-        type: "date", 
-        required: true,
-        defaultValue: "today",
-        placeholder: "Data do documento"
-    },
-    { 
-        name: "Nome do Supervisor",  // ✅ Seguindo padrão dos outros modelos
-        type: "text", 
-        required: true,
-        autoFill: {
-            source: "config",
-            property: "supervisorName"
+      localizacao_provisoria: [
+        { 
+            name: "Escola de Interesse",  // ✅ Nome mais claro
+            type: "dropdown", 
+            required: true,
+            placeholder: "Selecione a ESCOLA DE INTERESSE (nova localização)",
+            autoFill: {
+                field: "Escola de Interesse (Cidade)",
+                source: "school", 
+                property: "city"
+            }
         },
-        readOnly: true,
-        placeholder: "Preenchido automaticamente"
-    }
-],
+        { 
+            name: "Escola de Interesse (Cidade)",  // ✅ Cidade da nova escola
+            type: "text", 
+            required: true,
+            readOnly: true,
+            placeholder: "Cidade preenchida automaticamente"
+        },
+        { 
+            name: "Nome do professor",  // ✅ Campo renomeado
+            type: "text", 
+            required: true,
+            placeholder: "Digite o nome completo do professor"
+        },
+        { 
+            name: "Número Funcional",  
+            type: "text", 
+            required: true,
+            placeholder: "Digite o número funcional do professor"
+        },
+        { 
+            name: "Escola Atual",  // ✅ Campo editável
+            type: "text", 
+            required: true,
+            placeholder: "Digite o nome da escola atual do professor"
+        },
+        { 
+            name: "Escola Atual (Cidade)",  // ✅ Campo editável
+            type: "text", 
+            required: true,
+            placeholder: "Digite a cidade da escola atual"
+        },
+        { 
+            name: "Data",  
+            type: "date", 
+            required: true,
+            defaultValue: "today",
+            placeholder: "Data do documento"
+        },
+        { 
+            name: "Nome do Supervisor",  
+            type: "text", 
+            required: true,
+            autoFill: {
+                source: "config",
+                property: "supervisorName"
+            },
+            readOnly: true,
+            placeholder: "Preenchido automaticamente"
+        }
+    ],
     links_uteis: [
         // Este array fica vazio porque não teremos campos de formulário
         // Só teremos botões com links
