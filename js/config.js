@@ -31,6 +31,7 @@ const SCHOOLS_DATA = [
     { name: "EEEFM LEOGILDO SEVERIANO DE SOUZA", city: "Brejetuba", director: "Adalberto Carlos Araújo Chaves" },
     { name: "EEEFM LUIZ JOUFFROY", city: "Laranja da Terra", director: "Nilza Abel Gumz" },
     { name: "EEEFM MARIA DE ABREU ALVIM", city: "Afonso Cláudio", director: "Maria das Graças Fabio Costa" },
+    { name: "EEEFM MÁRIO BERGAMIN", city: "Venda Nova do Imigrante", director: "CELINA JANUÁRIO MOREIRA" },
     { name: "EEEFM MARLENE BRANDÃO", city: "Brejetuba", director: "Paulynne Ayres Tatagiba Gonçalves" },
     { name: "EEEFM PEDRA AZUL", city: "Domingos Martins", director: "Elizabeth Drumond Ambrósio Filgueiras" },
     { name: "EEEFM PONTO DO ALTO", city: "Domingos Martins", director: "Marcelo Ribett" },
@@ -40,8 +41,11 @@ const SCHOOLS_DATA = [
     { name: "EEEFM SÃO LUÍS", city: "Santa Maria de Jetibá", director: "Valdirene Mageski Cordeiro Magri" },
     { name: "EEEFM TEOFILO PAULINO", city: "Domingos Martins", director: "Delfina Schneider Stein" },
     { name: "EEEM FRANCISCO GUILHERME", city: "Santa Maria de Jetibá", director: "Jonatas André Drescher" },
+    { name: "EEEF IVANA CASAGRANDE SCABELO", city: "Venda Nova do Imigrante", director: "Maristela Broedel" },
+    { name: "EEEF SEVERINO PASTE", city: "Venda Nova do Imigrante", director: "Maristela Broedel" },
     { name: "EEEM MATA FRIA", city: "Afonso Cláudio", director: "Jonatas André Drescher" },
     { name: "EEEM SOBREIRO", city: "Laranja da Terra", director: "Jonatas André Drescher" }
+    
 ];
 
 // Opções para campos dropdown
@@ -66,6 +70,7 @@ const DOCUMENT_ICONS = {
     manifestacao: "fas fa-comment-alt",
     eletivas: "fas fa-book-open",
     projeto: "fas fa-project-diagram",
+    localizacao_provisoria: "fas fa-map-marker-alt", 
     links_uteis: "fas fa-link"
 };
 
@@ -79,6 +84,7 @@ const DOCUMENT_NAMES = {
     manifestacao: "Manifestação",
     eletivas: "Eletivas",
     projeto: "Projeto",
+    localizacao_provisoria: "Localização Provisória",
     links_uteis: "Links Úteis"
 };
 
