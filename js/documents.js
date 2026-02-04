@@ -433,64 +433,57 @@ const DOCUMENT_FIELDS = {
     ],
      localizacao_provisoria: [
     { 
-        name: "Nome da Escola",  // ✅ Escola de Interesse - SAME PLACEHOLDER
+        name: "Escola de Interesse",  // ✅ Nova localização (dropdown)
         type: "dropdown", 
         required: true,
         placeholder: "Selecione a ESCOLA DE INTERESSE (nova localização)",
         options: "Nome da Escola",
         autoFill: {
-            field: "Nome do Município",  // ✅ Município da Escola de Interesse
-            source: "school",
+            field: "Escola de Interesse (Cidade)",
+            source: "school", 
             property: "city"
         }
     },
     { 
-        name: "Nome do Município",  // ✅ Município da Escola de Interesse - SAME PLACEHOLDER
+        name: "Escola de Interesse (Cidade)",  // ✅ Cidade da nova escola (auto)
         type: "text", 
         required: true,
         readOnly: true,
-        placeholder: "Município preenchido automaticamente"
+        placeholder: "Cidade preenchida automaticamente"
     },
     { 
-        name: "Nome indicado",  // ✅ Correto
+        name: "Nome do professor",  // ✅ Campo renomeado
         type: "text", 
         required: true,
         placeholder: "Digite o nome completo do professor"
     },
     { 
-        name: "Número Funcional",  // ✅ Correto
+        name: "Número Funcional",  // ✅ Mantido igual
         type: "text", 
         required: true,
         placeholder: "Digite o número funcional do professor"
     },
     { 
-        name: "Nome da Escola Atual",  // ⚠️ IMPORTANTE: Campo NOVO para escola atual
-        type: "dropdown", 
-        required: true,
-        placeholder: "Selecione a ESCOLA ATUAL do professor",
-        options: "Nome da Escola",
-        autoFill: {
-            field: "Nome do Município Atual",  // Campo novo para município atual
-            source: "school",
-            property: "city"
-        }
-    },
-    { 
-        name: "Nome do Município Atual",  // ⚠️ IMPORTANTE: Campo NOVO para município atual
+        name: "Escola Atual",  // ✅ Campo editável (não dropdown)
         type: "text", 
         required: true,
-        readOnly: true,
-        placeholder: "Município atual preenchido automaticamente"
+        placeholder: "Digite o nome da escola atual do professor"
     },
     { 
-        name: "Data",  // ✅ Correto
+        name: "Escola Atual (Cidade)",  // ✅ Campo editável
+        type: "text", 
+        required: true,
+        placeholder: "Digite a cidade da escola atual"
+    },
+    { 
+        name: "Data",  // ✅ Seguindo padrão dos outros modelos
         type: "date", 
         required: true,
         defaultValue: "today",
         placeholder: "Data do documento"
     },
     { 
-        name: "Nome do Supervisor",  // ✅ Correto
+        name: "Nome do Supervisor",  // ✅ Seguindo padrão dos outros modelos
         type: "text", 
         required: true,
         autoFill: {
