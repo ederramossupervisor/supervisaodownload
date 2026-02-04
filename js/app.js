@@ -427,7 +427,7 @@ class SupervisaoApp {
                     
                     <!-- SIGAE -->
                     <div class="link-item" style="margin-bottom: 15px;">
-                        <a href="https://sigae.institutounibanco.org.br/" 
+                        <a href="https://https://piloto.sigae.org.br/" 
                            target="_blank" 
                            class="btn btn-secondary" 
                            style="width: 100%; text-align: left; justify-content: flex-start;">
