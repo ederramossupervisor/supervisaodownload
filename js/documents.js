@@ -436,7 +436,7 @@ const DOCUMENT_FIELDS = {
         name: "Escola de Interesse",  
         type: "dropdown", 
         required: true,
-        placeholder: "Selecione a ESCOLA DE INTERESSE (nova localização)",
+        placeholder: "Selecione a escola de interesse",
         options: "Escola de Interesse", 
         autoFill: {
             field: "Município da Escola de Interesse",  // ✅ Nome corrigido
