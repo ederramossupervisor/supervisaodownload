@@ -51,6 +51,7 @@ const SCHOOLS_DATA = [
 // Opções para campos dropdown
 const DROPDOWN_OPTIONS = {
     "Nome da Escola": SCHOOLS_DATA.map(school => school.name),
+    "Escola de Interesse": SCHOOLS_DATA.map(school => school.name),
     "Motivo da contratação": ["lista esgotada"],
     "Oferta": ["Regular", "EJA/Neeja", "Técnico"],
     "Série": [
