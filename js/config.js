@@ -58,6 +58,11 @@ const DROPDOWN_OPTIONS = {
         "1º ano", "2º ano", "3º ano", "4º ano", "5º ano", 
         "6º ano", "7º ano", "8º ano", "9º ano", 
         "1ª série", "2ª série", "3ª série"
+    ],
+    "Etapa de Ensino": [  // ✅ ADICIONE ESTA LINHA
+        "Ensino Fundamental - Anos Iniciais",
+        "Ensino Fundamental - Anos Finais", 
+        "Ensino Médio"
     ]
 };
 
@@ -71,7 +76,8 @@ const DOCUMENT_ICONS = {
     manifestacao: "fas fa-comment-alt",
     eletivas: "fas fa-book-open",
     projeto: "fas fa-project-diagram",
-    localizacao_provisoria: "fas fa-map-marker-alt", 
+    localizacao_provisoria: "fas fa-map-marker-alt",
+    atividade_pesquisa: "fas fa-search",
     links_uteis: "fas fa-link"
 };
 
@@ -86,6 +92,7 @@ const DOCUMENT_NAMES = {
     eletivas: "Eletivas",
     projeto: "Projeto",
     localizacao_provisoria: "Localização Provisória",
+    atividade_pesquisa: "Atividade de Pesquisa",
     links_uteis: "Links Úteis"
 };
 
