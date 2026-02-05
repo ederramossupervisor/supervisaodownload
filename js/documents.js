@@ -496,7 +496,7 @@ const DOCUMENT_FIELDS = {
 ],
     atividade_pesquisa: [
     { 
-        name: "Nome da Projeto",  // ✅ Campo para nome do projeto
+        name: "Nome do Projeto",  // ✅ Campo para nome do projeto
         type: "text", 
         required: true,
         placeholder: "Digite o nome do projeto"
