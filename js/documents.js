@@ -494,6 +494,56 @@ const DOCUMENT_FIELDS = {
         placeholder: "Preenchido automaticamente"
     }
 ],
+    atividade_pesquisa: [
+    { 
+        name: "Nome da Projeto",  // ✅ Campo para nome do projeto
+        type: "text", 
+        required: true,
+        placeholder: "Digite o nome do projeto"
+    },
+    { 
+        name: "Nome da Escola",  // ✅ Dropdown de escolas
+        type: "dropdown", 
+        required: true,
+        placeholder: "Selecione a escola",
+        autoFill: {
+            field: "Nome do Município",  // Se quiser preencher cidade automaticamente
+            source: "school",
+            property: "city"
+        }
+    },
+    { 
+        name: "Nome do Município",  // ✅ Cidade da escola (opcional)
+        type: "text", 
+        required: false,
+        readOnly: true,
+        placeholder: "Cidade preenchida automaticamente"
+    },
+    { 
+        name: "Etapa de Ensino",  // ✅ Dropdown de etapas
+        type: "dropdown", 
+        required: true,
+        placeholder: "Selecione a etapa de ensino"
+    },
+    { 
+        name: "Data",  // ✅ Data do documento
+        type: "date", 
+        required: true,
+        defaultValue: "today",
+        placeholder: "Data do documento"
+    },
+    { 
+        name: "Nome do Supervisor",  // ✅ Supervisor (auto)
+        type: "text", 
+        required: true,
+        autoFill: {
+            source: "config",
+            property: "supervisorName"
+        },
+        readOnly: true,
+        placeholder: "Preenchido automaticamente"
+    }
+],
     links_uteis: [
         // Este array fica vazio porque não teremos campos de formulário
         // Só teremos botões com links
