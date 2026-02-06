@@ -544,6 +544,50 @@ const DOCUMENT_FIELDS = {
         placeholder: "Preenchido automaticamente"
     }
 ],
+    pca: [
+    { 
+        name: "Nome do Professor",  // ✅ Nome do professor
+        type: "text", 
+        required: true,
+        placeholder: "Digite o nome completo do professor"
+    },
+    { 
+        name: "Número Funcional",  // ✅ Número funcional
+        type: "text", 
+        required: true,
+        placeholder: "Digite o número funcional"
+    },
+    { 
+        name: "Área do Conhecimento",  // ✅ Dropdown de áreas
+        type: "dropdown", 
+        required: true,
+        placeholder: "Selecione a área do conhecimento"
+    },
+    { 
+        name: "Nome da Escola",  // ✅ Dropdown de escolas
+        type: "dropdown", 
+        required: true,
+        placeholder: "Selecione a escola"
+    },
+    { 
+        name: "Data",  // ✅ Data do documento
+        type: "date", 
+        required: true,
+        defaultValue: "today",
+        placeholder: "Data do documento"
+    },
+    { 
+        name: "Nome do Supervisor",  // ✅ Supervisor (auto)
+        type: "text", 
+        required: true,
+        autoFill: {
+            source: "config",
+            property: "supervisorName"
+        },
+        readOnly: true,
+        placeholder: "Preenchido automaticamente"
+    }
+],
     links_uteis: [
         // Este array fica vazio porque não teremos campos de formulário
         // Só teremos botões com links
