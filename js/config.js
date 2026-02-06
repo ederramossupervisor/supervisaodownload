@@ -59,10 +59,15 @@ const DROPDOWN_OPTIONS = {
         "6º ano", "7º ano", "8º ano", "9º ano", 
         "1ª série", "2ª série", "3ª série"
     ],
-    "Etapa de Ensino": [  // ✅ ADICIONE ESTA LINHA
+    "Etapa de Ensino": [  
         "Ensino Fundamental - Anos Iniciais",
         "Ensino Fundamental - Anos Finais", 
         "Ensino Médio"
+    ],
+     "Área do Conhecimento": [  
+        "Linguagens e Códigos",
+        "Ciências da Natureza e Matemática",
+        "Ciências da Humanas"
     ]
 };
 
@@ -78,6 +83,7 @@ const DOCUMENT_ICONS = {
     projeto: "fas fa-project-diagram",
     localizacao_provisoria: "fas fa-map-marker-alt",
     atividade_pesquisa: "fas fa-search",
+    pca: "fas fa-chalkboard-teacher",
     links_uteis: "fas fa-link"
 };
 
@@ -93,6 +99,7 @@ const DOCUMENT_NAMES = {
     projeto: "Projeto",
     localizacao_provisoria: "Localização Provisória",
     atividade_pesquisa: "Atividade de Pesquisa",
+    pca: "PCA",
     links_uteis: "Links Úteis"
 };
 
