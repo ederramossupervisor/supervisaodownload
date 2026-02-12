@@ -62,12 +62,15 @@ const DROPDOWN_OPTIONS = {
     "Etapa de Ensino": [  
         "Ensino Fundamental - Anos Iniciais",
         "Ensino Fundamental - Anos Finais", 
-        "Ensino Médio"
+        "Ensino Médio",
+        "Ensino Fundamental - Anos Iniciais e Anos Finais",
+        "Ensino Fundamental e Ensino Médio",
+        "Todas as Etapas de Ensino"
     ],
      "Área do Conhecimento": [  
         "Linguagens e Códigos",
         "Ciências da Natureza e Matemática",
-        "Ciências da Humanas"
+        "Ciências Humanas"
     ]
 };
 
