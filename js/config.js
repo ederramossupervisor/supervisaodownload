@@ -67,6 +67,7 @@ const DROPDOWN_OPTIONS = {
         "Ensino Fundamental e Ensino Médio",
         "Todas as Etapas de Ensino"
     ],
+    "Turno": ["Matutino", "Vespertino", "Noturno", "Integral"],
      "Área do Conhecimento": [  
         "Linguagens e Códigos",
         "Ciências da Natureza e Matemática",
@@ -87,6 +88,7 @@ const DOCUMENT_ICONS = {
     localizacao_provisoria: "fas fa-map-marker-alt",
     atividade_pesquisa: "fas fa-search",
     pca: "fas fa-chalkboard-teacher",
+    coordenacao_escolar: "fas fa-user-tie",
     links_uteis: "fas fa-link"
 };
 
@@ -103,6 +105,7 @@ const DOCUMENT_NAMES = {
     localizacao_provisoria: "Localização Provisória",
     atividade_pesquisa: "Atividade de Pesquisa",
     pca: "PCA",
+    coordenacao_escolar: "Coordenação Escolar",
     links_uteis: "Links Úteis"
 };
 
