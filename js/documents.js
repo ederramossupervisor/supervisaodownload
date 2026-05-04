@@ -588,6 +588,50 @@ const DOCUMENT_FIELDS = {
         placeholder: "Preenchido automaticamente"
     }
 ],
+    coordenacao_escolar: [
+    {
+        name: "Número do Processo",
+        type: "text",
+        required: true,
+        placeholder: "Ex.: 2026-NQ15FP"
+    },
+    {
+        name: "Nome da Escola",
+        type: "dropdown",
+        required: true,
+        placeholder: "Selecione a escola"
+        // (sem autoFill de município, pois o texto não exige cidade)
+    },
+    {
+        name: "Nome do Servidor",
+        type: "text",
+        required: true,
+        placeholder: "Digite o nome completo do(a) servidor(a)"
+    },
+    {
+        name: "Turno",
+        type: "dropdown",
+        required: true,
+        placeholder: "Selecione o turno"
+    },
+    {
+        name: "Data",
+        type: "date",
+        required: true,
+        defaultValue: "today"
+    },
+    {
+        name: "Supervisor Escolar",
+        type: "text",
+        required: true,
+        readOnly: true,
+        autoFill: {
+            source: "config",
+            property: "supervisorName"
+        },
+        placeholder: "Preenchido automaticamente"
+    }
+],
     links_uteis: [
         // Este array fica vazio porque não teremos campos de formulário
         // Só teremos botões com links
