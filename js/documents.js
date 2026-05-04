@@ -590,7 +590,7 @@ const DOCUMENT_FIELDS = {
 ],
     coordenacao_escolar: [
     {
-        name: "Número do Processo",
+        name: "Número Edocs",
         type: "text",
         required: true,
         placeholder: "Ex.: 2026-NQ15FP"
@@ -603,7 +603,7 @@ const DOCUMENT_FIELDS = {
         // (sem autoFill de município, pois o texto não exige cidade)
     },
     {
-        name: "Nome do Servidor",
+        name: "Nome do Professor",
         type: "text",
         required: true,
         placeholder: "Digite o nome completo do(a) servidor(a)"
@@ -621,7 +621,7 @@ const DOCUMENT_FIELDS = {
         defaultValue: "today"
     },
     {
-        name: "Supervisor Escolar",
+        name: "Nome do Supervisor",
         type: "text",
         required: true,
         readOnly: true,
