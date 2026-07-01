@@ -25,7 +25,7 @@ const SCHOOLS_DATA = [
     { name: "EEEFM GISELA SALLOKER FAYET", city: "Domingos Martins", director: "Maxwel Augusto Neves" },
     { name: "EEEFM GRAÇA ARANHA", city: "Santa Maria de Jetibá", director: "Camilo Pauli Dominicini" },
     { name: "EEEFM JOAQUIM CAETANO DE PAIVA", city: "Laranja da Terra", director: "Miriam Klitzke Seibel" },
-    { name: "EEEFM JOSE CUPERTINO", city: "Afonso Cláudio", director: "Cléria Pagotto Ronchi Zanelato" },
+    { name: "EEEFM JOSE CUPERTINO", city: "Afonso Cláudio", director: "Nilzeti Silva da Cruz Coutinho" },
     { name: "EEEFM JOSE GIESTAS", city: "Afonso Cláudio", director: "Gederson Vargas Dazilio" },
     { name: "EEEFM JOSÉ ROBERTO CHRISTO", city: "Afonso Cláudio", director: "Andressa Silva Dias" },
     { name: "EEEFM LEOGILDO SEVERIANO DE SOUZA", city: "Brejetuba", director: "Adalberto Carlos Araújo Chaves" },
