@@ -72,6 +72,18 @@ const DROPDOWN_OPTIONS = {
         "Linguagens e Códigos",
         "Ciências da Natureza e Matemática",
         "Ciências Humanas"
+    ],
+
+     // ✅ ADICIONE ESTA LINHA:
+    "Etapa do Circuito": [
+        "Planejamento I",
+        "Execução I",
+        "SMAR I",
+        "Correção de Rotas I",
+        "Execução II",
+        "SMAR II",
+        "Correção de Rotas II",
+        "Execução III"
     ]
 };
 
