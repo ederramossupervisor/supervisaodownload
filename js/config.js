@@ -107,7 +107,7 @@ const DOCUMENT_NAMES = {
     atividade_pesquisa: "Atividade de Pesquisa",
     pca: "PCA",
     coordenacao_escolar: "Coordenação Escolar",
-    ata_circuito_gestao: "Ata de Reunião do Circuito de Gestão"
+    ata_circuito_gestao: "Ata de Reunião do Circuito de Gestão",
     links_uteis: "Links Úteis"
 };
 
