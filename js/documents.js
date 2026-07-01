@@ -632,6 +632,61 @@ const DOCUMENT_FIELDS = {
         placeholder: "Preenchido automaticamente"
     }
 ],
+
+    ata_circuito_gestao: [
+        {
+            name: "Etapa do Circuito",
+            type: "dropdown",
+            required: true,
+            placeholder: "Selecione a etapa",
+            options: [
+                "Planejamento I",
+                "Execução I",
+                "SMAR I",
+                "Correção de Rotas I",
+                "Execução II",
+                "SMAR II",
+                "Correção de Rotas II",
+                "Execução III"
+            ]
+        },
+        {
+            name: "Data",
+            type: "date",
+            required: true,
+            defaultValue: "today"
+        },
+        {
+            name: "Nome do Supervisor",
+            type: "text",
+            required: true,
+            autoFill: {
+                source: "config",
+                property: "supervisorName"
+            },
+            readOnly: true,
+            placeholder: "Preenchido automaticamente"
+        },
+        {
+            name: "Nome da Escola",
+            type: "dropdown",
+            required: true,
+            placeholder: "Selecione a escola"
+        },
+        {
+            name: "Nome do Participante",
+            type: "text",
+            required: true,
+            placeholder: "Ex: João Silva - Diretor"
+        },
+        {
+            name: "Assunto",
+            type: "textarea",
+            required: true,
+            placeholder: "Descreva os assuntos discutidos na reunião",
+            rows: 6
+        }
+    ],
     links_uteis: [
         // Este array fica vazio porque não teremos campos de formulário
         // Só teremos botões com links
