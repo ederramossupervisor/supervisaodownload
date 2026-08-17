@@ -651,6 +651,13 @@ const DOCUMENT_FIELDS = {
             ]
         },
         {
+            name: "Subtópico",
+            type: "dropdown",
+            required: true,
+            placeholder: "Selecione primeiro a etapa",
+            dependsOn: "Etapa do Circuito"
+        },
+        {
             name: "Data",
             type: "date",
             required: true,
@@ -690,6 +697,46 @@ const DOCUMENT_FIELDS = {
     links_uteis: [
         // Este array fica vazio porque não teremos campos de formulário
         // Só teremos botões com links
+    ]
+};
+
+// Mapeamento de etapa do Circuito de Gestão para seus subtópicos
+const ETAPA_SUBTOPICOS = {
+    "Planejamento I": [
+        "Diagnóstico e identificação de desafios",
+        "Aprimoramento do Plano de Ação",
+        "Aspectos da Regulação Escolar"
+    ],
+    "Execução I": [
+        "Análise da execução do Plano de Ação",
+        "Aspectos da Regulação Escolar",
+        "Reflexão sobre a incidência das ações",
+        "Específica para as Escolas em Tempo Integral",
+        "Exclusiva para as Escolas Prioritárias"
+    ],
+    "SMAR I": [
+        "Análise dos resultados"
+    ],
+    "Correção de Rotas I": [
+        "Revisão do Plano de Ação"
+    ],
+    "Execução II": [
+        "Aspectos da Regulação Escolar",
+        "Reflexão sobre a incidência das ações",
+        "Específica para as Escolas em Tempo Integral",
+        "Exclusiva para as Escolas Prioritárias"
+    ],
+    "SMAR II": [
+        "Análise dos resultados"
+    ],
+    "Correção de Rotas II": [
+        "Revisão do Plano de Ação"
+    ],
+    "Execução III": [
+        "Aspectos da regulação escolar",
+        "Reflexão da incidência das ações",
+        "Balanço da Execução do Plano de Ação",
+        "Exclusiva para as Escolas Prioritárias"
     ]
 };
 
@@ -782,7 +829,7 @@ const DOCUMENT_HANDLERS = {
         }
 
         return `
-            <div class="form-group field-group" data-field-name="${field.name}">
+            <div class="form-group field-group" data-field-name="${field.name}" ${field.dependsOn ? 'style="display: none;"' : ''}>
                 <label for="${fieldId}">
                     ${field.name} 
                     ${field.required ? '<span class="required-asterisk">*</span>' : ''}

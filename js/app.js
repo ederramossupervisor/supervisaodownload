@@ -540,7 +540,50 @@ class SupervisaoApp {
             if (field.name === "Nome da Escola") {
                 input.addEventListener('change', () => this.handleSchoolChange());
             }
+
+            if (field.name === "Etapa do Circuito") {
+                input.addEventListener('change', () => this.handleEtapaCircuitoChange());
+            }
         });
+
+        // Se o formulário já tiver "Etapa do Circuito" (ex.: reabrindo o form), sincroniza o Subtópico
+        if (fields.some(f => f.name === "Etapa do Circuito")) {
+            this.handleEtapaCircuitoChange();
+        }
+    }
+
+    // ✅ Popular/exibir o dropdown "Subtópico" de acordo com a "Etapa do Circuito" selecionada
+    handleEtapaCircuitoChange() {
+        const etapaField = document.querySelector('[name="Etapa do Circuito"]');
+        const subtopicoField = document.querySelector('[name="Subtópico"]');
+        const subtopicoGroup = document.querySelector('[data-field-name="Subtópico"]');
+
+        if (!etapaField || !subtopicoField || !subtopicoGroup) return;
+
+        const etapaSelecionada = etapaField.value;
+        const subtopicos = ETAPA_SUBTOPICOS[etapaSelecionada] || [];
+
+        // Limpar opções existentes, mantendo apenas o placeholder
+        subtopicoField.innerHTML = '<option value="">Selecione o subtópico</option>';
+
+        if (subtopicos.length > 0) {
+            subtopicos.forEach(subtopico => {
+                const option = document.createElement('option');
+                option.value = subtopico;
+                option.textContent = subtopico;
+                subtopicoField.appendChild(option);
+            });
+
+            subtopicoGroup.style.display = '';
+
+            // Se só existe um subtópico para a etapa, seleciona automaticamente
+            if (subtopicos.length === 1) {
+                subtopicoField.value = subtopicos[0];
+            }
+        } else {
+            subtopicoGroup.style.display = 'none';
+            subtopicoField.value = '';
+        }
     }
 
     handleSchoolChange() {
