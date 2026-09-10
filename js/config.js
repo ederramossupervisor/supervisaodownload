@@ -123,6 +123,22 @@ const DOCUMENT_NAMES = {
     links_uteis: "Links Úteis"
 };
 
+// Legendas curtas explicando cada tipo de documento (exibidas discretamente nos cards)
+const DOCUMENT_DESCRIPTIONS = {
+    cuidador: "Parecer para processo de contratação de profissional de apoio escolar.",
+    justificativa: "Parecer para contratação de professores que se enquadram nos editais de processo seletivo.",
+    parecer: "Parecer para contratação de professores que não se enquadram nos editais de processo seletivo.",
+    regularizacao_aee: "Parecer para processo de regularização de atendimento educacional especializado.",
+    viagem_pedagogica: "Parecer pedagógico para viagens escolares.",
+    manifestacao: "Resposta às ouvidorias/manifestações.",
+    eletivas: "Parecer para aprovação de Eletivas.",
+    projeto: "Parecer pedagógico relacionado aos projetos escolares.",
+    localizacao_provisoria: "Parecer pedagógico a respeito de localização provisória de professores.",
+    atividade_pesquisa: "Parecer Pedagógico para atividade de pesquisa.",
+    pca: "Parecer pedagógico para atribuição de cargo de PCA.",
+    coordenacao_escolar: "Parecer pedagógico para atribuição de cargo de Coordenador Escolar."
+};
+
 // Estado da aplicação
 let APP_STATE = {
     supervisorName: "",
