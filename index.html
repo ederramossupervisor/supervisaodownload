@@ -162,17 +162,26 @@
 
     <!-- Modal de Download -->
     <div id="download-modal" class="modal hidden">
-        <div class="modal-content">
+        <div class="modal-content preview-modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-download"></i> Documento Gerado</h2>
+                <h2><i class="fas fa-file-alt"></i> Documento Gerado</h2>
                 <span class="close">&times;</span>
             </div>
-            <p>Seu documento foi gerado com sucesso. Clique no botão para o download:</p>
+            <p>Confira a prévia abaixo. Você pode editar o documento no Google Docs antes de baixar o PDF.</p>
+
+            <div class="document-preview">
+                <iframe id="document-preview-frame" title="Pré-visualização do documento" loading="lazy"></iframe>
+            </div>
+
             <div class="download-options">
+                <button class="btn btn-secondary" id="edit-document">
+                    <i class="fas fa-pen"></i> Editar Documento
+                </button>
                 <button class="btn btn-primary" id="download-pdf">
                     <i class="fas fa-file-pdf"></i> Baixar PDF
                 </button>
             </div>
+            <p class="preview-note"><i class="fas fa-info-circle"></i> Se editar o documento, baixe o PDF atualizado direto pelo Google Docs (Arquivo &gt; Fazer download &gt; PDF) para pegar a versão mais recente.</p>
         </div>
     </div>
 
