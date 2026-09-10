@@ -369,6 +369,15 @@ input:focus, select:focus, textarea:focus {
     font-weight: 600;
 }
 
+.document-type-desc {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--preto);
+    opacity: 0.55;
+}
+
 /* Multi-select */
 .multi-select {
     position: relative;
