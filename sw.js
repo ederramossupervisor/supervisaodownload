@@ -1,5 +1,5 @@
 // Service Worker para GitHub Pages
-const CACHE_NAME = 'supervisao-v1';
+const CACHE_NAME = 'supervisao-v2'; // ⬆️ versão incrementada: força atualização do cache (preview/edição do documento)
 const urlsToCache = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', function(event) {
+  self.skipWaiting(); // ativa o novo SW sem esperar todas as abas fecharem
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
@@ -22,15 +23,27 @@ self.addEventListener('install', function(event) {
   );
 });
 
+// Remove caches antigos (ex: supervisao-v1) para não continuar servindo arquivos desatualizados
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames
+          .filter(function(name) { return name !== CACHE_NAME; })
+          .map(function(name) { return caches.delete(name); })
+      );
+    }).then(function() {
+      return self.clients.claim();
+    })
+  );
+});
+
 self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.match(event.request).then(function(response) {
+        return response || fetch(event.request);
+      });
+    })
   );
 });
