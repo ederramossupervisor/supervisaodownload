@@ -299,9 +299,11 @@ class SupervisaoApp {
             const card = document.createElement('div');
             card.className = 'document-type';
             card.setAttribute('data-type', docType);
+            const descricao = DOCUMENT_DESCRIPTIONS[docType];
             card.innerHTML = `
                 <i class="${DOCUMENT_ICONS[docType]}"></i>
                 <h3>${DOCUMENT_NAMES[docType]}</h3>
+                ${descricao ? `<p class="document-type-desc">${descricao}</p>` : ''}
             `;
             card.addEventListener('click', () => this.selectDocumentType(docType));
             container.appendChild(card);
