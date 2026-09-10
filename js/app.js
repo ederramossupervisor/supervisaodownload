@@ -1,4 +1,3 @@
-
 // Aplicação principal - Controle de fluxo e eventos
 class SupervisaoApp {
     constructor() {
@@ -33,6 +32,7 @@ class SupervisaoApp {
 
         // Modais
         document.getElementById('download-pdf').addEventListener('click', () => this.downloadPDF());
+        document.getElementById('edit-document').addEventListener('click', () => this.editDocument());
         document.getElementById('access-form').addEventListener('submit', (e) => this.handleAccessRequest(e));
 
         // Fechar modais
@@ -770,7 +770,37 @@ class SupervisaoApp {
     showDownloadModal() {
         console.log('📁 Mostrando modal de download...');
         const modal = document.getElementById('download-modal');
+        const frame = document.getElementById('document-preview-frame');
+        const editBtn = document.getElementById('edit-document');
+        const doc = APP_STATE.generatedDocument;
+
+        if (frame) {
+            // Prioriza a previewUrl vinda do backend; se ainda não existir (backend não
+            // redeployado), tenta montar uma a partir da URL do PDF como fallback
+            frame.src = (doc && doc.previewUrl) || this.toPreviewUrl(doc && doc.url) || 'about:blank';
+        }
+        if (editBtn) {
+            editBtn.disabled = !(doc && doc.editableUrl);
+        }
+
         modal.classList.remove('hidden');
+    }
+
+    // Converte uma URL do Google Drive (view/download) em URL de pré-visualização embutível
+    toPreviewUrl(url) {
+        if (!url) return '';
+        const fileId = url.match(/[-\w]{25,}/);
+        return fileId ? `https://drive.google.com/file/d/${fileId[0]}/preview` : '';
+    }
+
+    // Abre o documento editável no Google Docs em uma nova aba
+    editDocument() {
+        const doc = APP_STATE.generatedDocument;
+        if (!doc || !doc.editableUrl) {
+            UTILS.showNotification('Link de edição não disponível para este documento.', 'error');
+            return;
+        }
+        window.open(doc.editableUrl, '_blank');
     }
 
     showAccessModal() {
@@ -782,6 +812,12 @@ class SupervisaoApp {
     closeModal(modal) {
         console.log('❌ Fechando modal...');
         modal.classList.add('hidden');
+
+        // Libera o iframe de pré-visualização ao fechar o modal de download
+        if (modal && modal.id === 'download-modal') {
+            const frame = document.getElementById('document-preview-frame');
+            if (frame) frame.src = 'about:blank';
+        }
     }
 }
 
