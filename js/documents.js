@@ -1043,9 +1043,11 @@ const DOCUMENT_HANDLERS = {
             if (result.success) {
                 return {
                     success: true,
-                    filename: `${DOCUMENT_NAMES[documentType]}_${new Date().getTime()}.pdf`,
+                    // Usa o nome vindo do backend (ex: "Cuidador_Escola_Aluno.pdf"); mantém fallback só por segurança
+                    filename: result.filename || `${DOCUMENT_NAMES[documentType]}_${new Date().getTime()}.pdf`,
                     url: result.pdfUrl,
-                    documentUrl: result.documentUrl,
+                    previewUrl: result.previewUrl,   // usado no iframe de pré-visualização
+                    editableUrl: result.editableUrl, // link do documento editável no Google Docs
                     documentId: result.documentId
                 };
             } else {
