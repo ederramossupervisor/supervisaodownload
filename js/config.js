@@ -101,7 +101,6 @@ const DOCUMENT_ICONS = {
     atividade_pesquisa: "fas fa-search",
     pca: "fas fa-chalkboard-teacher",
     coordenacao_escolar: "fas fa-user-tie",
-    links_uteis: "fas fa-link",
     ata_circuito_gestao: "fas fa-users"
 };
 
@@ -119,8 +118,7 @@ const DOCUMENT_NAMES = {
     atividade_pesquisa: "Atividade de Pesquisa",
     pca: "PCA",
     coordenacao_escolar: "Coordenação Escolar",
-    ata_circuito_gestao: "Ata de Reunião do Circuito de Gestão",
-    links_uteis: "Links Úteis"
+    ata_circuito_gestao: "Ata de Reunião do Circuito de Gestão"
 };
 
 // Legendas curtas explicando cada tipo de documento (exibidas discretamente nos cards)
