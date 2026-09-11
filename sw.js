@@ -1,5 +1,5 @@
 // Service Worker para GitHub Pages
-const CACHE_NAME = 'supervisao-v2'; // ⬆️ versão incrementada: força atualização do cache (preview/edição do documento)
+const CACHE_NAME = 'supervisao-v3'; // ⬆️ nova versão: remoção do card "Links Úteis"
 const urlsToCache = [
   './',
   './index.html',
