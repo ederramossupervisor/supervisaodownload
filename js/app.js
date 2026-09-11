@@ -11,8 +11,31 @@ class SupervisaoApp {
     // Inicialização da aplicação
     initializeApp() {
         console.log(`${CONFIG.appName} v${CONFIG.version} inicializando...`);
+        this.populateSupervisorSelect();
         this.initSchoolSelector(); // Novo sistema de seleção
         this.createDocumentCards();
+    }
+
+    // Preencher o select de supervisores a partir de SUPERVISORS_DATA
+    populateSupervisorSelect() {
+        const select = document.getElementById('supervisor-name');
+        SUPERVISORS_DATA.forEach(supervisor => {
+            const option = document.createElement('option');
+            option.value = supervisor.name;
+            option.textContent = supervisor.name;
+            select.appendChild(option);
+        });
+    }
+
+    // Ao escolher o nome do supervisor, pré-seleciona automaticamente as escolas dele
+    // (o supervisor ainda pode adicionar ou remover escolas normalmente depois)
+    onSupervisorChange(name) {
+        const supervisor = SUPERVISORS_DATA.find(s => s.name === name);
+        if (!supervisor) return;
+
+        APP_STATE.selectedSchools = [...supervisor.schools];
+        this.selectedSchools = [...supervisor.schools];
+        this.updateSchoolSelectionDisplay();
     }
 
     // Vincular eventos
@@ -26,6 +49,7 @@ class SupervisaoApp {
         // Configuração
         document.getElementById('save-config').addEventListener('click', () => this.saveConfiguration());
         document.getElementById('request-access-btn').addEventListener('click', () => this.showAccessModal());
+        document.getElementById('supervisor-name').addEventListener('change', (e) => this.onSupervisorChange(e.target.value));
 
         // Formulário de documentos
         document.getElementById('generate-document').addEventListener('click', () => this.generateDocument());
@@ -356,7 +380,7 @@ class SupervisaoApp {
         
         // Validações
         if (!supervisorName) {
-            UTILS.showNotification('Por favor, informe seu nome completo.', 'error');
+            UTILS.showNotification('Por favor, selecione seu nome.', 'error');
             document.getElementById('supervisor-name').focus();
             return;
         }
