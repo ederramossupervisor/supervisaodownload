@@ -1,5 +1,5 @@
 // Service Worker para GitHub Pages
-const CACHE_NAME = 'supervisao-v3'; // ⬆️ nova versão: remoção do card "Links Úteis"
+const CACHE_NAME = 'supervisao-v4'; // ⬆️ nova versão: seleção de supervisor com pré-seleção de escolas
 const urlsToCache = [
   './',
   './index.html',
