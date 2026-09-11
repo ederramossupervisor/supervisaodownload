@@ -48,6 +48,54 @@ const SCHOOLS_DATA = [
     
 ];
 
+// Supervisores e suas escolas (usado para pré-selecionar as escolas ao escolher o nome no dropdown)
+const SUPERVISORS_DATA = [
+    {
+        name: "Caroliny Emilia Uhlig Araujo",
+        schools: ["EEEFM JOSE CUPERTINO", "EEEFM TEOFILO PAULINO", "EEEFM MARIA DE ABREU ALVIM"]
+    },
+    {
+        name: "Eder Calixto Ramos",
+        schools: ["EEEFM ALTO RIO POSSMOSER", "EEEFM FIORAVANTE CALIMAN", "EEEFM PEDRA AZUL"]
+    },
+    {
+        name: "Iracilde de Oliveira Silva",
+        schools: ["EEEFM FAZENDA CAMPORÊS", "EEEM FRANCISCO GUILHERME"]
+    },
+    {
+        name: "Jonas de Vargas Pagotto",
+        schools: ["EEEFM ÁLVARO CASTELO", "EEEFM GISELA SALLOKER FAYET", "EEEFM MÁRIO BERGAMIN", "EEEM MATA FRIA"]
+    },
+    {
+        name: "Julia Caroline Locatelli de Souza",
+        schools: ["EEEF IVANA CASAGRANDE SCABELO", "EEEFM JOAQUIM CAETANO DE PAIVA", "CEEFMTI ELISA PAIVA"]
+    },
+    {
+        name: "Kely Aparecida Lopes",
+        schools: ["EEEFM DOMINGOS PERIM", "EEEFM ELVIRA BARROS", "EEEFM GRAÇA ARANHA"]
+    },
+    {
+        name: "Maria da Glória Lovo Pires",
+        schools: ["EEEFM PONTO DO ALTO", "EEEFM PROFª ALDY SOARES MERÇON VARGAS", "EEEM SOBREIRO"]
+    },
+    {
+        name: "Rosiane Flegler",
+        schools: ["EEEFM PROF HERMANN BERGER", "EEEFM SÃO LUÍS", "EEEFM LEOGILDO SEVERIANO DE SOUZA"]
+    },
+    {
+        name: "Rubiane Coutinho da Silva Pautz",
+        schools: ["EEEFM FAZENDA EMÍLIO SCHROEDER", "EEEFM LUIZ JOUFFROY", "EEEFM MARLENE BRANDÃO"]
+    },
+    {
+        name: "Sabrina da Larmelina",
+        schools: ["CEEFMTI AFONSO CLÁUDIO", "EEEFM FREDERICO BOLDT", "EEEFM JOSÉ ROBERTO CHRISTO"]
+    },
+    {
+        name: "Zileni Anchieta do Nascimento",
+        schools: ["EEEF SEVERINO PASTE", "EEEFM SÃO JORGE", "EEEFM JOSE GIESTAS"]
+    }
+];
+
 // Opções para campos dropdown
 const DROPDOWN_OPTIONS = {
     "Nome da Escola": SCHOOLS_DATA.map(school => school.name),
