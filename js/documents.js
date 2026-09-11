@@ -693,10 +693,6 @@ const DOCUMENT_FIELDS = {
             placeholder: "Descreva os assuntos discutidos na reunião",
             rows: 6
         }
-    ],
-    links_uteis: [
-        // Este array fica vazio porque não teremos campos de formulário
-        // Só teremos botões com links
     ]
 };
 
